@@ -1,0 +1,16 @@
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\ExcelAsConfigs.exe.config
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\ExcelAsConfigs.exe
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\ExcelAsConfigs.pdb
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\LitJson.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\MySql.Data.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\System.Data.SQLite.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\obj\Release\ExcelAsConfigs.csproj.CoreCompileInputs.cache
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\obj\Release\ExcelAsConfigs.csproj.CopyComplete
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\obj\Release\ExcelAsConfigs.exe
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\obj\Release\ExcelAsConfigs.pdb
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\ExcelDataReader.DataSet.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\ExcelDataReader.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\NPOI.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\NPOI.OOXML.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\NPOI.OpenXml4Net.dll
+E:\vs2017\ExcelAsConfigs\ExcelAsConfigs\bin\Release\NPOI.OpenXmlFormats.dll

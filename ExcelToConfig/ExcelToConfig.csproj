@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EE8603C0-95F7-4DBD-9DA6-603A08CECA97}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ExcelToConfig</RootNamespace>
+    <AssemblyName>ExcelToConfig</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ExcelDataReader">
+      <HintPath>..\DLL\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet">
+      <HintPath>..\DLL\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="LitJson">
+      <HintPath>..\DLL\LitJson.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\DLL\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>..\DLL\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>..\DLL\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net">
+      <HintPath>..\DLL\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats">
+      <HintPath>..\DLL\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\DLL\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppClass\AppDataTypeDateTime.cs" />
+    <Compile Include="AppClass\AppDataTypeMapString.cs" />
+    <Compile Include="AppClass\AppDataTypeTableString.cs" />
+    <Compile Include="AppClass\AppLang.cs" />
+    <Compile Include="AppClass\AppLanguage.cs" />
+    <Compile Include="AppClass\AppLog.cs" />
+    <Compile Include="AppClass\AppDataType.cs" />
+    <Compile Include="AppClass\AppValues.cs" />
+    <Compile Include="AppClass\BatData.cs" />
+    <Compile Include="AppClass\MapStringAnalyzeHelper.cs" />
+    <Compile Include="DataBase\DataBase.cs" />
+    <Compile Include="DateTimes\DateTimeValue.cs" />
+    <Compile Include="ExcelClassOfApp\FieldInfo.cs" />
+    <Compile Include="ExcelClassOfApp\TableInfo.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\MapStringCheckHelper.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperConfigData.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperDictAndArray.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperMapStringType.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperJsonType.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperDateTimeType.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperLangType.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperCommonTypes.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperTableStringType.cs" />
+    <Compile Include="ExcelClass\ExcelMethods.cs" />
+    <Compile Include="ExcelClass\ExcelTableSetting.cs" />
+    <Compile Include="ExcelClass\ReadExcelHelper.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelper.cs" />
+    <Compile Include="ExportToERLANG\ErlangStruct.cs" />
+    <Compile Include="ExportToERLANG\ExportToErlangHelper.cs" />
+    <Compile Include="ExportToERLANG\SaveErlang.cs" />
+    <Compile Include="ExportToERLANG\TableExportToErlangHelper.cs" />
+    <Compile Include="ExportToERLANG\TableExportToErlangHelperGetOneField.cs" />
+    <Compile Include="ExportToHRL\ExportToHrlHelper.cs" />
+    <Compile Include="ExportToHRL\HrlStruct.cs" />
+    <Compile Include="ExportToHRL\SaveHrl.cs" />
+    <Compile Include="ExportToHRL\TableExportToHrlHelper.cs" />
+    <Compile Include="ExportToHRL\TableExportToHrlHelperGetOneField.cs" />
+    <Compile Include="ExportToJSON\ExportToJsonHelper.cs" />
+    <Compile Include="ExportToJSON\JsonStruct.cs" />
+    <Compile Include="ExportToJSON\SaveJson.cs" />
+    <Compile Include="ExportToJSON\TableExportToJsonHelper.cs" />
+    <Compile Include="ExportToJSON\TableExportToJsonHelperGetOneField.cs" />
+    <Compile Include="ExportToJSON\TableExportToJsonHelperSpecial.cs" />
+    <Compile Include="ExportToLUAFILe\ExportToLuaFileHelper.cs" />
+    <Compile Include="ExportToLUAFILe\LuaFileStruct.cs" />
+    <Compile Include="ExportToLUAFILe\SaveLuaFile.cs" />
+    <Compile Include="ExportToLUAFILe\TableExportToLuaFileHelper.cs" />
+    <Compile Include="ExportToLUAFILe\TableExportToLuaFileHelperGetOneField.cs" />
+    <Compile Include="ExportToLUA\ExportToLuaHelper.cs" />
+    <Compile Include="ExportToLUA\LuaStruct.cs" />
+    <Compile Include="ExportToLUA\SaveLua.cs" />
+    <Compile Include="ExportToLUA\TableExportToLuaHelper.cs" />
+    <Compile Include="ExportToLUA\TableExportToLuaHelperGetOneField.cs" />
+    <Compile Include="ExportToLUA\TableExportToLuaHelperSpecial.cs" />
+    <Compile Include="ExportToMYSQL\ExportToMySQLHelper.cs" />
+    <Compile Include="ExportToMYSQL\MySQLStruct.cs" />
+    <Compile Include="ExportToMYSQL\TableExportToMySQLHelper.cs" />
+    <Compile Include="ExportToSQLITE\SQLiteStruct.cs" />
+    <Compile Include="ExportToSQLITE\TableExportToSQLiteHelper.cs" />
+    <Compile Include="ExportToTXT\ExportToTxtHelper.cs" />
+    <Compile Include="ExportToTXT\SaveTxt.cs" />
+    <Compile Include="ExportToTXT\TableExportToTxtHelper.cs" />
+    <Compile Include="ExportToTXT\TxtStruct.cs" />
+    <Compile Include="MyCheckFunction.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExcelClass\ExcelFolder.cs" />
+    <Compile Include="PublicMethods\FileModule.cs" />
+    <Compile Include="PublicMethods\StringModule.cs" />
+    <Compile Include="SVN.cs" />
+    <Compile Include="SvnStruct.cs" />
+    <Compile Include="TableCheckHelper\CheckDateTime.cs" />
+    <Compile Include="TableCheckHelper\CheckEffective.cs" />
+    <Compile Include="TableCheckHelper\CheckFieldName.cs" />
+    <Compile Include="TableCheckHelper\CheckFile.cs" />
+    <Compile Include="TableCheckHelper\CheckFile2.cs" />
+    <Compile Include="TableCheckHelper\CheckFunc.cs" />
+    <Compile Include="TableCheckHelper\CheckGreaterThan.cs" />
+    <Compile Include="TableCheckHelper\CheckIllegal.cs" />
+    <Compile Include="TableCheckHelper\CheckJson.cs" />
+    <Compile Include="TableCheckHelper\CheckNotEmpty.cs" />
+    <Compile Include="TableCheckHelper\CheckRange.cs" />
+    <Compile Include="TableCheckHelper\CheckRef.cs" />
+    <Compile Include="TableCheckHelper\CheckRefStr.cs" />
+    <Compile Include="TableCheckHelper\CheckTableFunc.cs" />
+    <Compile Include="TableCheckHelper\CheckTableIntegrity.cs" />
+    <Compile Include="TableCheckHelper\CheckUnique.cs" />
+    <Compile Include="TableCheckHelper\CheckStruct.cs" />
+    <Compile Include="TableCheckHelper\GetCheckRules.cs" />
+    <Compile Include="TableCheckHelper\GetFieldByIndexDefineString.cs" />
+    <Compile Include="TableCheckHelper\GetValueIsInSet.cs" />
+    <Compile Include="TableCheckHelper\CheckSpecialExportRule.cs" />
+    <Compile Include="TableCheckHelper\TableCheckHelper.cs" />
+    <Compile Include="TxtClass\TxtConfigReader.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.Config.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
