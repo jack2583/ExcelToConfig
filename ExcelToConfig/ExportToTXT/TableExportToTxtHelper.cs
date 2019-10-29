@@ -35,10 +35,12 @@ public class TableExportToTxtHelper
                 //    //str2 = str2 +" \""+ dt.Rows[row][column].ToString()+"\" ," ;
                 //}
                 string[] str2 = strList.ToArray();
+               
                 //str2 = str2.Remove(str2.Length - 1);
                 //  str = str.TrimEnd(TxtStruct.ExportTxtSplitChar);
                 // content.Append(str).Append(TxtStruct.ExportTxtLineChar);
-                content.Append(string.Format(str, str2)).Append(TxtStruct.ExportTxtLineChar);
+                 content.Append(string.Format(str, str2)).Append(TxtStruct.ExportTxtLineChar);
+                //content.AppendFormat(str, str2).Append(TxtStruct.ExportTxtLineChar);
             }
             string exportString = content.ToString();
 

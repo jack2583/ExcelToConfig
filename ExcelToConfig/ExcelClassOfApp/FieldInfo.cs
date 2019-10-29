@@ -47,6 +47,10 @@ public class FieldInfo
     /// 第5行，导出到MySQL数据库中对应的字段数据类型
     /// </summary>
     public string DatabaseFieldType { get; set; }
+    /// <summary>
+    /// 第5行，导出到字段数据类型字符串
+    /// </summary>
+    public string DatabaseInfoString { get; set; }
 
     // 声明字段数据类型的字符串
     public string DataTypeString { get; set; }

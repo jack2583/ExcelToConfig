@@ -1,8 +1,0 @@
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\obj\Debug\ExcelToConfig.csproj.CoreCompileInputs.cache
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\obj\Debug\ExcelToConfig.csproj.CopyComplete
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\bin\Debug\ExcelToConfig.exe.config
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\bin\Debug\ExcelToConfig.exe
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\bin\Debug\ExcelToConfig.pdb
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\obj\Debug\ExcelToConfig.exe
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\obj\Debug\ExcelToConfig.pdb
-E:\vs2017\ExcelToConfig\ExcelAsConfigs\obj\Debug\ExcelToConfig.csprojAssemblyReference.cache

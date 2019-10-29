@@ -44,7 +44,7 @@ public struct JsonStruct
     /// <summary>
     /// 是否将生成的文件按原Excel文件所在的目录结构进行存储（默认:是）
     /// </summary>
-    public static bool IsExportKeepDirectoryStructure = true;
+    public static bool IsExportKeepDirectoryStructure = false;
     /// <summary>
     /// 导出json文件配置，bat脚本：导出的json文件是否生成为各行数据对应的json object包含在一个json array的形式，默认为否
     /// </summary>
@@ -116,7 +116,7 @@ public struct JsonStruct
     /// <summary>
     /// 某个Excel表的配置：声明对某张表格设置导出Json时是否忽略空值，如果忽略则不导出该字段。默认不忽略.false/true
     /// </summary>
-    public static bool IsExportJsonNullConfig = true;
+    public static bool IsExportJsonNullConfig = false;
     /// <summary>
     /// 某个Excel表的配置：声明某张表格导出为lua table时，是否将主键列的值作为table中的元素 
     /// </summary>

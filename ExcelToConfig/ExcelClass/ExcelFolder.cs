@@ -14,7 +14,7 @@ public class ExcelFolder
     /// <summary>
     /// 指定Excel文件目录是否包含子文件夹中（默认为不包含子文件夹）
     /// </summary>
-    public static bool IsIncludeSubfolder = false;
+    public static bool IsIncludeSubfolder = true;
 
     /// <summary>
     /// 指定Excel文件目录下，所有文件（key：表名， value：文件所在路径）

@@ -16,7 +16,7 @@ public  class CheckStruct
     /// <summary>
     /// 用户输入的是否允许int、float型字段中存在空值，默认不允许
     /// </summary>
-    public static bool IsAllowedNullNumber = false;
+    public static bool IsAllowedNullNumber = true;
 
 
 }

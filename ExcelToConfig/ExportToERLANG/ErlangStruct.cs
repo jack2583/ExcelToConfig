@@ -43,7 +43,7 @@ public struct ErlangStruct
     /// <summary>
     /// 导出erlang文件配置，bat脚本：是否将生成的文件按原Excel文件所在的目录结构进行存储（默认:是）
     /// </summary>
-    public static bool IsExportKeepDirectoryStructure = true;
+    public static bool IsExportKeepDirectoryStructure = false;
     /// <summary>
     /// 导出Erlang文件配置，bat脚本：数组类型是否使用[1]=值  格式，默认是
     /// </summary>
@@ -67,7 +67,7 @@ public struct ErlangStruct
     /// <summary>
     /// 导出的erlang文件中是否将erlang字符串整理为带缩进格式的形式，默认为否
     /// </summary>
-    public static bool ExportErlangIsFormat = false;
+    public static bool ExportErlangIsFormat = true;
     /// <summary>
     /// 导出erlang文件配置，bat脚本：用于缩进erlang table的字符串
     /// </summary>

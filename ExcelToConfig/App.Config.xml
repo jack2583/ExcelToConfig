@@ -1,18 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <!--ExcelToConfig工具配置文件-->
 <ExcelToConfig >
-  <ReadExcel ><!--Excel文件相关"=-->
-    <ExcelPath>D:\my\Code\xlsxtolua</ExcelPath><!--从哪读取Excel文件-->
-  <IsIncludeSubfolder>false</IsIncludeSubfolder><!--是否读取子文件夹中的Excel文件-->
-    <ExcelTempFileFileNameStartString>~$</ExcelTempFileFileNameStartString><!--Excel临时文件的文件名前缀-->
-  <AllowSameName>false</AllowSameName><!--是否允许不同子文件夹中存在同名文件夹-->
-  </ReadExcel>
-<ExportToMySQL>
-  <server>192.168.18.48</server><!--ip地址-->
-<port>32001</port><!--端口号-->
-<database>xz_game</database><!--数据库名称-->
-<uid>root</uid><!--用户名-->
-<password>2J89d7*(JDdih</password><!--密码-->
 
-</ExportToMySQL>
 </ExcelToConfig>

@@ -269,7 +269,7 @@ public partial class TableExportToErlangHelper
         // 生成数据内容结尾
         content.AppendLine("get(_N) -> false.");
         content.AppendLine("get_list() ->");
-        content.Append("[");
+        content.Append("\t[");
         foreach (var key in data.Keys)
         {
             content.Append(key).Append(",");
@@ -317,12 +317,12 @@ public partial class TableExportToErlangHelper
             FieldInfo keyColumnField = allField[0];
             
             if (keyColumnField.DataType == DataType.Int || keyColumnField.DataType == DataType.Long)
-                content.Append("get(").Append(keyColumnField.Data[row]).AppendLine(")->");
+                content.Append("get(").Append(keyColumnField.Data[row]).Append(")->");
             // 注意：像“1_2”这样的字符串作为table的key必须加[""]否则lua认为是语法错误
             else if (keyColumnField.DataType == DataType.String)
             {
-                string FieldString = _GetOneField(keyColumnField, row, currentLevel, out errorString);
-                content.Append("get(").Append(FieldString).AppendLine(")->");
+                string FieldString = keyColumnField.Data[row].ToString();// _GetOneField(keyColumnField, row, currentLevel, out errorString);
+                content.Append("get(").Append(FieldString).Append(")->");
             }
                
             else
@@ -332,7 +332,7 @@ public partial class TableExportToErlangHelper
                 return false;
             }
            // content.Append(_GetErlangIndentation(currentLevel));
-            content.Append("  #{");
+            content.AppendLine(" #{");
             //  ++currentLevel;
 
             // 如果设置了要将主键列的值作为导出的table中的元素
@@ -358,11 +358,11 @@ public partial class TableExportToErlangHelper
                     continue;
                 else
                     i++;
-                if (i > 1)
-                {
+               // if (i > 1)
+               // {
                     if (ErlangStruct.ExportErlangIsFormat == true)
                         content.Append(_GetErlangIndentation(currentLevel));
-                }
+               // }
                 
                 
                 if (errorString != null)
@@ -421,14 +421,14 @@ public partial class TableExportToErlangHelper
         // 生成数据内容结尾
         stringBuilder.AppendLine("get(_N) -> false.");
         stringBuilder.AppendLine("get_list() ->");
-        stringBuilder.Append("[");
+        stringBuilder.Append("\t[");
         for (int i=0;i< dataCount;i++)
         {
-            string FieldString = _GetOneField(allField[0], i, currentLevel, out errorString);
+            string FieldString = allField[0].Data[i].ToString();// _GetOneField(allField[0], i, currentLevel, out errorString);
             stringBuilder.Append(FieldString).Append(",");
         }
         stringBuilder.Remove(stringBuilder.Length - 1, 1);
-        stringBuilder.Append("].");
+        stringBuilder.AppendLine("].");
 
         string exportString = stringBuilder.ToString();
         //if (ErlangStruct.IsNeedColumnInfo == true)

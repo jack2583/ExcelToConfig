@@ -804,34 +804,22 @@ namespace ExcelToConfig
 
                     ExportToErlangHelper.ExportToErlang(tableInfo);
 
-                    ExportToHrlHelper.ExportToHrl(tableInfo);
-
                 }
                 ExportToMySQLHelper.ExportToMySQL();
 
                 AppLog.Log("全部文件导出成功");
-                Console.ReadKey();
-                //判断是否执行bat脚本复制文件
-                if (AppValues.App_Config_IsCopy)
-                {
-                    string PROGRAM_FOLDER_PATH = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-                    string defaultPath = FileModule.CombinePath(PROGRAM_FOLDER_PATH, AppValues.App_Config_CopyBatName);
-                    if (File.Exists(defaultPath))
-                    {
-                        System.Diagnostics.Process.Start(defaultPath.Replace('/', '\\'));
-                        AppLog.Log("全部文件复制成功");
-
-                        //判断是否要提交Svn
-                        if (SvnStruct.IsCommitSvn)
-                            SVN.CommitSvnDirectory(SvnStruct.SvnPath, SvnStruct.CommitSvnCloseonend);
-                    }
-                }
+                //Console.ReadKey();
             }
-            catch
+            catch(Exception e)
             {
-                AppLog.LogErrorAndExit("未知错误，请检查配置表");
+#if DEBUG
+                AppLog.LogErrorAndExit(e.ToString());
+#else
+                AppLog.LogErrorAndExit("出现错误，请检查配置表");
+#endif
+
             }
-           
+
 
 
         }

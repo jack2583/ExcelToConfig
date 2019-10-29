@@ -151,6 +151,8 @@ public partial class TableExportToLuaHelper
 
     private static string _GetStringValue(FieldInfo fieldInfo, int row, int level)
     {
+        if (fieldInfo.Data[row] == null)
+            return "nil";
         StringBuilder content = new StringBuilder();
 
         content.Append("\"");
@@ -315,6 +317,8 @@ public partial class TableExportToLuaHelper
 
     private static string _GetJsonValue(FieldInfo fieldInfo, int row, int level)
     {
+        if (fieldInfo.Data[row] == null)
+            return "nil";
         JsonData jsonData = fieldInfo.Data[row] as JsonData;
         if (jsonData == null)
             return "nil";
@@ -395,6 +399,8 @@ public partial class TableExportToLuaHelper
 
     private static string _GetMapStringValue(FieldInfo fieldInfo, int row, int level)
     {
+        if (fieldInfo.Data[row] == null)
+            return "nil";
         JsonData jsonData = fieldInfo.Data[row] as JsonData;
         if (jsonData == null)
             return "nil";

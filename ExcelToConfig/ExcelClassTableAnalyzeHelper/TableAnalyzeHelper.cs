@@ -314,28 +314,9 @@ public partial class TableAnalyzeHelper
             checkRuleString = dt.Rows[ExcelTableSetting.DataFieldCheckRuleRowIndex][columnIndex].ToString().Trim().Replace(System.Environment.NewLine, " ").Replace('\n', ' ').Replace('\r', ' ').Replace('\t', ' ');
         fieldInfo.CheckRule = string.IsNullOrEmpty(checkRuleString) ? null : checkRuleString;
         // 导出到数据库中的字段名及类型
-        string databaseInfoString = null;
         if(ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex>=0)
-            databaseInfoString = dt.Rows[ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex][columnIndex].ToString().Trim();
-        if (string.IsNullOrEmpty(databaseInfoString))
-        {
-            fieldInfo.DatabaseFieldName = null;
-            fieldInfo.DatabaseFieldType = null;
-        }
-        else
-        {
-            int leftBracketIndex = databaseInfoString.IndexOf('(');
-            int rightBracketIndex = databaseInfoString.LastIndexOf(')');
-            if (leftBracketIndex == -1 || rightBracketIndex == -1 || leftBracketIndex > rightBracketIndex)
-            {
-                errorString = "导出到数据库中表字段信息声明错误，必须在字段名后的括号中声明对应数据库中的数据类型";
-                nextFieldColumnIndex = columnIndex + 1;
-                return null;
-            }
-
-            fieldInfo.DatabaseFieldName = databaseInfoString.Substring(0, leftBracketIndex);
-            fieldInfo.DatabaseFieldType = databaseInfoString.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1);
-        }
+            fieldInfo.DatabaseInfoString = dt.Rows[ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex][columnIndex].ToString().Trim();
+        
         // 引用父FileInfo
         fieldInfo.ParentField = parentField;
 
@@ -464,7 +445,7 @@ public partial class TableAnalyzeHelper
                 return null;
             }
             // 独立字段未填写字段名以及导出数据库信息，视为无效列，直接忽略
-            else if (string.IsNullOrEmpty(databaseInfoString))
+            else if (string.IsNullOrEmpty(fieldInfo.DatabaseInfoString))
             {
                 //  AppLog.LogWarning(string.Format("警告：第{0}列未填写变量名，也未填写导出数据库信息，将被视为无效列而忽略", ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1)));
                 errorString = null;

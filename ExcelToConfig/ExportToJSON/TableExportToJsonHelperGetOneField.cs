@@ -138,6 +138,8 @@ public partial class TableExportToJsonHelper
 
     private static string _GetStringValue(FieldInfo fieldInfo, int row)
     {
+        if (fieldInfo.Data[row] == null)
+            return "null";
         StringBuilder content = new StringBuilder();
 
         content.Append("\"");
@@ -149,6 +151,8 @@ public partial class TableExportToJsonHelper
 
     private static string _GetBoolValue(FieldInfo fieldInfo, int row)
     {
+        if (fieldInfo.Data[row] == null)
+            return "null";
         if ((bool)fieldInfo.Data[row] == true)
             return "true";
         else
