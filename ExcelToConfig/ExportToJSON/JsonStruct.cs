@@ -60,7 +60,7 @@ public struct JsonStruct
     /// <summary>
     /// 导出的json文件，若生成包含在一个json object的形式，是否使每行字段信息对应的json object中包含主键列对应的键值对，默认为是
     /// </summary>
-    public static bool ExportJsonIsExportJsonMapIncludeKeyColumnValue = true;
+    public static bool ExportJsonIsExportJsonMapIncludeKeyColumnValue = false;
     /// <summary>
     /// 导出json文件配置，bat脚本：导出的json文件中是否将json字符串整理为带缩进格式的形式，默认为是
     /// </summary>

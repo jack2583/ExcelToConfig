@@ -64,15 +64,16 @@ public partial class TableExportToJsonHelper
             {
                 // 将主键列的值作为key
                 string keyString = null;
+                StringBuilder contentkey = new StringBuilder();
                 if (keyColumnInfo.DataType == DataType.String)
                 {
                     keyString = _GetStringValue(keyColumnInfo, row);
-                    content.Append(keyString);
+                    contentkey.Append(keyString);
                 }
                 else if (keyColumnInfo.DataType == DataType.Int || keyColumnInfo.DataType == DataType.Long)
                 {
                     keyString = _GetNumberValue(keyColumnInfo, row);
-                    content.Append("\"").Append(keyString).Append("\"");
+                    contentkey.Append("\"").Append(keyString).Append("\"");
                 }
                 else
                 {
@@ -81,9 +82,8 @@ public partial class TableExportToJsonHelper
                     return false;
                 }
 
-                // 生成一行数据json object的开头
-                content.Append(":{");
 
+                StringBuilder contenvalue = new StringBuilder();
                 int startColumn = (JsonStruct.ExportJsonIsExportJsonMapIncludeKeyColumnValue == true ? 0 : 1);
                 for (int column = startColumn; column < fieldCount; ++column)
                 {
@@ -95,17 +95,42 @@ public partial class TableExportToJsonHelper
                     }
                     else
                     {
-                        content.Append(oneFieldString);
+                        contenvalue.Append(oneFieldString);
                     }
                        
                 }
+                string str = contenvalue.ToString();
+                if(JsonStruct.ExportJsonIsExportJsonMapIncludeKeyColumnValue==true)
+                {
+                    // 生成一行数据json object的开头
+                    content.Append(contentkey);
+                    content.Append(":{");
 
-                // 去掉本行最后一个字段后多余的英文逗号，json语法不像lua那样最后一个字段后的逗号可有可无
-                content.Remove(content.Length - 1, 1);
-                // 生成一行数据json object的结尾
-                content.Append("}");
-                // 每行的json object后加英文逗号
-                content.Append(",");
+                    content.Append(contenvalue);
+
+                    // 去掉本行最后一个字段后多余的英文逗号，json语法不像lua那样最后一个字段后的逗号可有可无
+                    content.Remove(content.Length - 1, 1);
+                    // 生成一行数据json object的结尾
+                    content.Append("}");
+                    // 每行的json object后加英文逗号
+                    content.Append(",");
+                }
+                else if (str!="")
+                {
+                    // 生成一行数据json object的开头
+                    content.Append(contentkey);
+                    content.Append(":{");
+                    
+                    content.Append(contenvalue);
+
+                    // 去掉本行最后一个字段后多余的英文逗号，json语法不像lua那样最后一个字段后的逗号可有可无
+                    content.Remove(content.Length - 1, 1);
+                    // 生成一行数据json object的结尾
+                    content.Append("}");
+                    // 每行的json object后加英文逗号
+                    content.Append(",");
+                }
+               
             }
 
             // 去掉最后一行后多余的英文逗号，此处要特殊处理当表格中没有任何数据行时的情况

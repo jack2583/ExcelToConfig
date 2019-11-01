@@ -91,7 +91,7 @@ public partial class TableExportToJsonHelper
 
             // content.Append(_GetJsonIndentation(currentLevel));
             // 生成key
-            if (key.GetType() == typeof(int) || key.GetType() == typeof(float))
+            if (key.GetType() == typeof(int) || key.GetType() == typeof(long) || key.GetType() == typeof(float))
                 content.Append("\"").Append(key).Append("\"");
             else if (key.GetType() == typeof(string))
             {
@@ -130,8 +130,41 @@ public partial class TableExportToJsonHelper
                     }
                     else
                     {
-                        // if (isExportJsonNullConfig == true)
-                        content.Append(oneTableValueFieldData);
+                        if (oneTableValueFieldData == null)
+                        {
+                            content.Append("\"").Append(fieldInfo.FieldName).Append("\"");
+                            content.Append(":");
+                            switch (fieldInfo.DataType)
+                            {
+                                case DataType.Int:
+                                case DataType.Long:
+                                case DataType.Float:
+                                    {
+                                        content.Append("0").Append(",");
+                                        break;
+                                    }
+                                case DataType.String:
+                                    {
+                                        content.Append(@"""").Append(",");
+                                        break;
+                                    }
+                                case DataType.Bool:
+                                    {
+                                        content.Append("false").Append(",");
+                                        break;
+                                    }
+                                case DataType.Lang:
+                                case DataType.Date:
+                                case DataType.Time:
+                                default:
+                                    {
+                                        content.Append("\"\"").Append(",");
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                            content.Append(oneTableValueFieldData);
                     }
                 }
                 // 去掉最后一个子元素后多余的英文逗号

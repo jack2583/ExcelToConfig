@@ -23,6 +23,7 @@ public class ExportToJsonHelper
         //}
        
         // 以下为旧代码：判断是否设置了特殊导出规则
+        /*
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(JsonStruct.Excel_Config_SpecialExportJson))
         {
             List<string> inputParams = tableInfo.TableConfig[JsonStruct.Excel_Config_SpecialExportJson];
@@ -48,13 +49,14 @@ public class ExportToJsonHelper
                 }
             }
         }
+        */
         //以下为新的代码
         if (TableAnalyzeHelper.GetOneConfigData(tableInfo, JsonStruct.Excel_Config_SpecialExportJson, ref JsonStruct.SpecialExportJsonParams))
         {
             // 特殊嵌套导出
             foreach (string param in JsonStruct.SpecialExportJsonParams)
             {
-                AppLog.Log(string.Format("对此表格按\"{0}\"自定义规则进行导出Lua：", param));
+                AppLog.Log(string.Format("对此表格按\"{0}\"自定义规则进行导出json：", param));
                 TableExportToJsonHelper.SpecialExportTableToJson(tableInfo, param, out errorString);
                 if (errorString != null)
                     AppLog.LogErrorAndExit(string.Format("导出特殊json失败：\n{0}\n", errorString));
@@ -64,7 +66,7 @@ public class ExportToJsonHelper
         }
 
         // 对表格按默认方式导出
-        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_ExportLua, ref LuaStruct.IsExportLua))
+        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, JsonStruct.Excel_Config_ExportJson, ref JsonStruct.IsExportJson))
         {
             // 对表格按默认方式导出
             if (JsonStruct.IsExportJson == true)

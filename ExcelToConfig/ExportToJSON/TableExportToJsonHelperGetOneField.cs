@@ -140,10 +140,14 @@ public partial class TableExportToJsonHelper
     {
         if (fieldInfo.Data[row] == null)
             return "null";
+
+        string str = fieldInfo.Data[row].ToString();
+        if(str=="")
+            return "null";
         StringBuilder content = new StringBuilder();
 
         content.Append("\"");
-        content.Append(fieldInfo.Data[row].ToString().Replace("\n", "\\n").Replace("\"", "\\\""));
+        content.Append(str.Replace("\n", "\\n").Replace("\"", "\\\""));
         content.Append("\"");
 
         return content.ToString();
