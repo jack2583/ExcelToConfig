@@ -272,7 +272,12 @@ public partial class TableAnalyzeHelper
                 }
                 else
                 {
-                    AppValues.TableInfo.Add(tableName,AppValues.TableInfoList[tableName][0]);
+                    if(!AppValues.TableInfo.ContainsKey(tableName))
+                        AppValues.TableInfo.Add(tableName,AppValues.TableInfoList[tableName][0]);
+                    else
+                    {
+                        AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
+                    }
                 }
                
                 stopwatch.Stop();

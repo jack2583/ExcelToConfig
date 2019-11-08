@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExcelDataReader">
@@ -160,6 +162,7 @@
     <Compile Include="TableCheckHelper\CheckRefStr.cs" />
     <Compile Include="TableCheckHelper\CheckTableFunc.cs" />
     <Compile Include="TableCheckHelper\CheckTableIntegrity.cs" />
+    <Compile Include="TableCheckHelper\CheckType.cs" />
     <Compile Include="TableCheckHelper\CheckUnique.cs" />
     <Compile Include="TableCheckHelper\CheckStruct.cs" />
     <Compile Include="TableCheckHelper\GetCheckRules.cs" />

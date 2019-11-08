@@ -76,24 +76,34 @@ public partial class TableAnalyzeHelper
                 continue;
             else
             {
-                if (config.ContainsKey(paramName))
+                if(config.Count>0)
                 {
-                    errorString = string.Format("错误：表格{0}的配置表中存在相同的参数名{1}，请修正错误后重试\n");
-                    return null;
+                    if (config.ContainsKey(paramName))
+                    {
+                        errorString = string.Format("错误：表格{0}的配置表中存在相同的参数名{1}，请修正错误后重试\n", dt.TableName, paramName);
+                        return null;
+                    }
+                    else
+                        config.Add(paramName, new List<string>());
                 }
                 else
                     config.Add(paramName, new List<string>());
             }
 
             // 取具体参数配置
+            
             List<string> inputParams = config[paramName];
             for (int column = 2; column < columnCount; ++column)
             {
                 string param = dt.Rows[row][column].ToString();
                 if (!string.IsNullOrEmpty(param))
                 {
-                    if (inputParams.Contains(param))
-                        AppLog.LogWarning(string.Format("警告：配置项（参数名为{0}）中存在相同的参数\"{1}\"，请确认是否填写错误\n", paramName, param));
+                    if(inputParams.Count>0)
+                    {
+                        if (inputParams.Contains(param))
+                            AppLog.LogWarning(string.Format("警告：配置项（参数名为{0}）中存在相同的参数\"{1}\"，请确认是否填写错误\n", paramName, param));
+
+                    }
 
                     inputParams.Add(param);
                 }

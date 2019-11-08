@@ -1,347 +1,155 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
+
 
 public partial class TableCheckHelper
 {
     /// <summary>
     /// 用于int、long、float或string型取值必须在另一字段（可能还是这张表格也可能跨表）中有对应值的检查
+    /// jsonref:(2|ref:item-id|noCheck|[2,5])
+    /// 前面数字为json层数，[]为1，[[]]为2
     /// </summary>
     public static bool CheckJson(FieldInfo fieldInfo, FieldCheckRule checkRule, out string errorString)
     {
-        string temp = null;
-        List<object> exceptValues = new List<object>();
-        string tableName;
-        string fieldIndexDefine;
-        FieldInfo targetFieldInfo = null;
-
-        // 首先要求字段类型只能为int、long、float或string型
-        if (!(fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float || fieldInfo.DataType == DataType.String))
+        errorString = null;
+        bool isNumberDataType = fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float;
+        bool isTimeDataType = fieldInfo.DataType == DataType.Date || fieldInfo.DataType == DataType.Time;
+        bool isStringDataType = fieldInfo.DataType == DataType.String || fieldInfo.DataType == DataType.Lang;
+        if (fieldInfo.DataType != DataType.Json)
         {
-            errorString = string.Format("值引用检查规则只适用于int、long、float或string类型的字段，要检查的这列类型为{0}\n", fieldInfo.DataType.ToString());
+            errorString = string.Format("jsonref检查只能用于json的字段值的引用检查，而该字段为{0}型\n", fieldInfo.DataType);
             return false;
         }
+        // 检查填写的检查规则是否正确
+        bool isIncludeFloor;
+        bool isIncludeCeil;
+        bool isCheckFloor;
+        bool isCheckCeil;
+        double floorValue = 0;
+        double ceilValue = 0;
+        DateTime floorDateTime = DateTimeValue.REFERENCE_DATE;
+        DateTime ceilDateTime = DateTimeValue.REFERENCE_DATE;
+        // 规则首位必须为方括号或者圆括号
+        if (checkRule.CheckRuleString.StartsWith("jsonref:("))
+            isIncludeFloor = true;
         else
         {
-            // 解析ref规则中目标列所在表格以及字段名
-            const string START_STRING = "ref:";
-            if (!checkRule.CheckRuleString.StartsWith(START_STRING, StringComparison.CurrentCultureIgnoreCase))
+            errorString = "jsonref检查定义错误：必须用jsonref:(开头，以|分割\n";
+            return false;
+        }
+        // 规则末位必须为方括号或者圆括号
+        if (checkRule.CheckRuleString.EndsWith(")"))
+            isIncludeCeil = true;
+        else
+        {
+            errorString = "jsonref检查定义错误：必须用英文)，中间部分以|分割\n";
+            return false;
+        }
+        // 去掉首尾的括号
+        string temp = checkRule.CheckRuleString.Substring(9, checkRule.CheckRuleString.Length - 11);
+        // 通过英文逗号分隔上下限
+        string[] floorAndCeilString = temp.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+        int floorandCeilStrinLength = floorAndCeilString.Length;
+        if (floorandCeilStrinLength < 2)
+        {
+            errorString = "值范围检查定义错误：必须用一个|分隔,如：jsonref:(2|ref:item-id|noCheck|[2,5])\n";
+            return false;
+        }
+        int floorString =int.Parse(floorAndCeilString[0].Trim());
+        string ceilString = floorAndCeilString[1].Trim();
+        string ceilString2 = "";
+        string ceilString3 = "";
+        string ceilString4 = "";
+        string ceilString5 = "";
+
+        if (floorandCeilStrinLength > 2)
+            ceilString2= floorAndCeilString[2].Trim();
+
+        if (floorandCeilStrinLength > 3)
+            ceilString3 = floorAndCeilString[3].Trim();
+
+        if (floorandCeilStrinLength > 4)
+            ceilString4 = floorAndCeilString[4].Trim();
+
+        if (floorandCeilStrinLength > 5)
+            ceilString5 = floorAndCeilString[5].Trim();
+
+        //对定义的检查字符串进行解析
+        if(ceilString.Length>0 && ceilString.StartsWith("$"))
+        {
+            ceilString = AppValues.ConfigData[ceilString];
+        }
+        if (ceilString2.Length > 0 && ceilString2.StartsWith("$"))
+        {
+            ceilString2 = AppValues.ConfigData[ceilString2];
+        }
+        if (ceilString3.Length > 0 && ceilString3.StartsWith("$"))
+        {
+            ceilString3 = AppValues.ConfigData[ceilString3];
+        }
+        if (ceilString4.Length > 0 && ceilString4.StartsWith("$"))
+        {
+            ceilString4 = AppValues.ConfigData[ceilString4];
+        }
+        if (ceilString5.Length > 0 && ceilString5.StartsWith("$"))
+        {
+            ceilString5 = AppValues.ConfigData[ceilString5];
+        }
+
+
+
+
+        // 进行检查
+        // 存储检查出的非法值（key：数据索引， value：填写值）
+        Dictionary<int, object> illegalValue = new Dictionary<int, object>();
+        for (int i = 0; i < fieldInfo.Data.Count; ++i)
+        {
+            if (fieldInfo.Data[i] == null)
+                continue;
+
+            if (isNumberDataType == true)
             {
-                errorString = string.Format("值引用检查规则声明错误，必须以\"{0}\"开头，后面跟表格名-字段名\n", START_STRING);
+                double inputValue = Convert.ToDouble(fieldInfo.Data[i]);
+                if (inputValue < floorValue || inputValue > ceilValue)
+                    illegalValue.Add(i, fieldInfo.Data[i]);
+            }
+            else if (isStringDataType == true)
+            {
+                int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
+                if (lengh < floorValue || lengh > ceilValue)
+                    illegalValue.Add(i, fieldInfo.Data[i]);
+            }
+
+            if (illegalValue.Count > 0)
+            {
+                StringBuilder illegalValueInfo = new StringBuilder();
+                if (isNumberDataType == true || isStringDataType == true)
+                {
+                    foreach (var item in illegalValue)
+                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
+                }
+                else if (fieldInfo.DataType == DataType.Date)
+                {
+                    foreach (var item in illegalValue)
+                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, ((DateTime)(item.Value)).ToString(DateTimeValue.APP_DEFAULT_DATE_FORMAT));
+                }
+                else if (fieldInfo.DataType == DataType.Time)
+                {
+                    foreach (var item in illegalValue)
+                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, ((DateTime)(item.Value)).ToString(DateTimeValue.APP_DEFAULT_TIME_FORMAT));
+                }
+
+                errorString = illegalValueInfo.ToString();
                 return false;
             }
             else
             {
-                temp = checkRule.CheckRuleString.Substring(START_STRING.Length).Trim();//去掉前面的fef:字符
-                if (string.IsNullOrEmpty(temp))
-                {
-                    errorString = string.Format("值引用检查规则声明错误，\"{0}\"的后面必须跟表格名-字段名\n", START_STRING);
-                    return false;
-                }
-                else
-                {
-                    // 判断是否在最后以(except{xx,xx})的格式声明无需ref规则检查的特殊值
-                   // List<object> exceptValues = new List<object>();
-                    int leftBracketIndex = temp.IndexOf('(');
-                    int rightBracketIndex = temp.LastIndexOf(')');
-                    if (leftBracketIndex != -1 && rightBracketIndex > leftBracketIndex)
-                    {
-                        // 取出括号中的排除值声明
-                        const string EXCEPT_DEFINE_START_STRING = "except";
-                        string exceptDefineString = temp.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1).Trim();//提取except括号内的声明内容
-                        if (!exceptDefineString.StartsWith(EXCEPT_DEFINE_START_STRING, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            errorString = string.Format("值引用检查规则声明错误，若要声明ref检查所忽略的特殊值，需在最后以(except{xx,xx})的形式声明，而你在括号中声明为\"{0}\"\n", exceptDefineString);
-                            return false;
-                        }
-                        else
-                        {
-                            // 检查排除值的声明（即有效值声明格式）是否合法
-                            string exceptValuesDefine = exceptDefineString.Substring(EXCEPT_DEFINE_START_STRING.Length).Trim();
-                            exceptValues = Utils.GetEffectiveValue(exceptValuesDefine, fieldInfo.DataType, out errorString);
-                            if (errorString != null)
-                            {
-                                errorString = string.Format("值引用检查规则声明错误，排除值的声明非法，{0}\n", errorString);
-                                return false;
-                            }
-
-                            // 将定义字符串去掉except声明部分
-                            temp = temp.Substring(0, leftBracketIndex).Trim();
-                        }
-                    }
-
-                 //   FieldInfo targetFieldInfo = null;
-
-                    #region 多表多字段情况 ref:table[entry_item.item_id,entry_item_weapon.weapon_id,entry_partner.entry_id](except{0})
-
-                    const string START_STRING2 = "table[";
-                    int rightBracketIndex2 = temp.LastIndexOf(']');
-                    if (temp.StartsWith(START_STRING2, StringComparison.CurrentCultureIgnoreCase))//如果是以 ref:table开头则
-                    {
-                        temp = temp.Substring(START_STRING2.Length, rightBracketIndex2 - 6).Trim();//提交[]内的表名和字段
-                        if (string.IsNullOrEmpty(temp))
-                        {
-                            errorString = string.Format("值引用检查规则声明错误，\"{0}\"的后面必须跟[表格名.字段名,表格名.字段名]\n", START_STRING2);
-                            return false;
-                        }
-                        //检查表名和字段
-                        //   FieldInfo targetFieldInfo2 = null;
-                        string[] values = temp.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 0; i < values.Length; ++i)
-                        {
-                            string tempNameField = values[i].Trim();
-                            // 解析参考表名、列名声明
-                            targetFieldInfo = null;
-                            int hyphenIndex = tempNameField.LastIndexOf('.');
-                            if (hyphenIndex == -1)
-                            {
-                                tableName = tempNameField;
-                                fieldIndexDefine = null;
-                            }
-                            else
-                            {
-                                tableName = tempNameField.Substring(0, hyphenIndex).Trim();
-                                fieldIndexDefine = tempNameField.Substring(hyphenIndex + 1, tempNameField.Length - hyphenIndex - 1);
-                            }
-
-                            if (!AppValues.TableInfo.ContainsKey(tableName))
-                            {
-                                errorString = string.Format("值引用检查规则声明错误，找不到名为 {0} 的表格\n", tableName);
-                                return false;
-                            }
-                            if (string.IsNullOrEmpty(fieldIndexDefine))
-                                targetFieldInfo = AppValues.TableInfo[tableName].GetKeyColumnFieldInfo();
-                            else
-                            {
-                                TableInfo targetTableInfo = AppValues.TableInfo[tableName];
-                                targetFieldInfo = GetFieldByIndexDefineString(fieldIndexDefine, targetTableInfo, out errorString);
-                                if (errorString != null)
-                                {
-                                    errorString = string.Format("值引用检查规则声明错误，表格\"{0}\"中无法根据索引字符串\"{1}\"找到要参考的字段，错误信息为：{2}\n", tableName, fieldIndexDefine, errorString);
-                                    return false;
-                                }
-                            }
-                            // 检查目标字段必须为相同的数据类型
-                            if (fieldInfo.DataType != targetFieldInfo.DataType)
-                            {
-                                errorString = string.Format("值引用检查规则声明错误，表格\"{0}\"中通过索引字符串\"{1}\"找到的参考字段的数据类型为{2}，而要检查字段的数据类型为{3}，无法进行不同数据类型字段的引用检查\n", tableName, fieldIndexDefine, targetFieldInfo.DataType.ToString(), fieldInfo.DataType.ToString());
-                                return false;
-                            }
-                        }
-
-                        Dictionary<int, object> unreferencedInfo = new Dictionary<int, object>();
-                        Dictionary<int, object> tempunreferencedInfo2 = new Dictionary<int, object>();
-                        for (int j = 0; j < values.Length; ++j)
-                        {
-                            string tempNameField = values[j].Trim();
-                            // 解析参考表名、列名声明
-                            targetFieldInfo = null;
-                            int hyphenIndex = tempNameField.LastIndexOf('.');
-                            if (hyphenIndex == -1)
-                            {
-                                tableName = tempNameField;
-                                fieldIndexDefine = null;
-                            }
-                            else
-                            {
-                                tableName = tempNameField.Substring(0, hyphenIndex).Trim();
-                                fieldIndexDefine = tempNameField.Substring(hyphenIndex + 1, tempNameField.Length - hyphenIndex - 1);
-                            }
-
-                            if (string.IsNullOrEmpty(fieldIndexDefine))
-                                targetFieldInfo = AppValues.TableInfo[tableName].GetKeyColumnFieldInfo();
-                            else
-                            {
-                                TableInfo targetTableInfo = AppValues.TableInfo[tableName];
-                                targetFieldInfo = GetFieldByIndexDefineString(fieldIndexDefine, targetTableInfo, out errorString);
-                            }
-
-                            List<object> targetFieldData = targetFieldInfo.Data;
-                            // 存储找不到引用对应关系的数据信息（key：行号， value：填写的数据）
-                            Dictionary<int, object> tempunreferencedInfo = new Dictionary<int, object>();
-
-                            if (unreferencedInfo.Count == 0)
-                            {
-                                if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float)
-                                {
-                                    for (int i = 0; i < fieldInfo.Data.Count; ++i)
-                                    {
-                                        // 忽略无效集合元素下属子类型的空值或本身为空值
-                                        if (fieldInfo.Data[i] == null)
-                                            continue;
-                                        // 忽略不进行ref检查的排除值
-                                        else if (exceptValues.Contains(fieldInfo.Data[i]))
-                                            continue;
-
-                                        if (!targetFieldData.Contains(fieldInfo.Data[i]))
-                                            tempunreferencedInfo.Add(i, fieldInfo.Data[i]);
-                                    }
-                                }
-                                else if (fieldInfo.DataType == DataType.String)
-                                {
-                                    for (int i = 0; i < fieldInfo.Data.Count; ++i)
-                                    {
-                                        // 忽略无效集合元素下属子类型的空值以及空字符串
-                                        if (fieldInfo.Data[i] == null || string.IsNullOrEmpty(fieldInfo.Data[i].ToString()))
-                                            continue;
-                                        // 忽略不进行ref检查的排除值
-                                        else if (exceptValues.Contains(fieldInfo.Data[i]))
-                                            continue;
-
-                                        if (!targetFieldData.Contains(fieldInfo.Data[i]))
-                                            tempunreferencedInfo.Add(i, fieldInfo.Data[i]);
-                                    }
-                                }
-                                if (tempunreferencedInfo.Count == 0)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    foreach (KeyValuePair<int, object> kvp in tempunreferencedInfo)
-                                    {
-                                        unreferencedInfo.Add(kvp.Key, kvp.Value);
-                                    }
-                                    continue;
-                                }
-                               
-                            }
-                            else
-                            {
-                                foreach (KeyValuePair<int, object> kvp in unreferencedInfo)
-                                {
-                                    if (targetFieldData.Contains(kvp.Value))
-                                    {
-                                        if(!tempunreferencedInfo2.ContainsKey(kvp.Key))
-                                            tempunreferencedInfo2.Add(kvp.Key, kvp.Value);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (tempunreferencedInfo2.Count > 0)
-                        {
-                            foreach (KeyValuePair<int, object> kvp in tempunreferencedInfo2)
-                            {
-                                if (unreferencedInfo.ContainsKey(kvp.Key))
-                                    unreferencedInfo.Remove(kvp.Key);
-                            }
-                        }
-
-
-
-                        if (unreferencedInfo.Count > 0)
-                        {
-                            StringBuilder errorStringBuild = new StringBuilder();
-                            errorStringBuild.AppendLine("存在以下未找到引用关系的数据行：");
-                            foreach (var item in unreferencedInfo)
-                                errorStringBuild.AppendFormat("第{0}行数据\"{1}\"在对应参考列不存在\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
-
-                            errorString = errorStringBuild.ToString();
-                            return false;
-                        }
-                        else
-                        {
-                            errorString = null;
-                            return true;
-                        }
-                    }
-
-                    #endregion 多表多字段情况 ref:table[entry_item.item_id,entry_item_weapon.weapon_id,entry_partner.entry_id](except{0})
-
-                    // 解析参考表名、
-
-
-                    int hyphenIndex2 = temp.LastIndexOf('-');
-                    if (hyphenIndex2 == -1)
-                    {
-                        tableName = temp;
-                        fieldIndexDefine = null;
-                    }
-                    else
-                    {
-                        tableName = temp.Substring(0, hyphenIndex2).Trim();
-                        fieldIndexDefine = temp.Substring(hyphenIndex2 + 1, temp.Length - hyphenIndex2 - 1);
-                    }
-
-                    if (!AppValues.TableInfo.ContainsKey(tableName))
-                    {
-                        errorString = string.Format("值引用检查规则声明错误，找不到名为{0}的表格\n", START_STRING);
-                        return false;
-                    }
-                    if (string.IsNullOrEmpty(fieldIndexDefine))
-                        targetFieldInfo = AppValues.TableInfo[tableName].GetKeyColumnFieldInfo();
-                    else
-                    {
-                        TableInfo targetTableInfo = AppValues.TableInfo[tableName];
-                        targetFieldInfo = GetFieldByIndexDefineString(fieldIndexDefine, targetTableInfo, out errorString);
-                        if (errorString != null)
-                        {
-                            errorString = string.Format("值引用检查规则声明错误，表格\"{0}\"中无法根据索引字符串\"{1}\"找到要参考的字段，错误信息为：{2}\n", tableName, fieldIndexDefine, errorString);
-                            return false;
-                        }
-                    }
-                    // 检查目标字段必须为相同的数据类型
-                    if (fieldInfo.DataType != targetFieldInfo.DataType)
-                    {
-                        errorString = string.Format("值引用检查规则声明错误，表格\"{0}\"中通过索引字符串\"{1}\"找到的参考字段的数据类型为{2}，而要检查字段的数据类型为{3}，无法进行不同数据类型字段的引用检查\n", tableName, fieldIndexDefine, targetFieldInfo.DataType.ToString(), fieldInfo.DataType.ToString());
-                        return false;
-                    }
-                    else
-                    {
-                        List<object> targetFieldData = targetFieldInfo.Data;
-                        // 存储找不到引用对应关系的数据信息（key：行号， value：填写的数据）
-                        Dictionary<int, object> unreferencedInfo = new Dictionary<int, object>();
-
-                        if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float)
-                        {
-                            for (int i2 = 0; i2 < fieldInfo.Data.Count; ++i2)
-                            {
-                                // 忽略无效集合元素下属子类型的空值或本身为空值
-                                if (fieldInfo.Data[i2] == null)
-                                    continue;
-                                // 忽略不进行ref检查的排除值
-                                else if (exceptValues.Contains(fieldInfo.Data[i2]))
-                                    continue;
-
-                                if (!targetFieldData.Contains(fieldInfo.Data[i2]))
-                                    unreferencedInfo.Add(i2, fieldInfo.Data[i2]);
-                            }
-                        }
-                        else if (fieldInfo.DataType == DataType.String)
-                        {
-                            for (int i3 = 0; i3 < fieldInfo.Data.Count; ++i3)
-                            {
-                                // 忽略无效集合元素下属子类型的空值以及空字符串
-                                if (fieldInfo.Data[i3] == null || string.IsNullOrEmpty(fieldInfo.Data[i3].ToString()))
-                                    continue;
-                                // 忽略不进行ref检查的排除值
-                                else if (exceptValues.Contains(fieldInfo.Data[i3]))
-                                    continue;
-
-                                if (!targetFieldData.Contains(fieldInfo.Data[i3]))
-                                    unreferencedInfo.Add(i3, fieldInfo.Data[i3]);
-                            }
-                        }
-
-                        if (unreferencedInfo.Count > 0)
-                        {
-                            StringBuilder errorStringBuild = new StringBuilder();
-                            errorStringBuild.AppendLine("存在以下未找到引用关系的数据行：");
-                            foreach (var item in unreferencedInfo)
-                                errorStringBuild.AppendFormat("第{0}行数据\"{1}\"在对应参考列不存在\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
-
-                            errorString = errorStringBuild.ToString();
-                            return false;
-                        }
-                        else
-                        {
-                            errorString = null;
-                            return true;
-                        }
-                    }
-                }
+                errorString = null;
+                return true;
             }
         }
+        return true;
     }
 }

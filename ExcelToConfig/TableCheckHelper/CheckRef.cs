@@ -6,6 +6,7 @@ public partial class TableCheckHelper
 {
     /// <summary>
     /// 用于int、long、float或string型取值必须在另一字段（可能还是这张表格也可能跨表）中有对应值的检查
+    /// 多表多字段情况 ref:table[entry_item.item_id,entry_item_weapon.weapon_id,entry_partner.entry_id](except{0})
     /// </summary>
     public static bool CheckRef(FieldInfo fieldInfo, FieldCheckRule checkRule, out string errorString)
     {
