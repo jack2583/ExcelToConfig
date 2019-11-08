@@ -60,11 +60,11 @@ public partial class TableCheckHelper
                         else
                         {
                             //string path = FileModule.CombinePath(pathString, inputFileName);
-                           // string[] paths = Utils.GetAllFolders(pathString, "", false);
+                            // string[] paths = Utils.GetAllFolders(pathString, "", false);
                             string[] paths = Directory.GetDirectories(pathString);
                             bool exists = ((System.Collections.IList)paths).Contains(pathString + "\\" + inputFileName);
-                            if(!exists)
-                            inexistFileInfo.Add(i, inputFileName);
+                            if (!exists)
+                                inexistFileInfo.Add(i, inputFileName);
                         }
                     }
                 }
@@ -87,7 +87,7 @@ public partial class TableCheckHelper
                             }
                         }
                         Dictionary<string, List<string>> tempfile = FileModule.GetFileInfo(pathString, extension, SearchOption.AllDirectories);
-                  
+
                         //if (errorString !=null)
                         //{
                         //    return false;
@@ -95,32 +95,28 @@ public partial class TableCheckHelper
                         for (int i = 0; i < fieldInfo.Data.Count; ++i)
                         {
                             // 忽略无效集合元素下属子类型的空值
-                            if (fieldInfo.Data[i] == null|| fieldInfo.Data[i].ToString() == "0")
-                                    continue;
+                            if (fieldInfo.Data[i] == null || fieldInfo.Data[i].ToString() == "0")
+                                continue;
 
-                                // 文件名中不允许含有\或/，即不支持文件在填写路径的非同级目录
-                                string inputFileName = fieldInfo.Data[i].ToString().Trim();
-                                if (string.IsNullOrEmpty(inputFileName))
-                                    continue;
-                                else if (inputFileName.IndexOf('\\') != -1 || inputFileName.IndexOf('/') != -1)
-                                    illegalFileNames.Add(i);
-                                else
-                                {
-                                    if (!tempfile.ContainsKey(inputFileName))
-                                        inexistFileInfo.Add(i, inputFileName);
-                                }
+                            // 文件名中不允许含有\或/，即不支持文件在填写路径的非同级目录
+                            string inputFileName = fieldInfo.Data[i].ToString().Trim();
+                            if (string.IsNullOrEmpty(inputFileName))
+                                continue;
+                            else if (inputFileName.IndexOf('\\') != -1 || inputFileName.IndexOf('/') != -1)
+                                illegalFileNames.Add(i);
+                            else
+                            {
+                                if (!tempfile.ContainsKey(inputFileName))
+                                    inexistFileInfo.Add(i, inputFileName);
                             }
                         }
+                    }
                     else
                     {
                         errorString = "文件存在性检查定义错误：如果要声明扩展名，\"file2\"与英文冒号之间必须在英文括号内声明扩展名\n";
                         return false;
                     }
                 }
-
-                
-
-                
 
                 if (inexistFileInfo.Count > 0 || illegalFileNames.Count > 0)
                 {
@@ -160,5 +156,4 @@ public partial class TableCheckHelper
             return false;
         }
     }
-  
 }

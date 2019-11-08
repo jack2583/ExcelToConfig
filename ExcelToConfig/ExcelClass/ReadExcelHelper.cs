@@ -1,22 +1,19 @@
-﻿using System;
-using System.IO;
+﻿using ExcelDataReader;
+//using NPOI.HSSF.UserModel;
+//using NPOI.SS.UserModel;
+//using NPOI.XSSF.UserModel;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
+using System.IO;
 using System.Runtime.InteropServices;
-using ExcelDataReader;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+using System.Text;
 
 public class ReadExcelHelper
 {
     public static void GetFileState(Dictionary<string, string> ExportTables)
     {
-        
         StringBuilder content = new StringBuilder();
         string filePath = null;
         foreach (KeyValuePair<string, string> kvp in ExportTables)
@@ -27,28 +24,24 @@ public class ReadExcelHelper
             if (fileState == FileState.Inexist)
             {
                 content.Append(string.Format("{0}文件不存在\n", filePath));
-               
             }
             else if (fileState == FileState.IsOpen)
             {
                 content.Append(string.Format("{0}文件正在被其他软件打开\n\n", filePath));
-               
             }
-
         }
         string errorString = content.ToString();
-        if(errorString.Length>0)
+        if (errorString.Length > 0)
         {
             AppLog.LogErrorAndExit(string.Format("错误：存在以下错误，请处理后再执行：\n{0}", errorString));
         }
-           
     }
+
     /// <summary>
     /// 将指定Excel文件的内容读取到DataSet中
     /// </summary>
-    public static DataSet ReadXlsxFileForOleDb(string filePath,string excelName,ref string tableName, out string errorString)
+    public static DataSet ReadXlsxFileForOleDb(string filePath, string excelName, ref string tableName, out string errorString)
     {
-
         OleDbConnection conn = null;
         OleDbDataAdapter da = null;
         DataSet ds = null;
@@ -61,22 +54,22 @@ public class ReadExcelHelper
             conn = new OleDbConnection(connectionString);
             conn.Open();
 
-            // 获取数据源的表定义元数据                       
+            // 获取数据源的表定义元数据
             DataTable dtSheet = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "TABLE" });
 
             tableName = ExcelMethods.GetTableName(excelName);
             List<string> excelSheetNames = new List<string>();
             excelSheetNames = ExcelMethods.GetExcelSheetName(tableName, dtSheet);
 
-            if (excelSheetNames.Count==1)
+            if (excelSheetNames.Count == 1)
             {
-                if(excelSheetNames.Contains(ExcelTableSetting.ExcelConfigSheetName))
+                if (excelSheetNames.Contains(ExcelTableSetting.ExcelConfigSheetName))
                 {
                     errorString = string.Format("错误：{0}中不含有Sheet名为{1}或以{2}开头的数据表", filePath, ExcelTableSetting.ExcelDataSheetName.Replace("$", ""), tableName);
                     return null;
                 }
             }
-            else if(excelSheetNames.Count == 0)
+            else if (excelSheetNames.Count == 0)
             {
                 errorString = string.Format("错误：{0}中不含有Sheet名为{1}或以{2}开头的数据表", filePath, ExcelTableSetting.ExcelDataSheetName.Replace("$", ""), tableName);
                 return null;
@@ -85,7 +78,7 @@ public class ReadExcelHelper
             ds = new DataSet();
             foreach (string sheetName in excelSheetNames)
             {
-                if (sheetName!=ExcelTableSetting.ExcelConfigSheetName)
+                if (sheetName != ExcelTableSetting.ExcelConfigSheetName)
                 {
                     da = new OleDbDataAdapter();
                     da.SelectCommand = new OleDbCommand(String.Format("Select * FROM [{0}]", sheetName), conn);
@@ -111,7 +104,7 @@ public class ReadExcelHelper
                 }
             }
         }
-        catch
+        catch(Exception e)
         {
             errorString = "错误：连接Excel失败，你可能尚未安装Office数据连接组件: http://www.microsoft.com/en-US/download/details.aspx?id=23734 \n";
             tableName = null;
@@ -160,8 +153,6 @@ public class ReadExcelHelper
                 return null;
             }
 
-
-
             ds = reader.AsDataSet();
 
             tableName = ExcelMethods.GetTableName(excelName);
@@ -197,7 +188,7 @@ public class ReadExcelHelper
                 }
                 else if (da.TableName.StartsWith(tableName))
                 {
-                   // da.TableName = da.TableName;
+                    // da.TableName = da.TableName;
                 }
                 else
                 {
@@ -212,11 +203,10 @@ public class ReadExcelHelper
             //{
             //	Utils.Log(string.Format("Table: {0}", da.TableName), ConsoleColor.Cyan);
             //}
-
         }
 
         bool removeConfig = false;
-        foreach(DataTable da in ds.Tables)
+        foreach (DataTable da in ds.Tables)
         {
             DataRowCollection rows = da.Rows;
             int rowCount = rows.Count;
@@ -239,7 +229,7 @@ public class ReadExcelHelper
             }
         }
 
-        if(removeConfig==true)
+        if (removeConfig == true)
             ds.Tables.Remove(ds.Tables[ExcelTableSetting.ExcelConfigSheetName]);
 
         //// 删除表格末尾的空行
@@ -254,6 +244,7 @@ public class ReadExcelHelper
         //}
         return ds;
     }
+    /*
     /// <summary>
     /// 使用NPOI将指定Excel文件的内容读取到DataSet中
     /// </summary>
@@ -266,7 +257,7 @@ public class ReadExcelHelper
 
         tableName = ExcelMethods.GetTableName(excelName);
         List<string> excelSheetNames = new List<string>();
-        
+
         try
         {
             ISheet sheet = null;
@@ -291,7 +282,6 @@ public class ReadExcelHelper
                                 dt.TableName = sheetName.Trim();
                                 ds.Tables.Add(dt);
                             }
-
                         }
                     }
                 }
@@ -327,6 +317,7 @@ public class ReadExcelHelper
             return null;
         }
     }
+    
     /// <summary>
     /// 使用NPIO获取sheet表对应的DataTable
     /// </summary>
@@ -384,6 +375,7 @@ public class ReadExcelHelper
                             case CellType.Blank:
                                 drNew[j] = "";
                                 break;
+
                             case CellType.Numeric:
                                 short format = cell.CellStyle.DataFormat;
                                 //对时间格式（2015.12.5、2015/12/5、2015-12-5等）的处理
@@ -394,9 +386,11 @@ public class ReadExcelHelper
                                 if (cell.CellStyle.DataFormat == 177 || cell.CellStyle.DataFormat == 178 || cell.CellStyle.DataFormat == 188)
                                     drNew[j] = cell.NumericCellValue.ToString("#0.00");
                                 break;
+
                             case CellType.String:
                                 drNew[j] = cell.StringCellValue;
                                 break;
+
                             case CellType.Formula:
                                 try
                                 {
@@ -413,6 +407,7 @@ public class ReadExcelHelper
                                     catch { }
                                 }
                                 break;
+
                             default:
                                 drNew[j] = cell.StringCellValue;
                                 break;
@@ -424,20 +419,17 @@ public class ReadExcelHelper
         }
         return dt;
     }
-
-
-
-
-
-
-
+    */
     [DllImport("kernel32.dll")]
     private static extern IntPtr _lopen(string lpPathName, int iReadWrite);
+
     [DllImport("kernel32.dll")]
     private static extern bool CloseHandle(IntPtr hObject);
+
     private const int OF_READWRITE = 2;
     private const int OF_SHARE_DENY_NONE = 0x40;
     private static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+
     /// <summary>
     /// 获取某个文件的状态
     /// </summary>
@@ -455,6 +447,7 @@ public class ReadExcelHelper
         else
             return FileState.Inexist;
     }
+
     public enum FileState
     {
         Inexist,     // 不存在

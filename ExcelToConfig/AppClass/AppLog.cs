@@ -1,68 +1,86 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 /// <summary>
 /// 本工具控制台程序Log日志相关
 /// </summary>
-public  class AppLog
+public class AppLog
 {
-
     #region Log日志文本类型：普通/警告/错误
+
     /// <summary>
     /// Log日志文本存储(普通日志）
     /// </summary>
     public static StringBuilder LogContent = new StringBuilder();
+
     /// <summary>
     ///  警告文本存储
     /// </summary>
     public static StringBuilder LogWarningContent = new StringBuilder();
+
     /// <summary>
     ///  错误文本存储
     /// </summary>
     public static StringBuilder LogErrorContent = new StringBuilder();
-    #endregion
+
+    #endregion Log日志文本类型：普通/警告/错误
+
     /// <summary>
     ///AppLog文件配置，bat脚本
     /// </summary>
     public const string Public_Config_AppLog = "AppLog";
+
     #region 是否打印Log
+
     /// <summary>
     /// 是否打印Log日志（普通日志）
     /// </summary>
     public static bool IsPrintLog = true;
+
     public const string Public_Config_IsPrintLog = "IsPrintLog";
+
     /// <summary>
     /// 是否打印警告信息
     /// </summary>
     public static bool IsPrintLogWarning = false;
+
     public const string Public_Config_IsPrintLogWarning = "IsPrintLogWarning";
+
     /// <summary>
     /// 是否打印错误信息
     /// </summary>
     public static bool IsPrintLogError = true;
+
     public const string Public_Config_IsPrintLogError = "IsPrintLogError";
-    #endregion
+
+    #endregion 是否打印Log
+
     #region 是否保存Log
+
     /// <summary>
     /// 是否保存Log日志（普通日志）
     /// </summary>
     public static bool IsSaveLog = false;
+
     public const string Public_Config_IsSaveLog = "IsSaveLog";
+
     /// <summary>
     /// 是否保存警告信息
     /// </summary>
     public static bool IsSaveLogWarning = false;
+
     public const string Public_Config_IsSaveLogWarning = "IsSaveLogWarning";
+
     /// <summary>
     /// 是否保存错误信息
     /// </summary>
     public static bool IsSaveLogError = false;
+
     public const string Public_Config_IsSaveLogError = "IsSaveLogError";
-    #endregion
+
+    #endregion 是否保存Log
+
     /// <summary>
     /// Log打印保存(普通日志）
     /// </summary>
@@ -71,11 +89,12 @@ public  class AppLog
     public static void Log(string logString, ConsoleColor color = ConsoleColor.White)
     {
         Console.ForegroundColor = color;
-        if(IsPrintLog==true)
+        if (IsPrintLog == true)
             Console.WriteLine(logString);
         //if(IsSaveLog==true)
         LogContent.AppendLine(logString);
     }
+
     /// <summary>
     /// 警告信息打印或保存
     /// </summary>
@@ -88,8 +107,8 @@ public  class AppLog
             Console.WriteLine(warningString);
         //if (IsSaveLogWarning == true)
         LogWarningContent.AppendLine(warningString);
-        
     }
+
     /// <summary>
     /// 错误信息打印或保存
     /// </summary>
@@ -132,32 +151,29 @@ public  class AppLog
             StringBuilder LogStr = new StringBuilder();
             if (IsSaveLog == true)
             {
-                if(LogContent.Length>0)
+                if (LogContent.Length > 0)
                 {
                     LogStr.AppendLine();
                     LogStr.AppendLine(LogContent.ToString().Replace("\n", System.Environment.NewLine));
                 }
-               
             }
-            if(IsSaveLogWarning==true)
+            if (IsSaveLogWarning == true)
             {
-                if(LogWarningContent.Length>0)
+                if (LogWarningContent.Length > 0)
                 {
                     LogStr.AppendLine();
                     LogStr.AppendLine(LogWarningContent.ToString().Replace("\n", System.Environment.NewLine));
                 }
-               
             }
-            if(IsSaveLogError==true)
+            if (IsSaveLogError == true)
             {
-                if(LogErrorContent.Length>0)
+                if (LogErrorContent.Length > 0)
                 {
                     LogStr.AppendLine();
                     LogStr.AppendLine(LogErrorContent.ToString().Replace("\n", System.Environment.NewLine));
                 }
-              
             }
-            if(LogStr.Length>0)
+            if (LogStr.Length > 0)
             {
                 string fileNameTime = string.Format("{0:yyyy年MM月dd日 HH时mm分ss秒}.txt", DateTime.Now);
                 string fileName = string.Format("{0}{1}", SaveName, fileNameTime);
@@ -168,9 +184,9 @@ public  class AppLog
                 writer.Flush();
                 writer.Close();
 
-                Log(string.Format("错误信息已全部导出txt文件，文件名为\"{0}\"，存储在本工具所在目录下", fileName),ConsoleColor.Red);
+                Log(string.Format("错误信息已全部导出txt文件，文件名为\"{0}\"，存储在本工具所在目录下", fileName), ConsoleColor.Red);
             }
-           
+
             return true;
         }
         catch

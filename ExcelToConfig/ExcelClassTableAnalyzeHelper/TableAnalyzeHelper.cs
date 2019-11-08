@@ -1,13 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 public partial class TableAnalyzeHelper
 {
@@ -142,6 +138,7 @@ public partial class TableAnalyzeHelper
         errorString = null;
         return tableInfo;
     }
+
     /// <summary>
     /// 解析所有配置表
     /// </summary>
@@ -150,7 +147,7 @@ public partial class TableAnalyzeHelper
     {
         AppLog.Log("开始解析Excel文件：");
         Stopwatch stopwatch = new Stopwatch();//计算运行时间
-        foreach (KeyValuePair <string, string> kvp in ExportTables )
+        foreach (KeyValuePair<string, string> kvp in ExportTables)
         {
             AppLog.Log(string.Format("解析表格\"{0}\"：", kvp.Key), ConsoleColor.Green);
             string excelName = Path.GetFileNameWithoutExtension(kvp.Key);
@@ -176,7 +173,7 @@ public partial class TableAnalyzeHelper
                         }
                     }
                 }
-                else// 
+                else//
                 {
                     bool Current_Language = true;
                     if (AppValues.OtherLanguage != null)
@@ -212,16 +209,22 @@ public partial class TableAnalyzeHelper
             stopwatch.Start();
 
             string errorString = null;
-          
+
             string tableName = null;
-            DataSet ds = ReadExcelHelper.ReadXlsxFileForOleDb(kvp.Value, excelName,ref tableName, out errorString);
+            DataSet ds;
+            if (AppValues.App_Config_ReadExcelType == "ExcelDataReader")
+                ds = ReadExcelHelper.ReadXlsxFileForExcelDataReader(kvp.Value, excelName, ref tableName, out errorString);
+            else if (AppValues.App_Config_ReadExcelType == "OleDb")
+                ds = ReadExcelHelper.ReadXlsxFileForOleDb(kvp.Value, excelName, ref tableName, out errorString);
+            else
+                 ds = ReadExcelHelper.ReadXlsxFileForOleDb(kvp.Value, excelName, ref tableName, out errorString);
 
             if (string.IsNullOrEmpty(errorString))
             {
                 int tbNum = 0;
-                foreach(DataTable tb in ds.Tables)
+                foreach (DataTable tb in ds.Tables)
                 {
-                    if(tb.TableName!=ExcelTableSetting.ExcelConfigSheetName)
+                    if (tb.TableName != ExcelTableSetting.ExcelConfigSheetName)
                     {
                         TableInfo tableInfo = AnalyzeTable(tb, kvp.Value, out errorString);
                         if (errorString != null)
@@ -235,6 +238,7 @@ public partial class TableAnalyzeHelper
                             // 如果有表格配置进行解析
                             if (ds.Tables[ExcelTableSetting.ExcelConfigSheetName] != null)
                             {
+                                AppLog.Log("    解析config配置...", ConsoleColor.Green);
                                 tableInfo.TableConfig = GetTableConfigOfFirstColumn(ds.Tables[ExcelTableSetting.ExcelConfigSheetName], out errorString);
                                 if (!string.IsNullOrEmpty(errorString))
                                 {
@@ -252,9 +256,12 @@ public partial class TableAnalyzeHelper
                         }
                     }
                 }
-                TableInfo tableInfo2 ;
-
-                if (tbNum > 1)
+                TableInfo tableInfo2;
+                if (tbNum ==0)
+                {
+                    AppLog.LogErrorAndExit(string.Format("错误：读取{0}失败,没有找到有效数据表\n", kvp.Value));
+                }
+                else if (tbNum > 1)
                 {
                     tableInfo2 = TableInfo.Merge(AppValues.TableInfoList[tableName]);
                     // 唯一性检查
@@ -272,14 +279,29 @@ public partial class TableAnalyzeHelper
                 }
                 else
                 {
-                    if(!AppValues.TableInfo.ContainsKey(tableName))
-                        AppValues.TableInfo.Add(tableName,AppValues.TableInfoList[tableName][0]);
+                    if (!AppValues.TableInfo.ContainsKey(tableName))
+                        AppValues.TableInfo.Add(tableName, AppValues.TableInfoList[tableName][0]);
                     else
                     {
-                        AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
+                       if( AppValues.App_Config_MergeTable==false)
+                            AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
+                       else
+                        {
+                            AppValues.TableInfo[tableName] = TableInfo.Merge(AppValues.TableInfoList[tableName]);
+                            // 唯一性检查
+                            FieldCheckRule uniqueCheckRule = new FieldCheckRule();
+                            uniqueCheckRule.CheckType = TableCheckType.Unique;
+                            uniqueCheckRule.CheckRuleString = "unique";
+                            TableCheckHelper.CheckUnique(AppValues.TableInfo[tableName].GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
+                            if (errorString != null)
+                            {
+                                errorString = _GetTableAnalyzeErrorString(tableName, "", 0) + "主键列存在重复错误\n" + errorString;
+                                AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
+                            }
+                        }
                     }
                 }
-               
+
                 stopwatch.Stop();
                 AppLog.Log(string.Format("成功，耗时：{0}毫秒", stopwatch.ElapsedMilliseconds));
             }
@@ -293,6 +315,7 @@ public partial class TableAnalyzeHelper
         }
         AppLog.Log("所有配置表解析完毕！！！");
     }
+
     /// <summary>
     /// 解析一列的数据结构及数据，返回FieldInfo
     /// </summary>
@@ -315,13 +338,13 @@ public partial class TableAnalyzeHelper
         fieldInfo.ColumnSeq = columnIndex;
         // 检查规则字符串
         string checkRuleString = null;
-        if(ExcelTableSetting.DataFieldCheckRuleRowIndex>=0)
+        if (ExcelTableSetting.DataFieldCheckRuleRowIndex >= 0)
             checkRuleString = dt.Rows[ExcelTableSetting.DataFieldCheckRuleRowIndex][columnIndex].ToString().Trim().Replace(System.Environment.NewLine, " ").Replace('\n', ' ').Replace('\r', ' ').Replace('\t', ' ');
         fieldInfo.CheckRule = string.IsNullOrEmpty(checkRuleString) ? null : checkRuleString;
         // 导出到数据库中的字段名及类型
-        if(ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex>=0)
+        if (ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex >= 0)
             fieldInfo.DatabaseInfoString = dt.Rows[ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex][columnIndex].ToString().Trim();
-        
+
         // 引用父FileInfo
         fieldInfo.ParentField = parentField;
 
@@ -565,5 +588,4 @@ public partial class TableAnalyzeHelper
         else
             return null;
     }
-
 }

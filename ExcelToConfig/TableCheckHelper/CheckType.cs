@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public partial class TableCheckHelper
 {
-    public static bool GetCheckType(string checkRuleStr,out CheckType checkType, out string errorString)
+    public static bool GetCheckType(string checkRuleStr, out CheckType checkType, out string errorString)
     {
         errorString = null;
         // 规则首位必须为方括号或者圆括号
@@ -39,13 +35,11 @@ public partial class TableCheckHelper
                     fieldIndexDefine = temp.Substring(hyphenIndex2 + 1, temp.Length - hyphenIndex2 - 1);
                 }
 
-
                 if (!AppValues.TableInfo.ContainsKey(tableName))
                 {
                     errorString = string.Format("值引用检查规则声明错误，找不到名为{0}的表格\n", tableName);
                     return false;
                 }
-
 
                 if (string.IsNullOrEmpty(fieldIndexDefine))
                 {
@@ -97,7 +91,6 @@ public partial class TableCheckHelper
                     return false;
                 }
 
-
                 if (double.TryParse(ceilString, out ceilValue) == false)
                 {
                     errorString = string.Format("值范围检查定义错误：上限不是合法的数字，你输入的为{0}\n", ceilString);
@@ -109,10 +102,9 @@ public partial class TableCheckHelper
         else
         {
             checkType = CheckType.Invalid;
-            errorString = string.Format("jsonref检查的子项声明定义错误，仅支持 ref:表名-字段名 或 [2,5] 的形式，而此处声明为{0}\n",checkRuleStr);
+            errorString = string.Format("jsonref检查的子项声明定义错误，仅支持 ref:表名-字段名 或 [2,5] 的形式，而此处声明为{0}\n", checkRuleStr);
             return false;
         }
-        
     }
 }
 
@@ -125,6 +117,7 @@ public enum CheckType
     /// 无效类型
     /// </summary>
     Invalid,
+
     CheckRef,
     CheckRange
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 public class ExportToMySQLHelper
 {
@@ -51,7 +47,6 @@ public class ExportToMySQLHelper
             AppLog.LogErrorAndExit(errorInfo.ToString());
         }
 
-
         TableExportToMySQLHelper.ConnectToDatabase(out errorString);
         if (!string.IsNullOrEmpty(errorString))
             AppLog.LogErrorAndExit(string.Format("无法连接至MySQL数据库：{0}\n导出至MySQL数据库被迫中止，请修正错误后重试\n", errorString));
@@ -68,7 +63,6 @@ public class ExportToMySQLHelper
 
             if (TableAnalyzeHelper.GetOneConfigData(tableInfo, MySQLStruct.Excel_Config_ExportMySQL, ref MySQLStruct.IsExportMySQL))
             {
-                
                 if (MySQLStruct.IsExportMySQL == true)
                 {
                     TableExportToMySQLHelper.ExportTableToDatabase(kvp.Value, tableExportNameforMySQL, out errorString);
@@ -78,16 +72,13 @@ public class ExportToMySQLHelper
             }
             else
             {
-                
                 //if (MySQLStruct.IsExport == true)
                 //{
-                    TableExportToMySQLHelper.ExportTableToDatabase(kvp.Value, tableExportNameforMySQL,out errorString);
-                    if (!string.IsNullOrEmpty(errorString))
-                        AppLog.LogErrorAndExit(string.Format("导出失败：{0}\n导出至MySQL数据库被迫中止，请修正错误后重试\n", errorString));
+                TableExportToMySQLHelper.ExportTableToDatabase(kvp.Value, tableExportNameforMySQL, out errorString);
+                if (!string.IsNullOrEmpty(errorString))
+                    AppLog.LogErrorAndExit(string.Format("导出失败：{0}\n导出至MySQL数据库被迫中止，请修正错误后重试\n", errorString));
                 //}
             }
         }
-        
     }
 }
-

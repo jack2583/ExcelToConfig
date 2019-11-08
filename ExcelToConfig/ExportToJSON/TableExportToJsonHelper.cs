@@ -1,5 +1,4 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -82,7 +81,6 @@ public partial class TableExportToJsonHelper
                     return false;
                 }
 
-
                 StringBuilder contenvalue = new StringBuilder();
                 int startColumn = (JsonStruct.ExportJsonIsExportJsonMapIncludeKeyColumnValue == true ? 0 : 1);
                 for (int column = startColumn; column < fieldCount; ++column)
@@ -97,10 +95,9 @@ public partial class TableExportToJsonHelper
                     {
                         contenvalue.Append(oneFieldString);
                     }
-                       
                 }
                 string str = contenvalue.ToString();
-                if(JsonStruct.ExportJsonIsExportJsonMapIncludeKeyColumnValue==true)
+                if (JsonStruct.ExportJsonIsExportJsonMapIncludeKeyColumnValue == true)
                 {
                     // 生成一行数据json object的开头
                     content.Append(contentkey);
@@ -115,12 +112,12 @@ public partial class TableExportToJsonHelper
                     // 每行的json object后加英文逗号
                     content.Append(",");
                 }
-                else if (str!="")
+                else if (str != "")
                 {
                     // 生成一行数据json object的开头
                     content.Append(contentkey);
                     content.Append(":{");
-                    
+
                     content.Append(contenvalue);
 
                     // 去掉本行最后一个字段后多余的英文逗号，json语法不像lua那样最后一个字段后的逗号可有可无
@@ -130,7 +127,6 @@ public partial class TableExportToJsonHelper
                     // 每行的json object后加英文逗号
                     content.Append(",");
                 }
-               
             }
 
             // 去掉最后一行后多余的英文逗号，此处要特殊处理当表格中没有任何数据行时的情况
@@ -158,6 +154,7 @@ public partial class TableExportToJsonHelper
             return false;
         }
     }
+
     /// <summary>
     /// 将紧凑型的json字符串整理为带缩进和换行的形式，需注意string型值中允许含有括号和\"
     /// </summary>
@@ -211,6 +208,7 @@ public partial class TableExportToJsonHelper
 
         return stringBuilder.ToString();
     }
+
     /// <summary>
     /// 将紧凑型的json字符串整理为带缩进和换行的形式，需注意string型值中允许含有括号和\"
     /// </summary>
@@ -270,6 +268,7 @@ public partial class TableExportToJsonHelper
 
         return stringBuilder.ToString();
     }
+
     /// <summary>
     /// json缩进处理
     /// </summary>

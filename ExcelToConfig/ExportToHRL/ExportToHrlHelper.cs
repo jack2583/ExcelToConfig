@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public class ExportToHrlHelper
+﻿public class ExportToHrlHelper
 {
     public static void ExportToHrl(TableInfo tableInfo)
     {
-       string errorString = null;
+        string errorString = null;
 
         // 对表格按默认方式导出
         if (TableAnalyzeHelper.GetOneConfigData(tableInfo, HrlStruct.Excel_Config_ExportHrl, ref HrlStruct.IsExportHrl))

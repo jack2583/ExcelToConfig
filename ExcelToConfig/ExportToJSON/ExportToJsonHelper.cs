@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class ExportToJsonHelper
 {
@@ -10,7 +6,7 @@ public class ExportToJsonHelper
     {
         string errorString = null;
         // 判断是否设置要是否要导出null字段
-        TableAnalyzeHelper.GetOneConfigData(tableInfo, JsonStruct.Excel_Config_NotExportJsonNull,ref JsonStruct.IsExportJsonNullConfig);
+        TableAnalyzeHelper.GetOneConfigData(tableInfo, JsonStruct.Excel_Config_NotExportJsonNull, ref JsonStruct.IsExportJsonNullConfig);
         //if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(JsonStruct.Excel_Config_NotExportJsonNull))
         //{
         //    if (tableInfo.TableConfig[JsonStruct.Excel_Config_NotExportJsonNull].Count > 0)
@@ -21,7 +17,7 @@ public class ExportToJsonHelper
         //        }
         //    }
         //}
-       
+
         // 以下为旧代码：判断是否设置了特殊导出规则
         /*
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(JsonStruct.Excel_Config_SpecialExportJson))

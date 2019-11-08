@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.Generic;
 
 /// <summary>
 /// tableString代表的table中的key类型
@@ -31,6 +26,7 @@ public struct DataInIndexDefine
 {
     // 数据类型
     public DataType DataType;
+
     // 数据所在数据组的索引位置
     public int DataIndex;
 }
@@ -51,6 +47,7 @@ public struct TableStringKeyDefine
 {
     // key的类型
     public TableStringKeyType KeyType;
+
     // 如果key为DATA_IN_INDEX类型，存储其定义
     public DataInIndexDefine DataInIndexDefine;
 }
@@ -62,8 +59,10 @@ public struct TableStringValueDefine
 {
     // value的类型
     public TableStringValueType ValueType;
+
     // 如果value为DATA_IN_INDEX类型，存储其定义
     public DataInIndexDefine DataInIndexDefine;
+
     // 如果value为TABLE类型，则需要存储table中每个元素的定义
     public List<TableElementDefine> TableValueDefineList;
 }

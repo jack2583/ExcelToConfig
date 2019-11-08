@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Text;
 
 public class SaveJson
 {
-    public static bool SaveJsonFile(string excelName, string tableName,string content)
+    public static bool SaveJsonFile(string excelName, string tableName, string content)
     {
         try
         {
@@ -25,7 +22,7 @@ public class SaveJson
             //{
             //    ExportJsonPath = AppValues.ExportJsonPath;
             //}
-            string exportDirectoryPath = FileModule.GetExportDirectoryPath(excelName, JsonStruct.SavePath,JsonStruct.IsExportKeepDirectoryStructure);
+            string exportDirectoryPath = FileModule.GetExportDirectoryPath(excelName, JsonStruct.SavePath, JsonStruct.IsExportKeepDirectoryStructure);
             //如果文件夹不存在就创建
             if (Directory.Exists(exportDirectoryPath) == false)
                 Directory.CreateDirectory(exportDirectoryPath);

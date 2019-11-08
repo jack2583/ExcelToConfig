@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Globalization;
-
 
 public partial class TableCheckHelper
 {
@@ -57,7 +55,7 @@ public partial class TableCheckHelper
             errorString = "值范围检查定义错误：必须用一个|分隔,如：jsonref:(2|ref:item-id|noCheck|[2,5])\n";
             return false;
         }
-        int floorString =int.Parse(floorAndCeilString[0].Trim());
+        int floorString = int.Parse(floorAndCeilString[0].Trim());
         string ceilString = floorAndCeilString[1].Trim();
         string ceilString2 = "";
         string ceilString3 = "";
@@ -65,7 +63,7 @@ public partial class TableCheckHelper
         string ceilString5 = "";
 
         if (floorandCeilStrinLength > 2)
-            ceilString2= floorAndCeilString[2].Trim();
+            ceilString2 = floorAndCeilString[2].Trim();
 
         if (floorandCeilStrinLength > 3)
             ceilString3 = floorAndCeilString[3].Trim();
@@ -77,7 +75,7 @@ public partial class TableCheckHelper
             ceilString5 = floorAndCeilString[5].Trim();
 
         //对定义的检查字符串进行解析
-        if(ceilString.Length>0 && ceilString.StartsWith("$"))
+        if (ceilString.Length > 0 && ceilString.StartsWith("$"))
         {
             ceilString = AppValues.ConfigData[ceilString];
         }
@@ -97,9 +95,6 @@ public partial class TableCheckHelper
         {
             ceilString5 = AppValues.ConfigData[ceilString5];
         }
-
-
-
 
         // 进行检查
         // 存储检查出的非法值（key：数据索引， value：填写值）

@@ -1,5 +1,4 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,7 +9,6 @@ public partial class TableExportToLuaHelper
     /// </summary>
     public static bool SpecialExportTableToLua(TableInfo tableInfo, string exportRule, out string errorString)
     {
-       
         exportRule = exportRule.Trim();
         // 解析按这种方式导出后的lua文件名
         int colonIndex = exportRule.IndexOf(':');
@@ -231,7 +229,6 @@ public partial class TableExportToLuaHelper
 
                 if (c == '\n' || c == '\r' || c.ToString() == " ")
                 {
-
                 }
                 else
                     stringBuilder2.Append(c);
@@ -264,7 +261,6 @@ public partial class TableExportToLuaHelper
             exportString = string.Concat(columnInfo, System.Environment.NewLine, exportString);
         }
 
-
         // 保存为lua文件
         if (SaveLua.SaveLuaFile(tableInfo.ExcelName, fileName, exportString) == true)
         {
@@ -281,7 +277,7 @@ public partial class TableExportToLuaHelper
     /// <summary>
     /// 按指定索引方式导出数据时,通过此函数递归生成层次结构,当递归到最内层时输出指定table value中的数据
     /// </summary>
-    private static void _GetIndexFieldData(StringBuilder content, Dictionary<object, object> parentDict, List<FieldInfo> tableValueField,  ref int currentLevel, out string errorString)
+    private static void _GetIndexFieldData(StringBuilder content, Dictionary<object, object> parentDict, List<FieldInfo> tableValueField, ref int currentLevel, out string errorString)
     {
         string oneTableValueFieldData = null;
         foreach (var key in parentDict.Keys)
@@ -319,7 +315,7 @@ public partial class TableExportToLuaHelper
                 foreach (FieldInfo fieldInfo in tableValueField)
                 {
                     int rowIndex = (int)parentDict[key];
-                     oneTableValueFieldData = _GetOneField(fieldInfo, rowIndex, currentLevel, out errorString);
+                    oneTableValueFieldData = _GetOneField(fieldInfo, rowIndex, currentLevel, out errorString);
                     if (errorString != null)
                     {
                         errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
@@ -347,5 +343,4 @@ public partial class TableExportToLuaHelper
 
         errorString = null;
     }
-
 }

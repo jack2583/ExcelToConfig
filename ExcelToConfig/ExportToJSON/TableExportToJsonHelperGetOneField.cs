@@ -5,13 +5,12 @@ using System.Text;
 
 public partial class TableExportToJsonHelper
 {
-    private static string _GetOneField(FieldInfo fieldInfo, int row,  out string errorString)
+    private static string _GetOneField(FieldInfo fieldInfo, int row, out string errorString)
     {
         errorString = null;
 
         // 变量名前的缩进
-       // content.Append(_GetJsonIndentation(level));
-
+        // content.Append(_GetJsonIndentation(level));
 
         // 对应数据值
         string value = null;
@@ -66,7 +65,7 @@ public partial class TableExportToJsonHelper
                 }
             case DataType.Dict:
                 {
-                    value = _GetDictValue(fieldInfo, row,  out errorString);
+                    value = _GetDictValue(fieldInfo, row, out errorString);
                     break;
                 }
             case DataType.Array:
@@ -104,7 +103,7 @@ public partial class TableExportToJsonHelper
         }
         else
         {
-            if(value!="null")
+            if (value != "null")
             {
                 // 变量名，注意array下属的子元素在json中不含key的声明
                 if (!(fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array))
@@ -122,10 +121,7 @@ public partial class TableExportToJsonHelper
             {
                 return null;
             }
-           
         }
-
-       
     }
 
     private static string _GetNumberValue(FieldInfo fieldInfo, int row)
@@ -142,7 +138,7 @@ public partial class TableExportToJsonHelper
             return "null";
 
         string str = fieldInfo.Data[row].ToString();
-        if(str=="")
+        if (str == "")
             return "null";
         StringBuilder content = new StringBuilder();
 
@@ -349,6 +345,7 @@ public partial class TableExportToJsonHelper
             {
                 case TableStringKeyType.Seq:
                     break;
+
                 case TableStringKeyType.DataInIndex:
                     {
                         string value = _GetDataInIndexType(fieldInfo.TableStringFormatDefine.KeyDefine.DataInIndexDefine, allDataString[i], out errorString);
@@ -582,7 +579,7 @@ public partial class TableExportToJsonHelper
         return result;
     }
 
-    private static string _GetDictValue(FieldInfo fieldInfo, int row,  out string errorString)
+    private static string _GetDictValue(FieldInfo fieldInfo, int row, out string errorString)
     {
         StringBuilder content = new StringBuilder();
 
@@ -595,10 +592,10 @@ public partial class TableExportToJsonHelper
             content.Append("{");
 
             // 逐个对子元素进行生成
-           
+
             foreach (FieldInfo childField in fieldInfo.ChildField)
             {
-                string oneFieldString = _GetOneField(childField, row,  out errorString);
+                string oneFieldString = _GetOneField(childField, row, out errorString);
                 if (errorString != null)
                     return null;
                 else
@@ -606,9 +603,8 @@ public partial class TableExportToJsonHelper
             }
 
             // 去掉最后一个子元素末尾多余的英文逗号
-            
+
             content.Remove(content.Length - 1, 1);
-            
 
             content.Append("}");
         }
@@ -617,7 +613,7 @@ public partial class TableExportToJsonHelper
         return content.ToString();
     }
 
-    private static string _GetArrayValue(FieldInfo fieldInfo, int row,out string errorString)
+    private static string _GetArrayValue(FieldInfo fieldInfo, int row, out string errorString)
     {
         StringBuilder content = new StringBuilder();
 
@@ -655,5 +651,4 @@ public partial class TableExportToJsonHelper
         errorString = null;
         return content.ToString();
     }
-
 }

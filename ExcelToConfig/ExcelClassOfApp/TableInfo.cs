@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Data;
 
 /// <summary>
@@ -16,11 +11,13 @@ public class TableInfo
     /// 如：C:\Users\Administrator\Desktop\text.xlsx
     /// </summary>
     public string ExcelFilePath { get; set; }
+
     /// <summary>
-    ///带中文但不带后缀的Excel文件名，如 item_ft-物品 
+    ///带中文但不带后缀的Excel文件名，如 item_ft-物品
     /// Path.GetFileNameWithoutExtension(ExcelFilePath)
     /// </summary>
     public string ExcelName { get; set; }
+
     /// <summary>
     /// 不带中文且不组后缀的Excel文件名，即数据表名，Excel文件不带后缀的名称，如 item_ft
     /// </summary>
@@ -32,7 +29,7 @@ public class TableInfo
     /// Path.GetDirectoryName(ExcelFilePath)
     /// </summary>
     public string ExcelDirectoryName { get; set; }
-   
+
     /// <summary>
     /// Excel文件的名称含有后缀,
     ///如：text.xlsx
@@ -40,16 +37,17 @@ public class TableInfo
     /// </summary>
     public string ExcelFileName { get; set; }
 
-
-
-
     // 表格配置参数
     public Dictionary<string, List<string>> TableConfig { get; set; }
+
     public DataTable TableConfigData { get; set; }
+
     // 存储每个字段的信息以及按字段存储的所有数据
     private List<FieldInfo> _fieldInfo = new List<FieldInfo>();
+
     // 用于将字段名对应到_fieldInfo中的下标位置，目的是当其他表格进行ref检查规则时无需遍历快速找到指定字段列信息和数据（key：fieldName， value：index），但忽略array或dict的子元素列
     private Dictionary<string, int> _indexForFieldNameToColumnSeq = new Dictionary<string, int>();
+
     /// <summary>
     /// 添加字段
     /// </summary>
@@ -59,6 +57,7 @@ public class TableInfo
         _fieldInfo.Add(fieldInfo);
         _indexForFieldNameToColumnSeq.Add(fieldInfo.FieldName, _fieldInfo.Count - 1);
     }
+
     /// <summary>
     /// 根据字段名获取该字段
     /// </summary>
@@ -71,6 +70,7 @@ public class TableInfo
         else
             return null;
     }
+
     /// <summary>
     /// 获取所有字段信息
     /// </summary>
@@ -94,6 +94,7 @@ public class TableInfo
 
         return allClientFieldInfo;
     }
+
     /// <summary>
     /// 获取主键字段
     /// </summary>
@@ -129,6 +130,7 @@ public class TableInfo
         else if (fieldInfo.IsIgnoreClientExport == false)
             allFieldInfo.Add(fieldInfo);
     }
+
     /// <summary>
     /// 指定TableInfo与当前TableInfo合并
     /// </summary>
@@ -150,9 +152,9 @@ public class TableInfo
         {
             allFieldInfo = new List<FieldInfo>();
             allFieldInfo = tableInfo.GetAllFieldInfo();
-            foreach(FieldInfo fieldInfo in allFieldInfo)
+            foreach (FieldInfo fieldInfo in allFieldInfo)
             {
-                if(!fieldName.Contains(fieldInfo.FieldName))
+                if (!fieldName.Contains(fieldInfo.FieldName))
                 {
                     fieldInfoTemp = new FieldInfo();
                     fieldInfoTemp.TableName = fieldInfo.TableName;
@@ -165,7 +167,7 @@ public class TableInfo
                     fieldInfoTemp.DataType = fieldInfo.DataType;
                     fieldInfoTemp.DataTypeString = fieldInfo.DataTypeString;
                     fieldInfoTemp.ExtraParam = fieldInfo.ExtraParam;//类似：date(input=#1970sec|toLua=yyyy年MM月dd日 HH时mm分ss秒)
-                                                                        //Excel表第4行信息
+                                                                    //Excel表第4行信息
                     fieldInfoTemp.CheckRule = fieldInfo.CheckRule;
                     //Excel表第5行信息
                     fieldInfoTemp.DatabaseFieldName = fieldInfo.DatabaseFieldName;
@@ -184,7 +186,6 @@ public class TableInfo
                     tableInfo2.AddField(fieldInfoTemp);
                     fieldName.Add(fieldInfo.FieldName);
                 }
-                
             }
         }
         List<FieldInfo> allFieldInfo2 = new List<FieldInfo>();
@@ -204,16 +205,15 @@ public class TableInfo
         foreach (TableInfo tableInfo in tableInfoList)
         {
             int count = tableInfo.GetAllFieldInfo()[0].Data.Count;
-            if(count>0)
+            if (count > 0)
             {
                 allFieldInfoA = new List<FieldInfo>();
                 allFieldInfoA = tableInfo.GetAllFieldInfo();
-                for (int i=0;i<count;++i)
+                for (int i = 0; i < count; ++i)
                 {
-
                     foreach (FieldInfo fieldInfo in allFieldInfo2)
                     {
-                        if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName)!=null)
+                        if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName) != null)
                         {
                             object data = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).Data[i];
                             if (data != null)
@@ -222,13 +222,13 @@ public class TableInfo
                                 tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(null);
 
                             //object langkeys = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys[i];
-                            if(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys != null)
+                            if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys != null)
                                 tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys[i]);
                             else
                                 tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(null);
 
-                           // string jsonstring = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i];
-                            if(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString != null)
+                            // string jsonstring = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i];
+                            if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString != null)
                                 tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i]);
                             else
                                 tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(null);

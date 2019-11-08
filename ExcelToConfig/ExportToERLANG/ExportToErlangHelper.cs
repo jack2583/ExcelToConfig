@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public class ExportToErlangHelper
+﻿public class ExportToErlangHelper
 {
     public static void ExportToErlang(TableInfo tableInfo)
     {
-       string errorString = null;
+        string errorString = null;
         if (ErlangStruct.ExportErlangIsFormat == false)
             ErlangStruct.IndentationString = "";
         // 判断是否设置要是否要导出null字段
         TableAnalyzeHelper.GetOneConfigData(tableInfo, ErlangStruct.Excel_Config_NotExportErlangNull, ref ErlangStruct.IsExportErlangNullConfig);
-        
+
         if (TableAnalyzeHelper.GetOneConfigData(tableInfo, ErlangStruct.Excel_Config_SpecialExportErlang, ref ErlangStruct.SpecialExportErlangParams))
         {
             // 特殊嵌套导出

@@ -12,9 +12,9 @@ public partial class TableCheckHelper
     /// <param name="data">解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构</param>
     /// <param name="errorString"></param>
     /// <returns></returns>
-    public static bool CheckSpecialExportRule(TableInfo tableInfo, string exportRule, out List<FieldInfo> tableValueField,out Dictionary<object, object> data, out string errorString)
+    public static bool CheckSpecialExportRule(TableInfo tableInfo, string exportRule, out List<FieldInfo> tableValueField, out Dictionary<object, object> data, out string errorString)
     {
-         tableValueField = new List<FieldInfo>();
+        tableValueField = new List<FieldInfo>();
         data = new Dictionary<object, object>();
         // 解析按这种方式导出后的json文件名
         int colonIndex = exportRule.IndexOf(':');
@@ -167,7 +167,7 @@ public partial class TableCheckHelper
         }
 
         // 解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构
-       // Dictionary<object, object> data = new Dictionary<object, object>();
+        // Dictionary<object, object> data = new Dictionary<object, object>();
         int rowCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
         for (int i = 0; i < rowCount; ++i)
         {
@@ -206,6 +206,5 @@ public partial class TableCheckHelper
         }
         errorString = null;
         return true;
-
     }
 }

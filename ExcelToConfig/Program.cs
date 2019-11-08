@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Text;
 
 namespace ExcelToConfig
 {
-    class Program
+    internal class Program
     {
         //第1个参数，Excel所在路径格式：Excel
         //第2个以后参数可选参数
@@ -32,7 +30,8 @@ namespace ExcelToConfig
          * 导出sqvn参数格式：Svn(SvnPath=|IsUpdateSvn=false|UpdateSvnCloseonend=2|IsCommitSvn=false|CommitSvnCloseonend=0)
          * AppLog参数格式：AppLog(IsPrintLog=true|IsPrintLogWarning=true|IsPrintLogError=true|IsSaveLog=true|IsSaveLogWarning=true|IsSaveLogError=true)
          */
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             try
             {
@@ -90,7 +89,6 @@ namespace ExcelToConfig
                                 }
 
                                 continue;
-
                             }
                             else if (kvp.Key == AppValues.Public_Config_IsNeedCheck)
                             {
@@ -127,6 +125,28 @@ namespace ExcelToConfig
                             {
                                 AppValues.App_Config_ClientPath = Path.GetFullPath(kvp.Value);
                                 continue;
+                            }
+                            else if (kvp.Key == AppValues.Public_Config_ReadExcelType)
+                            {
+                                string kvptemp= kvp.Value;
+                                if(kvptemp== "ExcelDataReader")
+                                    AppValues.App_Config_ReadExcelType = kvptemp;
+                                if (kvptemp == "OleDb")
+                                    AppValues.App_Config_ReadExcelType = kvptemp;
+                                continue;
+                            }
+                            else if (kvp.Key == AppValues.Public_Config_MergeTable)
+                            {
+                                if (kvp.Value.ToLower() == "true")
+                                {
+                                    AppValues.App_Config_MergeTable = true;
+                                    continue;
+                                }
+                                else if (kvp.Value.ToLower() == "false")
+                                {
+                                    AppValues.App_Config_MergeTable = false;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -165,7 +185,6 @@ namespace ExcelToConfig
                                 }
 
                                 continue;
-
                             }
                         }
                     }
@@ -231,7 +250,7 @@ namespace ExcelToConfig
                             }
                             //else if (kvp.Key == AppLanguage.Public_Config_LanguageDictPath)
                             //{
-                            //   AppLanguage.LanguageDictPath= Path.GetFullPath(kvp.Value); 
+                            //   AppLanguage.LanguageDictPath= Path.GetFullPath(kvp.Value);
                             //}
                         }
                     }
@@ -332,7 +351,6 @@ namespace ExcelToConfig
                                     JsonStruct.IsExport = false;
                                     continue;
                                 }
-
                             }
                             else if (kvp.Key == JsonStruct.Public_Config_ExportPath)
                             {
@@ -344,8 +362,6 @@ namespace ExcelToConfig
                                     JsonStruct.IsExportKeepDirectoryStructure = false;
                                 else if (kvp.Value.ToLower() == "true")
                                     JsonStruct.IsExportKeepDirectoryStructure = true;
-
-
                             }
                             else if (kvp.Key == JsonStruct.Public_Config_ExportNameBeforeAdd)
                             {
@@ -396,7 +412,6 @@ namespace ExcelToConfig
                                     ErlangStruct.IsExport = false;
                                     continue;
                                 }
-
                             }
                             else if (kvp.Key == ErlangStruct.Public_Config_ExportPath)
                             {
@@ -444,7 +459,6 @@ namespace ExcelToConfig
                                     HrlStruct.IsExport = false;
                                     continue;
                                 }
-
                             }
                             else if (kvp.Key == HrlStruct.Public_Config_ExportPath)
                             {
@@ -478,7 +492,6 @@ namespace ExcelToConfig
                                     TxtStruct.IsExport = false;
                                     continue;
                                 }
-
                             }
                             else if (kvp.Key == TxtStruct.Public_Config_ExportPath)
                             {
@@ -644,12 +657,9 @@ namespace ExcelToConfig
                             }
                         }
                     }
-
                 }
 
                 /*↑↑↑↑↑↑↑↑↑读取参数↑↑↑↑↑↑↑↑↑*/
-
-
 
                 /*↓↓↓↓↓↓↓↓↓公共参数设定↓↓↓↓↓↓↓↓↓*/
 
@@ -742,8 +752,6 @@ namespace ExcelToConfig
                 ExcelFolder.ExportExcept = null;
                 ExcelFolder.ExportTables = ExcelFolder.getExportTables(ExcelFolder.AllExcelPaths, ExcelFolder.ExportPart, ExcelFolder.ExportExcept);
 
-
-
                 /*↑↑↑↑↑↑↑↑↑公共参数设定↑↑↑↑↑↑↑↑↑*/
 
                 //检测Excel是否打开
@@ -803,25 +811,22 @@ namespace ExcelToConfig
                     ExportToTxtHelper.ExportToTxt(tableInfo);
 
                     ExportToErlangHelper.ExportToErlang(tableInfo);
-
                 }
                 ExportToMySQLHelper.ExportToMySQL();
 
                 AppLog.Log("全部文件导出成功");
-                //Console.ReadKey();
+#if DEBUG
+                Console.ReadKey();
+#endif
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 #if DEBUG
                 AppLog.LogErrorAndExit(e.ToString());
 #else
                 AppLog.LogErrorAndExit("出现错误，请检查配置表");
 #endif
-
             }
-
-
-
         }
     }
 }

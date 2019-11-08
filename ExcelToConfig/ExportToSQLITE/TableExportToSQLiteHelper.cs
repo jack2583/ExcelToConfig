@@ -1,15 +1,14 @@
-﻿using System.Data.SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Text;
-using System.IO;
 
 public class TableExportToSQLiteHelper
 {
     private static SQLiteConnection _conn = null;
     private static string _schemaName = null;
+
     // 导出数据前获取的数据库中已存在的表名
     private static List<string> _existTableNames = new List<string>();
 
@@ -26,19 +25,18 @@ public class TableExportToSQLiteHelper
         string connectString = SQLiteStruct.ExportConnectString;
         try
         {
-                _conn = new SQLiteConnection(connectString);
-                _conn.Open();
+            _conn = new SQLiteConnection(connectString);
+            _conn.Open();
 
             if (_conn.State == System.Data.ConnectionState.Open)
             {
                 // 获取已经存在的表格名
                 DataTable schemaInfo = _conn.GetSchema("TABLES");
-				if (schemaInfo != null && schemaInfo.Rows.Count > 0)
+                if (schemaInfo != null && schemaInfo.Rows.Count > 0)
                 {
-			                foreach (DataRow info in schemaInfo.Rows)
-                    _existTableNames.Add(info["TABLE_NAME"].ToString());
-					
-				}
+                    foreach (DataRow info in schemaInfo.Rows)
+                        _existTableNames.Add(info["TABLE_NAME"].ToString());
+                }
                 errorString = null;
                 return true;
             }
@@ -92,19 +90,19 @@ public class TableExportToSQLiteHelper
                 AppLog.LogWarning(Utils.CombineString(warningInfo, " ,"));
             }
             // 按Excel表格中字段定义新建数据库表格
-			//string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE) && tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE].Count > 0 ? tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE ][0] : string.Empty;
-			string comment =string.Empty;
-			if(tableInfo.TableConfig != null)
-			{
-				if(tableInfo.TableConfig.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT))
-				{
-					if(tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0)
-					{
+            //string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE) && tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE].Count > 0 ? tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE ][0] : string.Empty;
+            string comment = string.Empty;
+            if (tableInfo.TableConfig != null)
+            {
+                if (tableInfo.TableConfig.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT))
+                {
+                    if (tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0)
+                    {
                         comment = tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0];
-					}
-				}
-			}
-            
+                    }
+                }
+            }
+
             _CreateTable(tableName, tableInfo, comment, out errorString);
             if (string.IsNullOrEmpty(errorString))
             {
@@ -263,7 +261,7 @@ public class TableExportToSQLiteHelper
             string valueDefineString = valueDefineStringBuilder.ToString();
             valueDefineString = valueDefineString.Substring(0, valueDefineString.Length - 1);
 
-            string insertSqlString = string.Format(_INSERT_DATA_SQL,tableName, fieldNameDefineString, valueDefineString);
+            string insertSqlString = string.Format(_INSERT_DATA_SQL, tableName, fieldNameDefineString, valueDefineString);
 
             // 执行插入操作
             try

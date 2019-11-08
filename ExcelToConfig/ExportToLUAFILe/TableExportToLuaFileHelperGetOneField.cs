@@ -13,8 +13,8 @@ public partial class TableExportToLuaFileHelper
         // 变量名前的缩进
         content.Append(_GetErlangIndentation(level));
         // 变量名
-       // content.Append(fieldInfo.FieldName);
-       // content.Append(" = ");
+        // content.Append(fieldInfo.FieldName);
+        // content.Append(" = ");
         // 对应数据值
         string value = null;
         switch (fieldInfo.DataType)
@@ -245,7 +245,7 @@ public partial class TableExportToLuaFileHelper
         {
             // 包裹dict或array所生成table的左括号
             content.Append("{");
-           // ++level;
+            // ++level;
             // 逐个对子元素进行生成
             foreach (FieldInfo childField in fieldInfo.ChildField)
             {

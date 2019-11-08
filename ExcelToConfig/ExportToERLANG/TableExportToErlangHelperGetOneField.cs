@@ -10,8 +10,8 @@ public partial class TableExportToErlangHelper
         errorString = null;
 
         // 变量名
-       // content.Append(fieldInfo.FieldName);
-       // content.Append(" = ");
+        // content.Append(fieldInfo.FieldName);
+        // content.Append(" = ");
         // 对应数据值
         string value = null;
         switch (fieldInfo.DataType)
@@ -96,7 +96,7 @@ public partial class TableExportToErlangHelper
         if (ErlangStruct.IsExportErlangNullConfig)
         {
             // 变量名前的缩进
-           // content.Append(_GetErlangIndentation(level));
+            // content.Append(_GetErlangIndentation(level));
             if (ErlangStruct.IsArrayFieldName == true)
             {
                 // 变量名，注意array下属的子元素在json中不含key的声明
@@ -115,7 +115,7 @@ public partial class TableExportToErlangHelper
 
             content.Append(value);
             // 一个字段结尾加逗号
-           // content.AppendLine(",");
+            // content.AppendLine(",");
 
             return content.ToString();
         }
@@ -143,7 +143,7 @@ public partial class TableExportToErlangHelper
 
                 content.Append(value);
                 // 一个字段结尾加逗号
-               // content.AppendLine(",");
+                // content.AppendLine(",");
 
                 return content.ToString();
             }
@@ -159,7 +159,7 @@ public partial class TableExportToErlangHelper
     private static string _GetNumberValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
-            if (ErlangStruct.IsExportErlangNullConfig==true)
+            if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "0";
             else
                 return "null";
@@ -175,8 +175,8 @@ public partial class TableExportToErlangHelper
             else
                 return @"<< "" >>";
         StringBuilder content = new StringBuilder();
-        if (fieldInfo.Data[row].ToString().Length==0)
-            if(ErlangStruct.IsExportErlangNullConfig == false)
+        if (fieldInfo.Data[row].ToString().Length == 0)
+            if (ErlangStruct.IsExportErlangNullConfig == false)
                 return "null";
             else
                 return @"<< "" >>";
@@ -201,7 +201,6 @@ public partial class TableExportToErlangHelper
             else
                 content.Append("\"/utf8>>");
         }
-       
 
         return content.ToString();
     }
@@ -243,9 +242,6 @@ public partial class TableExportToErlangHelper
                 content.Append(inputData.Replace("\n", "\\n").Replace("\\\"", "\""));
                 content.Append("\"/utf8>>");
             }
-               
-
-
         }
         else
         {
@@ -348,10 +344,11 @@ public partial class TableExportToErlangHelper
 
         return content.ToString();
     }
+
     private static string _GetDictValue(FieldInfo fieldInfo, int row, int level, out string errorString)
     {
         errorString = null;
-        
+
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
                 return "null";
@@ -383,13 +380,11 @@ public partial class TableExportToErlangHelper
                     content.Append("=> ");
                     content.Append(oneFieldString).Append(",");
                 }
-                    
             }
 
             // 去掉最后一个子元素末尾多余的英文逗号
 
             content.Remove(content.Length - 1, 1);
-
 
             content.Append("}");
         }
@@ -397,6 +392,7 @@ public partial class TableExportToErlangHelper
         errorString = null;
         return content.ToString();
     }
+
     private static string _GetSetValue(FieldInfo fieldInfo, int row, int level, out string errorString)
     {
         errorString = null;
@@ -407,15 +403,13 @@ public partial class TableExportToErlangHelper
                 return "[]";
 
         StringBuilder content = new StringBuilder();
-        
-            // 如果该dict或array数据用-1标为无效，则赋值为nil
-       if ((bool)fieldInfo.Data[row] == false)
+
+        // 如果该dict或array数据用-1标为无效，则赋值为nil
+        if ((bool)fieldInfo.Data[row] == false)
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "[]";
             else
                 return "null";
-
-
         else
         {
             // 包裹dict或array所生成table的左括号
@@ -448,7 +442,7 @@ public partial class TableExportToErlangHelper
                 return "#{}";
             else
                 return "null";
-        if (fieldInfo.Data[row].ToString()=="")
+        if (fieldInfo.Data[row].ToString() == "")
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "#{}";
             else
@@ -461,13 +455,13 @@ public partial class TableExportToErlangHelper
 
         JsonData jsonData = fieldInfo.Data[row] as JsonData;
         //if (jsonData == null)
-           
-       // else
+
+        // else
         //{
-            StringBuilder content = new StringBuilder();
-            _AnalyzeJsonData(content, jsonData, level);
-            return content.ToString();
-       // }
+        StringBuilder content = new StringBuilder();
+        _AnalyzeJsonData(content, jsonData, level);
+        return content.ToString();
+        // }
     }
 
     private static void _AnalyzeJsonData(StringBuilder content, JsonData jsonData, int level)
@@ -478,28 +472,28 @@ public partial class TableExportToErlangHelper
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 content.Append("#{}");
             else
-            content.Append("null");
+                content.Append("null");
         }
         else if (jsonData.IsObject == true)
         {
             content.Append("#{");
-           
+
             ++level;
 
             List<string> childKeyNames = new List<string>(jsonData.Keys);
             int childCount = jsonData.Count;
             for (int i = 0; i < childCount; ++i)
             {
-               //// content.Append(_GetErlangIndentation(level));
+                //// content.Append(_GetErlangIndentation(level));
                 //if(ErlangStruct.IsArrayFieldName==true)
                 //{
-                    // 如果键名为数字，需要加方括号和引号
-                    string keyName = childKeyNames[i];
-                    double temp;
-                    if (double.TryParse(keyName, out temp) == true)
-                        content.AppendFormat("'{0}'", keyName);
-                    else
-                        content.AppendFormat("'{0}'", keyName);
+                // 如果键名为数字，需要加方括号和引号
+                string keyName = childKeyNames[i];
+                double temp;
+                if (double.TryParse(keyName, out temp) == true)
+                    content.AppendFormat("'{0}'", keyName);
+                else
+                    content.AppendFormat("'{0}'", keyName);
 
                 content.Append("=> ");
                 //}
@@ -508,13 +502,13 @@ public partial class TableExportToErlangHelper
             }
             content.Remove(content.Length - 1, 1);
             --level;
-           //// content.Append(_GetErlangIndentation(level));
+            //// content.Append(_GetErlangIndentation(level));
             content.Append("}");
         }
         else if (jsonData.IsArray == true)
         {
             int childCount = jsonData.Count;
-            if(childCount==0)
+            if (childCount == 0)
             {
                 if (ErlangStruct.IsExportErlangNullConfig == true)
                     content.Append("[]");
@@ -541,11 +535,10 @@ public partial class TableExportToErlangHelper
                 //// content.Append(_GetErlangIndentation(level));
                 content.Append("]");
             }
-            
         }
         else if (jsonData.IsString == true)
         {
-            if(jsonData.ToString()=="")
+            if (jsonData.ToString() == "")
             {
                 content.Append(@"<<"">>");
             }
@@ -559,7 +552,6 @@ public partial class TableExportToErlangHelper
                 content.AppendFormat("{0}", jsonData.ToString().Replace("\n", "\\n").Replace("\"", "\""));
                 content.Append("\"/utf8>>");
             }
-
         }
         else if (jsonData.IsBoolean == true)
             content.AppendFormat(jsonData.ToString().ToLower());
@@ -572,7 +564,7 @@ public partial class TableExportToErlangHelper
     private static string _GetMapStringValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
-                return "null";
+            return "null";
 
         JsonData jsonData = fieldInfo.Data[row] as JsonData;
         if (jsonData == null)

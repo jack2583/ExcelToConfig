@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
 
 public partial class TableAnalyzeHelper
 {
@@ -74,6 +69,7 @@ public partial class TableAnalyzeHelper
         nextFieldColumnIndex = columnIndex + 1;
         return true;
     }
+
     /// <summary>
     /// 获取统一配置的Lang型字段定义在合成key时需进行替换的信息（key：要替换的字符串形如{fieldName}， value：对应的字段数据列表）
     /// </summary>
@@ -122,5 +118,4 @@ public partial class TableAnalyzeHelper
         errorString = null;
         return replaceInfo;
     }
-
 }

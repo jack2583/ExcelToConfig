@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
+using System.Text;
 
 public partial class TableAnalyzeHelper
 {
@@ -275,7 +271,7 @@ public partial class TableAnalyzeHelper
                     string str = dt.Rows[row][columnIndex].ToString();
                     AppLanguage.GetLanguageDictData(str);
                     fieldInfo.Data.Add(AppLanguage.GetNewLanguageText(str));
-                } 
+                }
             }
         }
         else if ("string(trim)".Equals(fieldInfo.DataTypeString, StringComparison.CurrentCultureIgnoreCase))
@@ -305,7 +301,6 @@ public partial class TableAnalyzeHelper
                     AppLanguage.GetLanguageDictData(str);
                     fieldInfo.Data.Add(AppLanguage.GetNewLanguageText(str));
                 }
-                   
             }
         }
 
@@ -313,5 +308,4 @@ public partial class TableAnalyzeHelper
         nextFieldColumnIndex = columnIndex + 1;
         return true;
     }
-
 }

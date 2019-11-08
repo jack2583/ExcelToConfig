@@ -282,7 +282,6 @@ public class MapStringCheckHelper
                         }
                     }
                 }
-
             }
             if (emptyConditionRowIndex.Count > 0)
             {
@@ -973,6 +972,7 @@ public class Condition
 {
     // 如果为null表示任何条件下都满足
     public FieldInfo FieldInfo { get; set; }
+
     public Relation Relation { get; set; }
 
     public object Value { get; set; }

@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
 
 public partial class TableAnalyzeHelper
 {
-
     private static bool _AnalyzeArrayType(FieldInfo fieldInfo, TableInfo tableInfo, DataTable dt, int columnIndex, FieldInfo parentField, out int nextFieldColumnIndex, out string errorString)
     {
         // dict或array集合类型中，如果定义列中的值填-1代表这行数据的该字段不生效，Data中用true和false代表该集合字段的某行数据是否生效

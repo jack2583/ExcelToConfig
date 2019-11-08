@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
 
 public partial class TableAnalyzeHelper
 {
@@ -56,6 +51,7 @@ public partial class TableAnalyzeHelper
         else
             return null;
     }
+
     /// <summary>
     /// 获取某张表格以以第1列为key，第3列起来value的方式的配置参数（key：参数名， value：参数列表）
     /// </summary>
@@ -76,7 +72,7 @@ public partial class TableAnalyzeHelper
                 continue;
             else
             {
-                if(config.Count>0)
+                if (config.Count > 0)
                 {
                     if (config.ContainsKey(paramName))
                     {
@@ -91,18 +87,17 @@ public partial class TableAnalyzeHelper
             }
 
             // 取具体参数配置
-            
+
             List<string> inputParams = config[paramName];
             for (int column = 2; column < columnCount; ++column)
             {
                 string param = dt.Rows[row][column].ToString();
                 if (!string.IsNullOrEmpty(param))
                 {
-                    if(inputParams.Count>0)
+                    if (inputParams.Count > 0)
                     {
                         if (inputParams.Contains(param))
                             AppLog.LogWarning(string.Format("警告：配置项（参数名为{0}）中存在相同的参数\"{1}\"，请确认是否填写错误\n", paramName, param));
-
                     }
 
                     inputParams.Add(param);
@@ -116,11 +111,12 @@ public partial class TableAnalyzeHelper
         else
             return null;
     }
+
     public static bool GetOneConfigData(TableInfo tableInfo, string configKey)
     {
-
         return true;
     }
+
     /// <summary>
     /// 获取一个config配置的bool值，如果找不到key则不到传入的bool值进行修改
     /// </summary>
@@ -128,9 +124,8 @@ public partial class TableAnalyzeHelper
     /// <param name="configKey"></param>
     /// <param name="configValue"></param>
     /// <returns></returns>
-    public static bool GetOneConfigData(TableInfo tableInfo,string configKey,ref bool configValue)
+    public static bool GetOneConfigData(TableInfo tableInfo, string configKey, ref bool configValue)
     {
-        
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(configKey))
         {
             if (tableInfo.TableConfig[configKey].Count > 0)
@@ -148,12 +143,13 @@ public partial class TableAnalyzeHelper
                 else
                     return true;
             }
-            else 
+            else
                 return false;
         }
-        else 
+        else
             return false;
     }
+
     /// <summary>
     /// 获取一个config配置的list值，如特殊导出的嵌套，list则为多个嵌套方案
     /// </summary>
@@ -161,21 +157,22 @@ public partial class TableAnalyzeHelper
     /// <param name="configKey"></param>
     /// <param name="configValue"></param>
     /// <returns></returns>
-    public static bool GetOneConfigData(TableInfo tableInfo, string configKey,ref List<string> configValue)
+    public static bool GetOneConfigData(TableInfo tableInfo, string configKey, ref List<string> configValue)
     {
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(configKey))
+        {
+            if (tableInfo.TableConfig[configKey].Count > 0)
             {
-                if (tableInfo.TableConfig[configKey].Count > 0)
-                    {
-                        configValue= tableInfo.TableConfig[configKey];
-                        return true;
-                    }
-                else
-                    return false;
+                configValue = tableInfo.TableConfig[configKey];
+                return true;
             }
+            else
+                return false;
+        }
         else
             return false;
     }
+
     /// <summary>
     /// 获取一个config配置的string值，
     /// </summary>
@@ -185,8 +182,6 @@ public partial class TableAnalyzeHelper
     /// <returns></returns>
     public static bool GetOneConfigData(TableInfo tableInfo, string configKey, ref string configValue)
     {
-        
-       
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(configKey))
         {
             if (tableInfo.TableConfig[configKey].Count > 0)

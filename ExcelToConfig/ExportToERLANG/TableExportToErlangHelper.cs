@@ -1,8 +1,6 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Data;
 
 public partial class TableExportToErlangHelper
 {
@@ -231,7 +229,7 @@ public partial class TableExportToErlangHelper
                 return false;
             }
 
-           // content.Append(_GetErlangIndentation(currentLevel));
+            // content.Append(_GetErlangIndentation(currentLevel));
             content.Append("  #{");
 
             // 如果已是最内层，输出指定table value中的数据
@@ -264,8 +262,6 @@ public partial class TableExportToErlangHelper
             content.AppendLine("  },");
         }
 
-
-
         // 生成数据内容结尾
         content.AppendLine("get(_N) -> false.");
         content.AppendLine("get_list() ->");
@@ -282,7 +278,6 @@ public partial class TableExportToErlangHelper
         //if (ErlangStruct.IsNeedColumnInfo == true)
         //    exportString = _GetColumnInfo(tableInfo) + exportString;
 
-
         // 保存为erlang文件
         if (SaveErlang.SaveErlangFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(fileName), exportString) == true)
         {
@@ -295,10 +290,10 @@ public partial class TableExportToErlangHelper
             return false;
         }
     }
+
     public static bool ExportTableToErlang(TableInfo tableInfo, out string errorString)
     {
         StringBuilder content = new StringBuilder();
-
 
         // 当前缩进量
         int currentLevel = 1;
@@ -311,11 +306,10 @@ public partial class TableExportToErlangHelper
         int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
         for (int row = 0; row < dataCount; ++row)
         {
-            
             // 将主键列作为key生成
 
             FieldInfo keyColumnField = allField[0];
-            
+
             if (keyColumnField.DataType == DataType.Int || keyColumnField.DataType == DataType.Long)
                 content.Append("get(").Append(keyColumnField.Data[row]).Append(")->");
             // 注意：像“1_2”这样的字符串作为table的key必须加[""]否则lua认为是语法错误
@@ -324,14 +318,13 @@ public partial class TableExportToErlangHelper
                 string FieldString = keyColumnField.Data[row].ToString();// _GetOneField(keyColumnField, row, currentLevel, out errorString);
                 content.Append("get(").Append(FieldString).Append(")->");
             }
-               
             else
             {
                 errorString = "用ExportTableToLua导出不支持的主键列数据类型";
                 AppLog.LogErrorAndExit(errorString);
                 return false;
             }
-           // content.Append(_GetErlangIndentation(currentLevel));
+            // content.Append(_GetErlangIndentation(currentLevel));
             content.AppendLine(" #{");
             //  ++currentLevel;
 
@@ -358,13 +351,12 @@ public partial class TableExportToErlangHelper
                     continue;
                 else
                     i++;
-               // if (i > 1)
-               // {
-                    if (ErlangStruct.ExportErlangIsFormat == true)
-                        content.Append(_GetErlangIndentation(currentLevel));
-               // }
-                
-                
+                // if (i > 1)
+                // {
+                if (ErlangStruct.ExportErlangIsFormat == true)
+                    content.Append(_GetErlangIndentation(currentLevel));
+                // }
+
                 if (errorString != null)
                 {
                     errorString = string.Format("导出表格{0}失败，", tableInfo.TableName) + errorString;
@@ -372,7 +364,7 @@ public partial class TableExportToErlangHelper
                 }
                 else
                 {
-                    if(i>1)
+                    if (i > 1)
                         content.Append(",");
 
                     if (ErlangStruct.ExportErlangIsFormat == true)
@@ -380,10 +372,7 @@ public partial class TableExportToErlangHelper
                     else
                         content.Append("'").Append(allField[column].FieldName).Append("' => ").Append(oneFieldString);
                     //content.AppendLine(",");
-
-
                 }
-                   
             }
 
             // 一行数据生成完毕后添加右括号结尾等
@@ -403,7 +392,6 @@ public partial class TableExportToErlangHelper
 
         //        if (c == '\n' || c == '\r')
         //        {
-
         //        }
         //        else
         //            stringBuilder2.Append(c);
@@ -417,12 +405,11 @@ public partial class TableExportToErlangHelper
         stringBuilder.AppendLine(@"-export([get/1,get_list/0]).");
         stringBuilder.Append(exportString2);
 
-
         // 生成数据内容结尾
         stringBuilder.AppendLine("get(_N) -> false.");
         stringBuilder.AppendLine("get_list() ->");
         stringBuilder.Append("\t[");
-        for (int i=0;i< dataCount;i++)
+        for (int i = 0; i < dataCount; i++)
         {
             string FieldString = allField[0].Data[i].ToString();// _GetOneField(allField[0], i, currentLevel, out errorString);
             stringBuilder.Append(FieldString).Append(",");
@@ -433,7 +420,6 @@ public partial class TableExportToErlangHelper
         string exportString = stringBuilder.ToString();
         //if (ErlangStruct.IsNeedColumnInfo == true)
         //    exportString = _GetColumnInfo(tableInfo) + exportString;
-
 
         // 保存为erlang文件
         if (SaveErlang.SaveErlangFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
@@ -447,6 +433,7 @@ public partial class TableExportToErlangHelper
             return false;
         }
     }
+
     /// <summary>
     /// 生成要在Erlang文件最上方以注释形式展示的列信息
     /// </summary>
@@ -457,10 +444,7 @@ public partial class TableExportToErlangHelper
 
         StringBuilder content = new StringBuilder();
 
-
         content.Append(System.Environment.NewLine);
         return content.ToString();
     }
-
-
 }

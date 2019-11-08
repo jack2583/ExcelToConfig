@@ -5,10 +5,10 @@ using System.Text;
 
 public partial class TableExportToLuaHelper
 {
-    private static string _GetOneField(FieldInfo fieldInfo, int row, int level, out string errorString,bool isExportLuaNilConfig=true)
+    private static string _GetOneField(FieldInfo fieldInfo, int row, int level, out string errorString, bool isExportLuaNilConfig = true)
     {
         errorString = null;
-      
+
         // 对应数据值
         string value = null;
         switch (fieldInfo.DataType)
@@ -84,7 +84,7 @@ public partial class TableExportToLuaHelper
         {
             // 变量名前的缩进
             content.Append(_GetLuaIndentation(level));
-            if(LuaStruct.IsArrayFieldName==true)
+            if (LuaStruct.IsArrayFieldName == true)
             {
                 // 变量名，注意array下属的子元素在json中不含key的声明
                 if (fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array)
@@ -373,7 +373,7 @@ public partial class TableExportToLuaHelper
             for (int i = 0; i < childCount; ++i)
             {
                 content.Append(_GetLuaIndentation(level));
-                if(LuaStruct.IsArrayFieldName)
+                if (LuaStruct.IsArrayFieldName)
                     content.AppendFormat("[{0}] = ", i + 1);
                 _AnalyzeJsonData(content, jsonData[i], level);
                 content.AppendLine(",");

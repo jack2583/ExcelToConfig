@@ -1,5 +1,4 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,8 +25,6 @@ public partial class TableExportToJsonHelper
             errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
             return false;
         }
-
-
 
         // 生成导出的文件内容
         StringBuilder content = new StringBuilder();
@@ -57,9 +54,8 @@ public partial class TableExportToJsonHelper
         if (JsonStruct.ExportJsonIsFormat == true)
         {
             exportString = _FormatJson2(exportString);
-           // exportString = JsonConvert.SerializeObject(exportString);
+            // exportString = JsonConvert.SerializeObject(exportString);
         }
-            
 
         // 保存为json文件
         string fileName = exportRule.Substring(0, colonIndex).Trim();
@@ -81,7 +77,6 @@ public partial class TableExportToJsonHelper
     private static void _GetIndexFieldData(StringBuilder content, Dictionary<object, object> parentDict, List<FieldInfo> tableValueField, ref int currentLevel, out string errorString)
     {
         string oneTableValueFieldData = null;
-       
 
         foreach (var key in parentDict.Keys)
         {
@@ -122,7 +117,7 @@ public partial class TableExportToJsonHelper
                 foreach (FieldInfo fieldInfo in tableValueField)
                 {
                     int rowIndex = (int)parentDict[key];
-                    oneTableValueFieldData = _GetOneField(fieldInfo, rowIndex,  out errorString);//
+                    oneTableValueFieldData = _GetOneField(fieldInfo, rowIndex, out errorString);//
                     if (errorString != null)
                     {
                         errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
@@ -173,8 +168,8 @@ public partial class TableExportToJsonHelper
             // 否则继续递归生成索引key
             else
             {
-               // if (content.ToString().EndsWith("}"))
-                   // content.Remove(content.Length - 1, 1).Append(",");
+                // if (content.ToString().EndsWith("}"))
+                // content.Remove(content.Length - 1, 1).Append(",");
 
                 _GetIndexFieldData(content, (Dictionary<object, object>)(parentDict[key]), tableValueField, ref currentLevel, out errorString);
                 if (errorString != null)
@@ -185,7 +180,7 @@ public partial class TableExportToJsonHelper
             }
 
             --currentLevel;
-           // content.Append(_GetJsonIndentation(currentLevel));
+            // content.Append(_GetJsonIndentation(currentLevel));
             content.Append("},"); // content.AppendLine("},");
         }
 
@@ -207,5 +202,4 @@ public partial class TableExportToJsonHelper
 
     //    return content.ToString();
     //}
- 
 }

@@ -1,15 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Data.OleDb;
 
 public class ExcelMethods
 {
-
     /// <summary>
     /// 将Excel中的列编号转为列名称（第1列为A，第28列为AB）
     /// </summary>
@@ -47,9 +41,8 @@ public class ExcelMethods
     /// </summary>
     /// <param name="excelName">Excel名字，如item-物品 或item</param>
     /// <returns></returns>
-    public static string GetTableName(string excelName,string splitStr= "-")
+    public static string GetTableName(string excelName, string splitStr = "-")
     {
-        
         if (excelName.Contains(splitStr))
         {
             string[] fileNames = null;
@@ -59,6 +52,7 @@ public class ExcelMethods
 
         return excelName;
     }
+
     /// <summary>
     /// 获取多语言下导出文件的真实名字
     /// </summary>
@@ -66,13 +60,14 @@ public class ExcelMethods
     /// <returns></returns>
     public static string GetSaveTableName(string tableName)
     {
-        if(AppLanguage.IsAddSaveType == true || AppLanguage.IsMoreLanguage==false || AppLanguage.NeedLanguage==null || tableName.EndsWith(AppLanguage.NeedLanguage))
+        if (AppLanguage.IsAddSaveType == true || AppLanguage.IsMoreLanguage == false || AppLanguage.NeedLanguage == null || tableName.EndsWith(AppLanguage.NeedLanguage))
         {
             return tableName;
         }
         else
             return tableName.Substring(0, tableName.Length - AppLanguage.NeedLanguage.Length);
     }
+
     public static List<string> GetExcelSheetName(string excelName, DataTable dtSheet)
     {
         List<string> excelSheetNames = new List<string>();

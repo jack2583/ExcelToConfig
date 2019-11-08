@@ -1,18 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+
 /// <summary>
 /// 文件相关方法
 /// </summary>
-public  class FileModule
+public class FileModule
 {
     /// <summary>
     /// 在指定文件夹下，某个文件名对应的所有文件路径（key：文件名， value：文件所在路径）
     /// </summary>
     public static Dictionary<string, List<string>> AllPathsOfName = new Dictionary<string, List<string>>();
+
     /// <summary>
     /// Dictionary<路径+(.扩展名)TopDirectoryOnly/AllDirectories, Dictionary<文件名, List<该文件对应所有完整文件路径>>>
     /// </summary>
@@ -33,10 +32,9 @@ public  class FileModule
             return AllFileInfos[fileInFokey];
         }
 
-
         //如果不存在就进行添加
         AllFileInfos.Add(fileInFokey, new Dictionary<string, List<string>>());
-       // string[] filePaths = Directory.GetFiles(pathString, "*." + extension, searchOption);
+        // string[] filePaths = Directory.GetFiles(pathString, "*." + extension, searchOption);
         var filePaths = Directory.EnumerateFiles(pathString, "*." + extension, searchOption);
         foreach (string filepath in filePaths)
         {
@@ -60,10 +58,10 @@ public  class FileModule
     /// <param name="isMoreLangue">是否为多语言</param>
     /// <param name="TempFileFileNameStartString">临时文件前缀</param>
     /// <returns></returns>
-    public static Dictionary<string, List<string>> RemoveTempFile(Dictionary<string, List<string>> allFilePaths, bool isMoreLangue,string TempFileFileNameStartString = ExcelTableSetting.ExcelTempFileFileNameStartString)
+    public static Dictionary<string, List<string>> RemoveTempFile(Dictionary<string, List<string>> allFilePaths, bool isMoreLangue, string TempFileFileNameStartString = ExcelTableSetting.ExcelTempFileFileNameStartString)
     {
         Dictionary<string, List<string>> allFilePathsTemp = new Dictionary<string, List<string>>();
-        if(isMoreLangue==false)
+        if (isMoreLangue == false)
         {
             foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
             {
@@ -75,7 +73,7 @@ public  class FileModule
         }
         else//多语言下处理
         {
-            if(AppLanguage.OtherLanguage==null)
+            if (AppLanguage.OtherLanguage == null)
             {
                 foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
                 {
@@ -92,7 +90,7 @@ public  class FileModule
                     if (!kvp.Key.StartsWith(TempFileFileNameStartString))
                     {
                         bool isNeedLanguage = true;
-                        foreach(string str in AppLanguage.OtherLanguage)
+                        foreach (string str in AppLanguage.OtherLanguage)
                         {
                             if (ExcelMethods.GetTableName(kvp.Key).EndsWith(str))
                             {
@@ -100,7 +98,7 @@ public  class FileModule
                                 break;
                             }
                         }
-                        if(isNeedLanguage==true)
+                        if (isNeedLanguage == true)
                             allFilePathsTemp.Add(kvp.Key, kvp.Value);
                     }
                 }
@@ -108,6 +106,7 @@ public  class FileModule
         }
         return allFilePathsTemp;
     }
+
     /// <summary>
     /// 检查是否存在同名文件，若存在则中止程序
     /// </summary>
@@ -130,8 +129,7 @@ public  class FileModule
         //判断是否存在同名文件，若存在则打印出来，退出程序
         if (SameNameFileTemp == null)
         {
-           // AppLog.Log(string.Format("Excel同名检查完毕，没有发现同名文件\n"), ConsoleColor.Green);
-
+            // AppLog.Log(string.Format("Excel同名检查完毕，没有发现同名文件\n"), ConsoleColor.Green);
         }
         else
         {
@@ -141,6 +139,7 @@ public  class FileModule
             AppLog.LogErrorAndExit("\n按任意键继续");
         }
     }
+
     /// <summary>
     /// 合并两个路径字符串，与.Net类库中的Path.Combine不同，本函数不会因为path2以目录分隔符开头就认为是绝对路径，然后直接返回path2
     /// </summary>
@@ -160,7 +159,7 @@ public  class FileModule
     /// <summary>
     /// 获取导出某种生成文件的存储目录
     /// </summary>
-    public static string GetExportDirectoryPath(string tableName, string exportRootPath,bool IsExportKeepDirectoryStructure,bool IsRemoveChinese=true)
+    public static string GetExportDirectoryPath(string tableName, string exportRootPath, bool IsExportKeepDirectoryStructure, bool IsRemoveChinese = true)
     {
         if (IsExportKeepDirectoryStructure == true)
         {
@@ -172,10 +171,10 @@ public  class FileModule
             Uri excelFolderUri = new Uri(excelFolderPath);
             Uri fileUri = new Uri(ExcelFolder.ExportTables[tableName]);
             Uri relativeUri = excelFolderUri.MakeRelativeUri(fileUri);
-            // 注意：Uri转为的字符串中会将中文转义为%xx，需要恢复为非转义形式 
+            // 注意：Uri转为的字符串中会将中文转义为%xx，需要恢复为非转义形式
             string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
-            if(IsRemoveChinese==true)
+            if (IsRemoveChinese == true)
             {
                 string[] SplitRelativePath = relativePath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                 string[] tempSplitRelativePath;
@@ -187,7 +186,7 @@ public  class FileModule
                 }
                 relativePath = relativePath + SplitRelativePath[SplitRelativePath.Length - 1];
             }
-            
+
             return Path.GetDirectoryName(CombinePath(exportRootPath, relativePath));
         }
         else

@@ -1,12 +1,9 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Data;
 
 public partial class TableExportToLuaFileHelper
 {
-
     public static bool ExportTableToLuaFile(TableInfo tableInfo, out string errorString)
     {
         StringBuilder content = new StringBuilder();
@@ -18,14 +15,13 @@ public partial class TableExportToLuaFileHelper
         int currentLevel = 1;
 
         // 判断是否设置要将主键列的值作为导出的table中的元素
-       // bool isAddKeyToLuaTable = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(ErlangStruct.Excel_Config_AddKeyToErlangTable) && tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable].Count > 0 && "true".Equals(tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable][0], StringComparison.CurrentCultureIgnoreCase);
+        // bool isAddKeyToLuaTable = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(ErlangStruct.Excel_Config_AddKeyToErlangTable) && tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable].Count > 0 && "true".Equals(tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable][0], StringComparison.CurrentCultureIgnoreCase);
 
         // 逐行读取表格内容生成lua table
         List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
         int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
         for (int row = 0; row < dataCount; ++row)
         {
-            
             // 将主键列作为key生成
 
             FieldInfo keyColumnField = allField[0];
@@ -42,7 +38,7 @@ public partial class TableExportToLuaFileHelper
             }
 
             //content.Append("#{");
-          //  ++currentLevel;
+            //  ++currentLevel;
 
             // 如果设置了要将主键列的值作为导出的table中的元素
             //if (isAddKeyToLuaTable == true)
@@ -72,9 +68,7 @@ public partial class TableExportToLuaFileHelper
                     content.Append("        ");
                     content.Append(allField[column].FieldName).Append("=").Append(oneFieldString);
                     content.AppendLine(",");
-
                 }
-                   
             }
 
             // 一行数据生成完毕后添加右括号结尾等
@@ -88,12 +82,10 @@ public partial class TableExportToLuaFileHelper
         content.AppendLine("}");
         // 生成数据内容结尾
         content.Append("return ").Append(tableInfo.TableName);
-       
 
         string exportString = content.ToString();
         //if (ErlangStruct.IsNeedColumnInfo == true)
         //    exportString = _GetColumnInfo(tableInfo) + exportString;
-
 
         // 保存为LuaFile文件
         if (SaveLuaFile.SaveLuaFileFile(tableInfo.TableName, tableInfo.TableName, exportString) == true)
@@ -107,6 +99,7 @@ public partial class TableExportToLuaFileHelper
             return false;
         }
     }
+
     /// <summary>
     /// 生成要在LuaFile文件最上方以注释形式展示的列信息
     /// </summary>
@@ -116,7 +109,6 @@ public partial class TableExportToLuaFileHelper
         int level = 0;
 
         StringBuilder content = new StringBuilder();
-
 
         content.Append(System.Environment.NewLine);
         return content.ToString();

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-/// <summary>
+﻿/// <summary>
 /// 本工具所的数据类型的定义
 /// </summary>
 public enum DataType
@@ -13,6 +7,7 @@ public enum DataType
     /// 无效类型
     /// </summary>
     Invalid,
+
     Int,
     Long,
     Float,
@@ -27,4 +22,3 @@ public enum DataType
     Dict,
     MapString,
 }
-

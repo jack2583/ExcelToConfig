@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Globalization;
-using LitJson;
+using System.Text;
 
 public partial class TableAnalyzeHelper
 {
@@ -280,8 +277,8 @@ public partial class TableAnalyzeHelper
 
         // 定义time型输入导出格式的key
         //const string TimeInputParamKey = "input";// INPUT_PARAM_KEY
-       // const string TimeToExportParamKey = "toLua";// TO_LUA_PARAM_KEY
-       // const string TimeToExportParamKey = "toDatabase";// TO_DATABASE_PARAM_KEY
+        // const string TimeToExportParamKey = "toLua";// TO_LUA_PARAM_KEY
+        // const string TimeToExportParamKey = "toDatabase";// TO_DATABASE_PARAM_KEY
         // 解析time型输入导出格式的声明
         if (!DateTimeValue.DefineTimeStartString.Equals(fieldInfo.DataTypeString, StringComparison.CurrentCultureIgnoreCase))
         {
@@ -499,5 +496,4 @@ public partial class TableAnalyzeHelper
             return true;
         }
     }
-
 }

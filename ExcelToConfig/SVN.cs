@@ -1,83 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
 using System.Diagnostics;
-
-
+using System.IO;
 
 public static class SVN
+{
+    private static string _svnPath = "";
+
+    public static void DelAndUpdateSvnFile(string path)
     {
-        private static string _svnPath = "";
-
-        public static void DelAndUpdateSvnFile(string path)
+        if (File.Exists(path))
         {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-            ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:2", path));
+            File.Delete(path);
         }
+        ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:2", path));
+    }
 
-        public static void RevertAndUpdateSvnDirectory(string path)
-        {
-            ExecuteProcess(GetSvnProcPath(), string.Format("/command:revert -r /path:{0} /closeonend:2", path));
-            ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:2", path));
-        }
+    public static void RevertAndUpdateSvnDirectory(string path)
+    {
+        ExecuteProcess(GetSvnProcPath(), string.Format("/command:revert -r /path:{0} /closeonend:2", path));
+        ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:2", path));
+    }
+
     /// <summary>
     /// 更新SVN，默认如果没发生错误和冲突则自动关闭对话框
     /// </summary>
     /// <param name="path"></param>
     /// <param name="closeonend"></param>
-    public static void UpdateSvnDirectory(string path,int closeonend=2)
-        {
-            ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:{1}", path, closeonend));
-        }
+    public static void UpdateSvnDirectory(string path, int closeonend = 2)
+    {
+        ExecuteProcess(GetSvnProcPath(), string.Format("/command:update /path:{0} /closeonend:{1}", path, closeonend));
+    }
+
     /// <summary>
     /// 提交SVN，默认不自动关闭对话框
     /// </summary>
     /// <param name="path"></param>
     /// <param name="closeonend"></param>
     public static void CommitSvnDirectory(string path, int closeonend = 0)
+    {
+        ExecuteProcess(GetSvnProcPath(), string.Format("/command:commit /path:{0} /closeonend:{1}", path, closeonend));
+    }
+
+    public static void ProcessSvnCommand(string command)
+    {
+        ExecuteProcess(GetSvnProcPath(), command);
+    }
+
+    private static List<string> drives = new List<string>() { "c:", "d:", "e:", "f:" };
+
+    private static string svnPath = @"\Program Files\TortoiseSVN\bin\";
+    private static string svnProc = @"TortoiseProc.exe";
+    private static string svnProcPath = "";
+
+    private static string GetSvnProcPath()
+    {
+        if (_svnPath != string.Empty)
         {
-            ExecuteProcess(GetSvnProcPath(), string.Format("/command:commit /path:{0} /closeonend:{1}", path,closeonend));
-        }
-
-        public static void ProcessSvnCommand(string command)
-        {
-            ExecuteProcess(GetSvnProcPath(), command);
-        }
-
-        private static List<string> drives = new List<string>() { "c:", "d:", "e:", "f:" };
-
-        private static string svnPath = @"\Program Files\TortoiseSVN\bin\";
-        private static string svnProc = @"TortoiseProc.exe";
-        private static string svnProcPath = "";
-
-        private static string GetSvnProcPath()
-        {
-            if (_svnPath != string.Empty)
-            {
-                return _svnPath;
-            }
-            foreach (string item in drives)
-            {
-                string path = string.Concat(item, svnPath, svnProc);
-                if (File.Exists(path))
-                {
-                    _svnPath = path;
-                    break;
-                }
-            }
-            if (_svnPath == string.Empty)
-            {
-            _svnPath = "";// OpenFilePanel("Select TortoiseProc.exe", "c:\\", "exe");
-            }
-            //可将路径存到本地注册表
             return _svnPath;
         }
+        foreach (string item in drives)
+        {
+            string path = string.Concat(item, svnPath, svnProc);
+            if (File.Exists(path))
+            {
+                _svnPath = path;
+                break;
+            }
+        }
+        if (_svnPath == string.Empty)
+        {
+            _svnPath = "";// OpenFilePanel("Select TortoiseProc.exe", "c:\\", "exe");
+        }
+        //可将路径存到本地注册表
+        return _svnPath;
+    }
 
     /// <summary>
     /// 对本地或远程进程进行访问，以及启动或停止本地进程。
@@ -121,5 +118,4 @@ public static class SVN
             process.Close();
         }
     }
-    }
-
+}

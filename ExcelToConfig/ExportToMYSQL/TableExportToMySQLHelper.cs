@@ -9,10 +9,12 @@ public class TableExportToMySQLHelper
 {
     private static MySqlConnection _conn = null;
     private static string _schemaName = null;
+
     // 导出数据前获取的数据库中已存在的表名
     private static List<string> _existTableNames = new List<string>();
 
     private const string _ConnectString = "server={0};port={1};uid={2};password={3};database={4};Charset={5};";
+
     // MySQL支持的用于定义Schema名的参数名
     private static string[] _DEFINE_SCHEMA_NAME_PARAM = { "Database", "Initial Catalog" };
 
@@ -20,100 +22,100 @@ public class TableExportToMySQLHelper
     private const string _DROP_TABLE_SQL = "DROP TABLE {0};";
     private const string _INSERT_DATA_SQL = "INSERT INTO {0} ({1}) VALUES {2};";
 
-   // private static string strValue = null;
+    // private static string strValue = null;
     public static bool ConnectToDatabase(out string errorString)
     {
         // 组合成MySQL连接字符串中的Schema名
         string connectString = string.Format(_ConnectString, MySQLStruct.Server, MySQLStruct.Port, MySQLStruct.Uid, MySQLStruct.PassWord, MySQLStruct.DataBase, MySQLStruct.Charset);
         try
+        {
+            _conn = new MySqlConnection(connectString);
+            _conn.Open();
+            if (_conn.State == System.Data.ConnectionState.Open)
             {
-                _conn = new MySqlConnection(connectString);
-                _conn.Open();
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    // 获取已经存在的表格名
-                    DataTable schemaInfo = _conn.GetSchema(SqlClientMetaDataCollectionNames.Tables);
-                    foreach (DataRow info in schemaInfo.Rows)
-                        _existTableNames.Add(info.ItemArray[2].ToString());
+                // 获取已经存在的表格名
+                DataTable schemaInfo = _conn.GetSchema(SqlClientMetaDataCollectionNames.Tables);
+                foreach (DataRow info in schemaInfo.Rows)
+                    _existTableNames.Add(info.ItemArray[2].ToString());
 
-                    errorString = null;
-                    return true;
-                }
-                else
-                {
-                    errorString = "未知错误";
-                    return true;
-                }
+                errorString = null;
+                return true;
             }
-            catch (MySqlException exception)
+            else
             {
-                errorString = exception.Message;
-                return false;
+                errorString = "未知错误";
+                return true;
             }
+        }
+        catch (MySqlException exception)
+        {
+            errorString = exception.Message;
+            return false;
+        }
     }
 
-    public static bool ExportTableToDatabase(TableInfo tableInfo,string tableName,out string errorString)
+    public static bool ExportTableToDatabase(TableInfo tableInfo, string tableName, out string errorString)
     {
         AppLog.Log(string.Format("导入MySQL数据库:{0} \"{1}\"：", MySQLStruct.DataBase, tableInfo.TableName), ConsoleColor.Green);
         //if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME))
         //{
-            //List<string> inputParams = tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME];
-            //if (inputParams == null || inputParams.Count < 1 || string.IsNullOrEmpty(inputParams[0]))
-            //{
-            //   // AppLog.LogWarning("警告：未在表格配置中声明该表导出到数据库中的表名，此表将不被导出到数据库，请确认是否真要如此");
-            //    errorString = null;
-            //    return true;
-            //}
+        //List<string> inputParams = tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME];
+        //if (inputParams == null || inputParams.Count < 1 || string.IsNullOrEmpty(inputParams[0]))
+        //{
+        //   // AppLog.LogWarning("警告：未在表格配置中声明该表导出到数据库中的表名，此表将不被导出到数据库，请确认是否真要如此");
+        //    errorString = null;
+        //    return true;
+        //}
 
-            //string tableName = inputParams[0];
-            // 检查数据库中是否已经存在同名表格，若存在删除旧表
-            if (_existTableNames.Contains(tableName))
+        //string tableName = inputParams[0];
+        // 检查数据库中是否已经存在同名表格，若存在删除旧表
+        if (_existTableNames.Contains(tableName))
+        {
+            _DropTable(tableName, out errorString);
+            if (!string.IsNullOrEmpty(errorString))
             {
-                _DropTable(tableName, out errorString);
-                if (!string.IsNullOrEmpty(errorString))
-                {
-                    errorString = string.Format("数据库中存在同名表格，但删除旧表失败，{0}", errorString);
-                    return false;
-                }
+                errorString = string.Format("数据库中存在同名表格，但删除旧表失败，{0}", errorString);
+                return false;
             }
-            // 警告未设置导出到数据库信息的字段，这些字段将不被导出
-            const string WARNING_INFO_FORMAT = "第{0}列（字段名为{1}）";
-            List<string> warningInfo = new List<string>();
-            foreach (FieldInfo fieldInfo in tableInfo.GetAllFieldInfo())
-            {
-                if (fieldInfo.DataType != DataType.Array && fieldInfo.DataType != DataType.Dict && fieldInfo.DatabaseFieldName == null)
-                    warningInfo.Add(string.Format(WARNING_INFO_FORMAT, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), fieldInfo.FieldName));
-            }
-            if (warningInfo.Count > 0)
-            {
-                //Utils.LogWarning("警告：以下字段未设置导出数据库的信息，将被忽略：");
-               // Utils.LogWarning(Utils.CombineString(warningInfo, " ,"));
-            }
-            // 按Excel表格中字段定义新建数据库表格
-            string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT) && tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0 ? tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0] : string.Empty;
-            _CreateTable(tableName, tableInfo, comment, out errorString);
+        }
+        // 警告未设置导出到数据库信息的字段，这些字段将不被导出
+        const string WARNING_INFO_FORMAT = "第{0}列（字段名为{1}）";
+        List<string> warningInfo = new List<string>();
+        foreach (FieldInfo fieldInfo in tableInfo.GetAllFieldInfo())
+        {
+            if (fieldInfo.DataType != DataType.Array && fieldInfo.DataType != DataType.Dict && fieldInfo.DatabaseFieldName == null)
+                warningInfo.Add(string.Format(WARNING_INFO_FORMAT, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), fieldInfo.FieldName));
+        }
+        if (warningInfo.Count > 0)
+        {
+            //Utils.LogWarning("警告：以下字段未设置导出数据库的信息，将被忽略：");
+            // Utils.LogWarning(Utils.CombineString(warningInfo, " ,"));
+        }
+        // 按Excel表格中字段定义新建数据库表格
+        string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT) && tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0 ? tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0] : string.Empty;
+        _CreateTable(tableName, tableInfo, comment, out errorString);
+        if (string.IsNullOrEmpty(errorString))
+        {
+            // 将Excel表格中的数据添加至数据库
+            _InsertData(tableName, tableInfo, out errorString);
             if (string.IsNullOrEmpty(errorString))
             {
-                // 将Excel表格中的数据添加至数据库
-                _InsertData(tableName, tableInfo, out errorString);
-                if (string.IsNullOrEmpty(errorString))
-                {
-                    AppLog.Log("成功");
+                AppLog.Log("成功");
 
-                    errorString = null;
-                    return true;
-                }
-                else
-                {
-                    errorString = string.Format("插入数据失败，{0}", errorString);
-                    return false;
-                }
+                errorString = null;
+                return true;
             }
             else
             {
-                errorString = string.Format("创建表格失败，{0}", errorString);
+                errorString = string.Format("插入数据失败，{0}", errorString);
                 return false;
             }
+        }
+        else
+        {
+            errorString = string.Format("创建表格失败，{0}", errorString);
+            return false;
+        }
         //}
         //else
         //{
@@ -258,7 +260,7 @@ public class TableExportToMySQLHelper
                 int insertCount = cmd.ExecuteNonQuery();
                 if (insertCount < count)
                 {
-                    errorString = string.Format("需要插入{0}条数据但仅插入了{1}条",count,insertCount);
+                    errorString = string.Format("需要插入{0}条数据但仅插入了{1}条", count, insertCount);
                     return false;
                 }
                 else

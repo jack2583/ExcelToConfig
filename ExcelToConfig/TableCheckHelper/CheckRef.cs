@@ -42,7 +42,7 @@ public partial class TableCheckHelper
                 else
                 {
                     // 判断是否在最后以(except{xx,xx})的格式声明无需ref规则检查的特殊值
-                   // List<object> exceptValues = new List<object>();
+                    // List<object> exceptValues = new List<object>();
                     int leftBracketIndex = temp.IndexOf('(');
                     int rightBracketIndex = temp.LastIndexOf(')');
                     if (leftBracketIndex != -1 && rightBracketIndex > leftBracketIndex)
@@ -71,7 +71,7 @@ public partial class TableCheckHelper
                         }
                     }
 
-                 //   FieldInfo targetFieldInfo = null;
+                    //   FieldInfo targetFieldInfo = null;
 
                     #region 多表多字段情况 ref:table[entry_item.item_id,entry_item_weapon.weapon_id,entry_partner.entry_id](except{0})
 
@@ -205,7 +205,6 @@ public partial class TableCheckHelper
                                     }
                                     continue;
                                 }
-                               
                             }
                             else
                             {
@@ -213,7 +212,7 @@ public partial class TableCheckHelper
                                 {
                                     if (targetFieldData.Contains(kvp.Value))
                                     {
-                                        if(!tempunreferencedInfo2.ContainsKey(kvp.Key))
+                                        if (!tempunreferencedInfo2.ContainsKey(kvp.Key))
                                             tempunreferencedInfo2.Add(kvp.Key, kvp.Value);
                                     }
                                 }
@@ -228,8 +227,6 @@ public partial class TableCheckHelper
                                     unreferencedInfo.Remove(kvp.Key);
                             }
                         }
-
-
 
                         if (unreferencedInfo.Count > 0)
                         {

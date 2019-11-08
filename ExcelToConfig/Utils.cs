@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 public class Utils
 {
@@ -27,6 +25,7 @@ public class Utils
                 return result;
         }
     }
+
     /// <summary>
     /// 二分查找
     /// </summary>
@@ -47,6 +46,7 @@ public class Utils
 
         return -1;
     }
+
     /// <summary>
     /// 获取有效值声明{1,5,10}或数值范围声明[1,5]中符合要求的值集合（有效值声明支持int、float、string型，数值范围声明仅支持int型）
     /// </summary>
@@ -288,5 +288,4 @@ public class Utils
         else
             return null;
     }
-
 }

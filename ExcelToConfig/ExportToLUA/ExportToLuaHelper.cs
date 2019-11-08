@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class ExportToLuaHelper
 {
     public static void ExportToLua(TableInfo tableInfo)
     {
-       string errorString = null;
+        string errorString = null;
         if (LuaStruct.ExportLuaIsFormat == false)
             LuaStruct.IndentationString = "";
         // 判断是否设置要是否要导出null字段
-        TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_NotExportLuaNil,ref LuaStruct.IsExportLuaNilConfig);
+        TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_NotExportLuaNil, ref LuaStruct.IsExportLuaNilConfig);
 
         //if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(LuaStruct.Excel_Config_NotExportLuaNil))
         //{
@@ -24,7 +21,6 @@ public class ExportToLuaHelper
         //        }
         //    }
         //}
-
 
         // 以下为旧的代码。判断是否设置了特殊导出规则
         if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey("tableExportConfig"))
@@ -54,7 +50,7 @@ public class ExportToLuaHelper
         }
 
         //以下为新的代码
-        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_SpecialExportLua,ref LuaStruct.SpecialExportLuaParams))
+        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_SpecialExportLua, ref LuaStruct.SpecialExportLuaParams))
         {
             // 特殊嵌套导出
             foreach (string param in LuaStruct.SpecialExportLuaParams)
@@ -68,7 +64,7 @@ public class ExportToLuaHelper
             }
         }
 
-        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_ExportLua,ref LuaStruct.IsExportLua))
+        if (TableAnalyzeHelper.GetOneConfigData(tableInfo, LuaStruct.Excel_Config_ExportLua, ref LuaStruct.IsExportLua))
         {
             // 对表格按默认方式导出
             if (LuaStruct.IsExportLua == true)
@@ -92,6 +88,5 @@ public class ExportToLuaHelper
                     AppLog.Log("按默认方式导出lua成功");
             }
         }
-        
     }
 }

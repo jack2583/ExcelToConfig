@@ -1,5 +1,4 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,21 +7,25 @@ public partial class TableExportToLuaHelper
     // 生成lua文件上方字段描述的配置
     // 每行开头的lua注释声明
     private static string _COMMENT_OUT_STRING = "-- ";
+
     // 变量名、数据类型、描述声明之间的间隔字符串
     private static string _DEFINE_INDENTATION_STRING = "   ";
+
     // dict子元素相对于父dict变量名声明的缩进字符串
     private static string _DICT_CHILD_INDENTATION_STRING = "   ";
+
     // 变量名声明所占的最少字符数
     private static int _FIELD_NAME_MIN_LENGTH = 30;
+
     // 数据类型声明所占的最少字符数
     private static int _FIELD_DATA_TYPE_MIN_LENGTH = 30;
 
     public static bool ExportTableToLua(TableInfo tableInfo, out string errorString)
     {
         StringBuilder content = new StringBuilder();
-        
+
         // 生成数据内容开头
-        if(LuaStruct.IsTableNameStart)
+        if (LuaStruct.IsTableNameStart)
         {
             content.Append(tableInfo.TableName).AppendLine(" = {");
         }
@@ -87,7 +90,6 @@ public partial class TableExportToLuaHelper
                     content.Append(oneFieldString);
             }
 
-
             // 一行数据生成完毕后添加右括号结尾等
             --currentLevel;
             content.Append(_GetLuaIndentation(currentLevel));
@@ -111,7 +113,6 @@ public partial class TableExportToLuaHelper
 
                 if (c == '\n' || c == '\r' || c.ToString() == " ")
                 {
-
                 }
                 else
                     stringBuilder2.Append(c);
@@ -123,7 +124,7 @@ public partial class TableExportToLuaHelper
             exportString = _GetColumnInfo(tableInfo) + exportString;
 
         // 保存为lua文件
-        if (SaveLua.SaveLuaFile(tableInfo.ExcelName,ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
+        if (SaveLua.SaveLuaFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
         {
             errorString = null;
             return true;
@@ -135,7 +136,6 @@ public partial class TableExportToLuaHelper
         }
     }
 
-    
     /// <summary>
     /// 生成要在lua文件最上方以注释形式展示的列信息
     /// </summary>
@@ -179,5 +179,4 @@ public partial class TableExportToLuaHelper
 
         return indentationStringBuilder.ToString();
     }
-
 }

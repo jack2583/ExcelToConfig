@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
 
 public partial class TableAnalyzeHelper
 {
@@ -13,36 +8,37 @@ public partial class TableAnalyzeHelper
     /// 解析tableString型数据的定义，将其格式解析为TableStringFormatDefine类，但填写的数据直接以字符串形式存在FieldInfo的Data变量中
     /// </summary>
     private static bool _AnalyzeTableStringType(FieldInfo fieldInfo, TableInfo tableInfo, DataTable dt, int columnIndex, FieldInfo parentField, out int nextFieldColumnIndex, out string errorString)
-{
-    // 检查定义字符串是否合法并转为TableStringFormatDefine的定义结构
-    fieldInfo.TableStringFormatDefine = _GetTableStringFormatDefine(fieldInfo.DataTypeString, out errorString);
-    if (errorString != null)
     {
-        errorString = string.Format("tableString格式定义错误，{0}，你输入的类型定义字符串为{1}", errorString, fieldInfo.DataTypeString);
-        nextFieldColumnIndex = columnIndex + 1;
-        return false;
-    }
-    // 将填写的数据直接以字符串形式存在FieldInfo的Data变量中
-    fieldInfo.Data = new List<object>();
-    for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
-    {
-        // 如果本行该字段的父元素标记为无效则该数据也标为无效
-        if (parentField != null && (bool)parentField.Data[row - ExcelTableSetting.DataFieldDataStartRowIndex] == false)
-            fieldInfo.Data.Add(null);
-        else
+        // 检查定义字符串是否合法并转为TableStringFormatDefine的定义结构
+        fieldInfo.TableStringFormatDefine = _GetTableStringFormatDefine(fieldInfo.DataTypeString, out errorString);
+        if (errorString != null)
         {
-            string inputData = dt.Rows[row][columnIndex].ToString().Trim();
-            if (string.IsNullOrEmpty(inputData))
+            errorString = string.Format("tableString格式定义错误，{0}，你输入的类型定义字符串为{1}", errorString, fieldInfo.DataTypeString);
+            nextFieldColumnIndex = columnIndex + 1;
+            return false;
+        }
+        // 将填写的数据直接以字符串形式存在FieldInfo的Data变量中
+        fieldInfo.Data = new List<object>();
+        for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
+        {
+            // 如果本行该字段的父元素标记为无效则该数据也标为无效
+            if (parentField != null && (bool)parentField.Data[row - ExcelTableSetting.DataFieldDataStartRowIndex] == false)
                 fieldInfo.Data.Add(null);
             else
-                fieldInfo.Data.Add(inputData);
+            {
+                string inputData = dt.Rows[row][columnIndex].ToString().Trim();
+                if (string.IsNullOrEmpty(inputData))
+                    fieldInfo.Data.Add(null);
+                else
+                    fieldInfo.Data.Add(inputData);
+            }
         }
+
+        errorString = null;
+        nextFieldColumnIndex = columnIndex + 1;
+        return true;
     }
 
-    errorString = null;
-    nextFieldColumnIndex = columnIndex + 1;
-    return true;
-}
     private static TableStringFormatDefine _GetTableStringFormatDefine(string dataTypeString, out string errorString)
     {
         TableStringFormatDefine formatDefine = new TableStringFormatDefine();
@@ -279,5 +275,4 @@ public partial class TableAnalyzeHelper
         errorString = null;
         return dataInIndexDefine;
     }
-
 }

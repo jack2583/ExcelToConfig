@@ -127,7 +127,6 @@ public partial class TableCheckHelper
 
                     FieldInfo targetFieldInfo = null;
 
-
                     const string START_STRING2 = "table[";
                     int rightBracketIndex2 = temp.LastIndexOf(']');
                     if (temp.StartsWith(START_STRING2, StringComparison.CurrentCultureIgnoreCase))//如果是以 refStr:table开头则
@@ -175,7 +174,7 @@ public partial class TableCheckHelper
                                 }
                             }
                             // 检查目标字段必须为相同的数据类型
-                            if (targetFieldInfo.DataType==DataType.Int)
+                            if (targetFieldInfo.DataType == DataType.Int)
                             {
                                 DataTypeString = false;
                                 //errorString = string.Format("值引用检查规则声明错误，表格\"{0}\"中通过索引字符串\"{1}\"找到的参考字段的数据类型为{2}，而要检查字段的数据类型为{3}，无法进行不同数据类型字段的引用检查\n", tableName, fieldIndexDefine, targetFieldInfo.DataType.ToString(), fieldInfo.DataType.ToString());
@@ -357,7 +356,6 @@ public partial class TableCheckHelper
                             errorString = null;
                             return true;
                         }
-
                     }
                     errorString = null;
                     return true;

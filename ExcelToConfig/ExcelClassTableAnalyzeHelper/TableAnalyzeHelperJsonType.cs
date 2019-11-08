@@ -1,11 +1,7 @@
-﻿using System;
+﻿using LitJson;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using System.Globalization;
-using LitJson;
+using System.Text;
 
 public partial class TableAnalyzeHelper
 {
@@ -62,5 +58,4 @@ public partial class TableAnalyzeHelper
             return false;
         }
     }
-
 }

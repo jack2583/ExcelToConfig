@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class ExportToTxtHelper
 {
     public static void ExportToTxt(TableInfo tableInfo)
     {
-       string errorString = null;
+        string errorString = null;
 
         // 对表格按默认方式导出
         if (TableAnalyzeHelper.GetOneConfigData(tableInfo, TxtStruct.Excel_Config_ExportTxt, ref TxtStruct.IsExportTxt))

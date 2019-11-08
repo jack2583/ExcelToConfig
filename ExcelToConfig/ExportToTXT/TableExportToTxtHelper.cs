@@ -1,16 +1,12 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
+using System.Text;
 
 public class TableExportToTxtHelper
 {
-
     public static bool ExportTableToTxt(TableInfo tableInfo, out string errorString)
     {
-       
-       
         StringBuilder stringBuilder = new StringBuilder();
 
         // DataTable dt = AppValues.ExcelDataSet[tableInfo.ExcelFilePath].Tables[ExcelTableSetting.ExcelDataSheetName];
@@ -23,23 +19,20 @@ public class TableExportToTxtHelper
                 string str = null;
                 for (int column = 0; column < dt.Columns.Count; ++column)
                 {
-                   
-                    str = str + "{"+column+"}" + TxtStruct.ExportTxtSplitChar;
+                    str = str + "{" + column + "}" + TxtStruct.ExportTxtSplitChar;
                     strList.Add(dt.Rows[row][column].ToString());
                 }
-               
-               
+
                 //for (int column = 0; column < dt.Columns.Count; ++column)
                 //{
-                    
                 //    //str2 = str2 +" \""+ dt.Rows[row][column].ToString()+"\" ," ;
                 //}
                 string[] str2 = strList.ToArray();
-               
+
                 //str2 = str2.Remove(str2.Length - 1);
                 //  str = str.TrimEnd(TxtStruct.ExportTxtSplitChar);
                 // content.Append(str).Append(TxtStruct.ExportTxtLineChar);
-                 content.Append(string.Format(str, str2)).Append(TxtStruct.ExportTxtLineChar);
+                content.Append(string.Format(str, str2)).Append(TxtStruct.ExportTxtLineChar);
                 //content.AppendFormat(str, str2).Append(TxtStruct.ExportTxtLineChar);
             }
             string exportString = content.ToString();
@@ -56,25 +49,24 @@ public class TableExportToTxtHelper
             if (SaveTxt.SaveTxtFile(tableInfo.ExcelName, dt.TableName, exportString) == true)
             {
                 errorString = null;
-               // return true;
+                // return true;
             }
             else
             {
-                errorString =string.Format("{0}的数据表{1}保存为txt文件失败\n",tableInfo.ExcelName,tableInfo.TableConfig);
+                errorString = string.Format("{0}的数据表{1}保存为txt文件失败\n", tableInfo.ExcelName, tableInfo.TableConfig);
                 stringBuilder.Append(errorString);
                 //return false;
             }
         }
-        if(stringBuilder==null)
+        if (stringBuilder == null)
         {
             errorString = null;
             return true;
         }
         else
         {
-
             errorString = stringBuilder.ToString();
-            if(errorString.Length>0)
+            if (errorString.Length > 0)
             {
                 return false;
             }
@@ -83,11 +75,7 @@ public class TableExportToTxtHelper
                 errorString = null;
                 return true;
             }
-                
         }
-        
-
-
     }
 
     /// <summary>
@@ -119,6 +107,4 @@ public class TableExportToTxtHelper
             return false;
         }
     }
-
-
 }

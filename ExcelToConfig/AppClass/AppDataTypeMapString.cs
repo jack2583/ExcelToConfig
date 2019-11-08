@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 /// <summary>
 /// mapString类型的配置信息
@@ -25,8 +21,10 @@ public class MapStringParamInfo
 {
     // 参数名
     public string ParamName { get; set; }
+
     // 参数的数据类型
     public DataType DataType { get; set; }
+
     // 如果此参数是mapString型，存储下属参数信息
     public MapStringInfo MapStringInfo { get; set; }
 }
