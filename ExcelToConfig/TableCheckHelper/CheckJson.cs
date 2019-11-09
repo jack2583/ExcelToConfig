@@ -96,55 +96,129 @@ public partial class TableCheckHelper
             ceilString5 = AppValues.ConfigData[ceilString5];
         }
 
+        
+        CheckType checkTypeceilString=CheckType.Invalid;
+        object[] RulevalueceilString=null;
+        if(GetCheckType(ceilString,ref checkTypeceilString,ref RulevalueceilString,out errorString) ==false)
+        {
+            return false;
+        }
+
+        CheckType checkTypeceilString2 = CheckType.Invalid;
+        object[] RulevalueceilString2 = null;
+        if(ceilString2.Length > 0)
+        {
+            if (GetCheckType(ceilString2, ref checkTypeceilString2, ref RulevalueceilString2, out errorString) == false)
+            {
+                return false;
+            }
+        }
+
+        CheckType checkTypeceilString3 = CheckType.Invalid;
+        object[] RulevalueceilString3 = null;
+        if (ceilString3.Length > 0)
+        {
+            if (GetCheckType(ceilString3, ref checkTypeceilString3, ref RulevalueceilString3, out errorString) == false)
+            {
+                return false;
+            }
+        }
+
+        CheckType checkTypeceilString4 = CheckType.Invalid;
+        object[] RulevalueceilString4 = null;
+        if (ceilString4.Length > 0)
+        {
+            if (GetCheckType(ceilString4, ref checkTypeceilString4, ref RulevalueceilString4, out errorString) == false)
+            {
+                return false;
+            }
+        }
+
+        CheckType checkTypeceilString5 = CheckType.Invalid;
+        object[] RulevalueceilString5 = null;
+        if (ceilString5.Length > 0)
+        {
+            if (GetCheckType(ceilString5, ref checkTypeceilString5, ref RulevalueceilString5, out errorString) == false)
+            {
+                return false;
+            }
+        }
         // 进行检查
         // 存储检查出的非法值（key：数据索引， value：填写值）
         Dictionary<int, object> illegalValue = new Dictionary<int, object>();
-        for (int i = 0; i < fieldInfo.Data.Count; ++i)
+        StringBuilder stringBuilder = new StringBuilder();
+        if (floorString == 1)
         {
-            if (fieldInfo.Data[i] == null)
-                continue;
+            for (int i = 0; i < fieldInfo.Data.Count; ++i)
+            {
+                if (fieldInfo.Data[i] == null)
+                    continue;
+                string fieldInfoDataString = fieldInfo.Data[i].ToString();
+                if (fieldInfoDataString == "[]")
+                    continue;
 
-            if (isNumberDataType == true)
-            {
-                double inputValue = Convert.ToDouble(fieldInfo.Data[i]);
-                if (inputValue < floorValue || inputValue > ceilValue)
-                    illegalValue.Add(i, fieldInfo.Data[i]);
-            }
-            else if (isStringDataType == true)
-            {
-                int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
-                if (lengh < floorValue || lengh > ceilValue)
-                    illegalValue.Add(i, fieldInfo.Data[i]);
+                if (!fieldInfoDataString.StartsWith("["))
+                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 1)));
+
+                if (!fieldInfoDataString.EndsWith("]"))
+                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length - 1, 1)));
+
+                string[] fieldInfoDataStringTemp = temp.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (isStringDataType == true)
+                {
+                    int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
+                    if (lengh < floorValue || lengh > ceilValue)
+                        illegalValue.Add(i, fieldInfo.Data[i]);
+                }
             }
 
-            if (illegalValue.Count > 0)
-            {
-                StringBuilder illegalValueInfo = new StringBuilder();
-                if (isNumberDataType == true || isStringDataType == true)
-                {
-                    foreach (var item in illegalValue)
-                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
-                }
-                else if (fieldInfo.DataType == DataType.Date)
-                {
-                    foreach (var item in illegalValue)
-                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, ((DateTime)(item.Value)).ToString(DateTimeValue.APP_DEFAULT_DATE_FORMAT));
-                }
-                else if (fieldInfo.DataType == DataType.Time)
-                {
-                    foreach (var item in illegalValue)
-                        illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, ((DateTime)(item.Value)).ToString(DateTimeValue.APP_DEFAULT_TIME_FORMAT));
-                }
-
-                errorString = illegalValueInfo.ToString();
-                return false;
-            }
-            else
-            {
-                errorString = null;
-                return true;
-            }
         }
-        return true;
+        if (floorString == 2)
+        {
+            for (int i = 0; i < fieldInfo.Data.Count; ++i)
+            {
+                if (fieldInfo.Data[i] == null)
+                    continue;
+                string fieldInfoDataString = fieldInfo.Data[i].ToString();
+                if (fieldInfoDataString == "[]")
+                    continue;
+
+                if (!fieldInfoDataString.StartsWith("[["))
+                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 2)));
+
+                if (!fieldInfoDataString.EndsWith("]]"))
+                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length-2, 2)));
+
+                if (isStringDataType == true)
+                {
+                    int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
+                    if (lengh < floorValue || lengh > ceilValue)
+                        illegalValue.Add(i, fieldInfo.Data[i]);
+                }
+            }
+
+        }
+
+
+
+        if (illegalValue.Count > 0)
+        {
+            StringBuilder illegalValueInfo = new StringBuilder();
+            if (isNumberDataType == true || isStringDataType == true)
+            {
+                foreach (var item in illegalValue)
+                    illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
+            }
+           
+
+            errorString = illegalValueInfo.ToString();
+            return false;
+        }
+        else
+        {
+            errorString = null;
+            return true;
+        }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using ExcelDataReader;
-//using NPOI.HSSF.UserModel;
-//using NPOI.SS.UserModel;
-//using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -48,7 +45,7 @@ public class ReadExcelHelper
 
         try
         {
-            // 初始化连接并打开
+            // 初始化连接并打开，framework2.0时需要将平台目标改为x86否则会报错
             string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath + ";Extended Properties=\"Excel 12.0;HDR=NO;IMEX=1\"";
 
             conn = new OleDbConnection(connectionString);

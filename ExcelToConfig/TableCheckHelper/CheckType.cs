@@ -2,7 +2,7 @@
 
 public partial class TableCheckHelper
 {
-    public static bool GetCheckType(string checkRuleStr, out CheckType checkType, out string errorString)
+    public static bool GetCheckType(string checkRuleStr, ref CheckType checkType, ref object[] Rulevalue,  out string errorString)
     {
         errorString = null;
         // 规则首位必须为方括号或者圆括号
@@ -58,12 +58,15 @@ public partial class TableCheckHelper
                     }
                 }
             }
+            Rulevalue = new object[] { tableName, fieldIndexDefine };
             return true;
         }
         // 规则末位必须为方括号或者圆括号
         else if (checkRuleStr.StartsWith("["))
         {
             checkType = CheckType.CheckRange;
+            double floorValue = 0;
+            double ceilValue = 0;
             if (checkRuleStr.EndsWith("]"))
             {
                 errorString = "值范围检查规则声明错误：必须用以[2,5]区间的形式进行声明\n";
@@ -82,8 +85,7 @@ public partial class TableCheckHelper
                 }
                 string floorString = floorAndCeilString[0].Trim();
                 string ceilString = floorAndCeilString[1].Trim();
-                double floorValue = 0;
-                double ceilValue = 0;
+
 
                 if (double.TryParse(floorString, out floorValue) == false)
                 {
@@ -96,7 +98,14 @@ public partial class TableCheckHelper
                     errorString = string.Format("值范围检查定义错误：上限不是合法的数字，你输入的为{0}\n", ceilString);
                     return false;
                 }
+
+                if(floorValue> ceilValue)
+                {
+                    errorString = string.Format("值范围检查定义错误：下限应该<=上限，你输入的下限为{0}，上限为{1}\n", floorValue, ceilValue);
+                    return false;
+                }
             }
+            Rulevalue = new object[] { floorValue, ceilValue };
             return true;
         }
         else

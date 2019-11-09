@@ -86,6 +86,15 @@ public class AppValues
     public static bool App_Config_MergeTable = false;
 
     /// <summary>
+    ///App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
+    /// </summary>
+    public const string Public_Config_Error = "Error";
+    /// <summary>
+    /// App全局导出通用配置,是否允许多个excel导出到同一个表中
+    /// </summary>
+    public static bool App_Config_Error = false;
+
+    /// <summary>
     /// 存储每张Excel表格的原始数据（key：文件完整路径）
     /// </summary>
     public static Dictionary<string, System.Data.DataSet> ExcelDataSet = new Dictionary<string, System.Data.DataSet>();

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+//using System.Linq;
 
 public class ExcelFolder
 {
@@ -67,7 +67,7 @@ public class ExcelFolder
     public static Dictionary<string, string> getExportTables(Dictionary<string, List<string>> AllPaths, string[] Part, string[] Except)
     {
         Dictionary<string, string> temp = new Dictionary<string, string>();
-
+        /*
         if (Part != null && Part.Count() > 0)
         {
             foreach (KeyValuePair<string, List<string>> kvp in AllExcelPaths)
@@ -96,6 +96,14 @@ public class ExcelFolder
                 {
                     temp.Add(kvp.Key, kvp.Value[0]);
                 }
+            }
+        }
+        */
+        foreach (KeyValuePair<string, List<string>> kvp in AllExcelPaths)
+        {
+            if (!kvp.Key.StartsWith(ExcelTableSetting.ExcelTempFileFileNameStartString))
+            {
+                temp.Add(kvp.Key, kvp.Value[0]);
             }
         }
         return temp;

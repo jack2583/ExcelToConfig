@@ -35,7 +35,7 @@ public class FileModule
         //如果不存在就进行添加
         AllFileInfos.Add(fileInFokey, new Dictionary<string, List<string>>());
         // string[] filePaths = Directory.GetFiles(pathString, "*." + extension, searchOption);
-        var filePaths = Directory.EnumerateFiles(pathString, "*." + extension, searchOption);
+        var filePaths = Directory.GetFiles(pathString, "*." + extension, searchOption);
         foreach (string filepath in filePaths)
         {
             string filename = Path.GetFileNameWithoutExtension(filepath);

@@ -35,6 +35,11 @@ namespace ExcelToConfig
         {
             try
             {
+                //if(!StringModule.GetDotNetVersion("4.0"))
+                //{
+                //    AppLog.Log("警告：你可能未安装framework4.0，请下载安装：\n"+"https://microsoft-net-framework-3-0.updatestar.com", ConsoleColor.Yellow);
+                //}
+
                 /*↓↓↓↓↓↓↓↓↓读取参数↓↓↓↓↓↓↓↓↓*/
                 //AppLog.Log("检查传入参数...", ConsoleColor.White);
                 if (args.Length < 1)
@@ -145,6 +150,19 @@ namespace ExcelToConfig
                                 else if (kvp.Value.ToLower() == "false")
                                 {
                                     AppValues.App_Config_MergeTable = false;
+                                    break;
+                                }
+                            }
+                            else if (kvp.Key == AppValues.Public_Config_Error)
+                            {
+                                if (kvp.Value.ToLower() == "true")
+                                {
+                                    AppValues.App_Config_Error = true;
+                                    continue;
+                                }
+                                else if (kvp.Value.ToLower() == "false")
+                                {
+                                    AppValues.App_Config_Error = false;
                                     break;
                                 }
                             }
@@ -824,7 +842,10 @@ namespace ExcelToConfig
 #if DEBUG
                 AppLog.LogErrorAndExit(e.ToString());
 #else
-                AppLog.LogErrorAndExit("出现错误，请检查配置表");
+                if(AppValues.App_Config_Error==true)
+                    AppLog.LogErrorAndExit(e.ToString());
+                else
+                    AppLog.LogErrorAndExit("出现错误，请检查配置表");
 #endif
             }
         }
