@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LitJson;
 
 public partial class TableCheckHelper
 {
     /// <summary>
     /// 用于int、long、float或string型取值必须在另一字段（可能还是这张表格也可能跨表）中有对应值的检查
-    /// jsonref:(2|ref:item-id|noCheck|[2,5])
+    /// jsonString:(2|ref:item-id|noCheck|[2,5])
     /// 前面数字为json层数，[]为1，[[]]为2
     /// </summary>
     public static bool CheckJson(FieldInfo fieldInfo, FieldCheckRule checkRule, out string errorString)
@@ -30,11 +31,11 @@ public partial class TableCheckHelper
         DateTime floorDateTime = DateTimeValue.REFERENCE_DATE;
         DateTime ceilDateTime = DateTimeValue.REFERENCE_DATE;
         // 规则首位必须为方括号或者圆括号
-        if (checkRule.CheckRuleString.StartsWith("jsonref:("))
+        if (checkRule.CheckRuleString.StartsWith("jsonString:("))
             isIncludeFloor = true;
         else
         {
-            errorString = "jsonref检查定义错误：必须用jsonref:(开头，以|分割\n";
+            errorString = "jsonref检查定义错误：必须用jsonString:(开头，以|分割\n";
             return false;
         }
         // 规则末位必须为方括号或者圆括号
@@ -46,7 +47,7 @@ public partial class TableCheckHelper
             return false;
         }
         // 去掉首尾的括号
-        string temp = checkRule.CheckRuleString.Substring(9, checkRule.CheckRuleString.Length - 11);
+        string temp = checkRule.CheckRuleString.Substring(12, checkRule.CheckRuleString.Length - 13);
         // 通过英文逗号分隔上下限
         string[] floorAndCeilString = temp.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
         int floorandCeilStrinLength = floorAndCeilString.Length;
@@ -153,23 +154,353 @@ public partial class TableCheckHelper
             {
                 if (fieldInfo.Data[i] == null)
                     continue;
-                string fieldInfoDataString = fieldInfo.Data[i].ToString();
+                string fieldInfoDataString = fieldInfo.JsonString[i];
                 if (fieldInfoDataString == "[]")
                     continue;
 
                 if (!fieldInfoDataString.StartsWith("["))
-                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 1)));
+                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 2)));
 
                 if (!fieldInfoDataString.EndsWith("]"))
-                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length - 1, 1)));
+                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length - 2, 2)));
 
-                string[] fieldInfoDataStringTemp = temp.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (isStringDataType == true)
+                JsonData jsonData = fieldInfo.Data[i] as JsonData;
+                if (jsonData != null)
                 {
-                    int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
-                    if (lengh < floorValue || lengh > ceilValue)
-                        illegalValue.Add(i, fieldInfo.Data[i]);
+                    for (int j = 0; j < jsonData.Count; ++j)
+                    {
+                        JsonData jsonData3 = jsonData[j] as JsonData;
+
+                            if (jsonData3.IsInt == true || jsonData3.IsLong == true || jsonData3.IsDouble == true)
+                            {
+                            switch (checkTypeceilString)
+                            {
+                                case CheckType.CheckRef:
+                                    {
+                                        TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
+                                        FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
+                                        object obj;
+                                        if (jsonData3.IsInt == true)
+                                            obj = int.Parse(jsonData3.ToString());
+                                        else if (jsonData3.IsLong == true)
+                                            obj = Int64.Parse(jsonData3.ToString());
+                                        else
+                                            obj = double.Parse(jsonData3.ToString());
+
+                                        if (!targetFieldInfo.Data.Contains(obj))
+                                        {
+                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                        }
+                                        break;
+                                    }
+                                case CheckType.CheckRange:
+                                    {
+                                        if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
+                                        {
+                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        break;
+                                    }
+                            }
+                            /*
+                            if (j == 0)
+                                {
+                                    switch (checkTypeceilString)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1,  Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 1)
+                                {
+                                    switch (checkTypeceilString2)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString2[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString2[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString2[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString2[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 2)
+                                {
+                                    switch (checkTypeceilString3)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString3[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString3[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString3[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString3[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 3)
+                                {
+                                    switch (checkTypeceilString4)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString4[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString4[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString4[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString4[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1,  Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 4)
+                                {
+                                    switch (checkTypeceilString5)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString5[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString5[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString5[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString5[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                */
+                            }
+                            else if (jsonData.IsString == true)
+                            {
+                                if (j == 0)
+                                {
+                                    switch (checkTypeceilString)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 1)
+                                {
+                                    switch (checkTypeceilString2)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString2[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString2[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 2)
+                                {
+                                    switch (checkTypeceilString3)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString3[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString3[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 3)
+                                {
+                                    switch (checkTypeceilString4)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString4[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString4[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (j == 4)
+                                {
+                                    switch (checkTypeceilString5)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString5[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString5[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                            }
+
+
+                        
+                    }
                 }
             }
 
@@ -180,7 +511,7 @@ public partial class TableCheckHelper
             {
                 if (fieldInfo.Data[i] == null)
                     continue;
-                string fieldInfoDataString = fieldInfo.Data[i].ToString();
+                string fieldInfoDataString = fieldInfo.JsonString[i];
                 if (fieldInfoDataString == "[]")
                     continue;
 
@@ -190,11 +521,310 @@ public partial class TableCheckHelper
                 if (!fieldInfoDataString.EndsWith("]]"))
                     stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length-2, 2)));
 
-                if (isStringDataType == true)
+                JsonData jsonData = fieldInfo.Data[i] as JsonData;
+                if (jsonData != null)
                 {
-                    int lengh = System.Text.Encoding.Default.GetBytes(fieldInfo.Data[i].ToString().ToCharArray()).Length;
-                    if (lengh < floorValue || lengh > ceilValue)
-                        illegalValue.Add(i, fieldInfo.Data[i]);
+                    for(int j=0;j<jsonData.Count;++j)
+                    {
+                        JsonData jsonData2 = jsonData[j] as JsonData;
+                        for (int z=0;z< jsonData2.Count;++z)
+                        {
+                            JsonData jsonData3 = jsonData2[z] as JsonData;
+                            if ( jsonData3.IsInt == true || jsonData3.IsLong == true || jsonData3.IsDouble == true)
+                            {
+                                if (z == 0)
+                                {
+                                    switch (checkTypeceilString)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else 
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if(Double.Parse(jsonData3.ToJson())<(double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6,j+1,z+1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 1)
+                                {
+                                    switch (checkTypeceilString2)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString2[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString2[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString2[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString2[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 2)
+                                {
+                                    switch (checkTypeceilString3)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString3[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString3[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString3[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString3[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 3)
+                                {
+                                    switch (checkTypeceilString4)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString4[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString4[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString4[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString4[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 4)
+                                {
+                                    switch (checkTypeceilString5)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString5[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString5[1].ToString(), targetTableInfo, out errorString);
+                                                object obj;
+                                                if (jsonData3.IsInt == true)
+                                                    obj = int.Parse(jsonData3.ToString());
+                                                else if (jsonData3.IsLong == true)
+                                                    obj = Int64.Parse(jsonData3.ToString());
+                                                else
+                                                    obj = double.Parse(jsonData3.ToString());
+
+                                                if (!targetFieldInfo.Data.Contains(obj))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        case CheckType.CheckRange:
+                                            {
+                                                if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString5[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString5[1])
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                            }
+                            else if(jsonData.IsString == true)
+                            {
+                                if (z == 0)
+                                {
+                                    switch (checkTypeceilString)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 1)
+                                {
+                                    switch (checkTypeceilString2)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString2[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString2[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 2)
+                                {
+                                    switch (checkTypeceilString3)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString3[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString3[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 3)
+                                {
+                                    switch (checkTypeceilString4)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString4[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString4[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                                else if (z == 4)
+                                {
+                                    switch (checkTypeceilString5)
+                                    {
+                                        case CheckType.CheckRef:
+                                            {
+                                                TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString5[0].ToString()];
+                                                FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString5[1].ToString(), targetTableInfo, out errorString);
+
+                                                if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
+                                                {
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                }
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
                 }
             }
 
@@ -202,18 +832,19 @@ public partial class TableCheckHelper
 
 
 
-        if (illegalValue.Count > 0)
+        if (!(stringBuilder==null))
         {
-            StringBuilder illegalValueInfo = new StringBuilder();
-            if (isNumberDataType == true || isStringDataType == true)
+           if(stringBuilder.ToString().Length>0)
             {
-                foreach (var item in illegalValue)
-                    illegalValueInfo.AppendFormat("第{0}行数据\"{1}\"不满足要求\n", item.Key + ExcelTableSetting.DataFieldDataStartRowIndex + 1, item.Value);
+                errorString = stringBuilder.ToString();
+                return false;
             }
-           
-
-            errorString = illegalValueInfo.ToString();
-            return false;
+           else
+            {
+                errorString = null;
+                return true;
+            }
+            
         }
         else
         {

@@ -81,6 +81,13 @@ public partial class TableCheckHelper
             checkRule.CheckRuleString = ruleString;
             oneCheckRule.Add(checkRule);
         }
+        else if (ruleString.StartsWith("jsonString", StringComparison.CurrentCultureIgnoreCase))
+        {
+            FieldCheckRule checkRule = new FieldCheckRule();
+            checkRule.CheckType = TableCheckType.JsonString;
+            checkRule.CheckRuleString = ruleString;
+            oneCheckRule.Add(checkRule);
+        }
         else if (ruleString.StartsWith(">") || ruleString.StartsWith(">="))
         {
             FieldCheckRule checkRule = new FieldCheckRule();

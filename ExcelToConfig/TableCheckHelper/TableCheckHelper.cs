@@ -188,6 +188,11 @@ public partial class TableCheckHelper
                         MapStringCheckHelper.CheckMapString(fieldInfo, checkRule, out errorString);
                         break;
                     }
+                case TableCheckType.JsonString:
+                    {
+                        CheckJson(fieldInfo, checkRule, out errorString);
+                        break;
+                    }
                 case TableCheckType.Func:
                     {
                         CheckFunc(fieldInfo, checkRule, out errorString);
@@ -239,6 +244,7 @@ public enum TableCheckType
     File2,         // 文件存在性检查
     File,         // 文件存在性检查
     MapString,    // mapString类型的内容检查
+    JsonString,
 }
 
 public struct FieldCheckRule

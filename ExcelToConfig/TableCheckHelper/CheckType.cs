@@ -67,9 +67,9 @@ public partial class TableCheckHelper
             checkType = CheckType.CheckRange;
             double floorValue = 0;
             double ceilValue = 0;
-            if (checkRuleStr.EndsWith("]"))
+            if (!checkRuleStr.EndsWith("]"))
             {
-                errorString = "值范围检查规则声明错误：必须用以[2,5]区间的形式进行声明\n";
+                errorString = "值范围检查规则声明错误：必须用以[x,y]区间的形式进行声明\n";
                 return false;
             }
             else
@@ -106,6 +106,11 @@ public partial class TableCheckHelper
                 }
             }
             Rulevalue = new object[] { floorValue, ceilValue };
+            return true;
+        }
+        else if(checkRuleStr.StartsWith("noCheck"))
+        {
+            checkType = CheckType.Invalid;
             return true;
         }
         else
