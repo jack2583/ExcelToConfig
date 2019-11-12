@@ -785,16 +785,16 @@ namespace ExcelToConfig
                     foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                     {
                         TableInfo tableInfo = kvp.Value;
-                        AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.TableName), ConsoleColor.Green);
+                        AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.ExcelName), ConsoleColor.Green);
                         errorString = null;
 
                         TableCheckHelper.CheckTable(tableInfo, out errorString);
                         if (errorString != null)
                         {
-                            AppLog.LogError(string.Format("{0}表格检查存在以下错误：\n{1}", tableInfo.TableName, errorString));
+                            AppLog.LogError(string.Format("检查完成比，存在以下错误：\n{0}",  errorString));
                         }
                         else
-                            AppLog.Log(string.Format("{0}表格检查正确", tableInfo.TableName));
+                            AppLog.Log(string.Format("检查完成比，正确", tableInfo.ExcelName));
                     }
 
                     if (AppLog.LogErrorContent.Length > 0)
@@ -808,7 +808,7 @@ namespace ExcelToConfig
                 foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                 {
                     TableInfo tableInfo = kvp.Value;
-                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.TableName), ConsoleColor.Green);
+                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelName), ConsoleColor.Green);
                     errorString = null;
                     if (AppLanguage.IsMoreLanguage == true && AppLanguage.NeedLanguage != null)
                     {

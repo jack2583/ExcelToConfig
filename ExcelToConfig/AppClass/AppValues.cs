@@ -74,7 +74,7 @@ public class AppValues
     /// <summary>
     /// App全局导出通用配置,读取excel的方式，OleDb 和 ExcelDataReader
     /// </summary>
-    public static string App_Config_ReadExcelType = "ExcelDataReader";
+    public static string App_Config_ReadExcelType = "OleDb";
 
     /// <summary>
     ///App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中

@@ -25,7 +25,7 @@ public partial class TableAnalyzeHelper
         tableInfo.ExcelName = Path.GetFileNameWithoutExtension(filePath);
         tableInfo.TableName = ExcelMethods.GetTableName(tableInfo.ExcelName);
 
-        string tableName = tableInfo.TableName;
+        string tableName = tableInfo.ExcelName;
 
         // 当前解析到的列号
         int curColumnIndex = 0;

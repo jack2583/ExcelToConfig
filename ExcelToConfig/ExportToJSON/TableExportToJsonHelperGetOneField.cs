@@ -634,7 +634,7 @@ public partial class TableExportToJsonHelper
                     return null;
 
                 // json array中不允许null元素
-                if (!"null,".Equals(oneFieldString))
+                if (oneFieldString!=null && (!"null".Equals(oneFieldString)))
                 {
                     content.Append(oneFieldString);
                     hasValidChild = true;
