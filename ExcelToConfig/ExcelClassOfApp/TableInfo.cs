@@ -29,6 +29,15 @@ public class TableInfo
     /// Path.GetDirectoryName(ExcelFilePath)
     /// </summary>
     public string ExcelDirectoryName { get; set; }
+    public string ExcelDirectory { get; set; }
+    public string ExcelNameTips
+    {
+        get
+        {
+            return ExcelDirectory + "/" + TableName;
+        }
+    }
+
 
     /// <summary>
     /// Excel文件的名称含有后缀,
@@ -135,14 +144,16 @@ public class TableInfo
     /// 指定TableInfo与当前TableInfo合并
     /// </summary>
     /// <param name="tableInfoList"></param>
-    public static TableInfo Merge(List<TableInfo> tableInfoList)
+    public static TableInfo Merge(string newTableName, List<TableInfo> tableInfoList,out string errorString)
     {
+        errorString = null;
         TableInfo tableInfo2 = new TableInfo();
         tableInfo2.ExcelFilePath = tableInfoList[0].ExcelFilePath;
         tableInfo2.ExcelName = tableInfoList[0].ExcelName;
-        tableInfo2.TableName = tableInfoList[0].TableName;
-        tableInfo2.TableConfig = tableInfoList[0].TableConfig;
-        tableInfo2.TableConfigData = tableInfoList[0].TableConfigData;
+        tableInfo2.TableName = newTableName;
+        tableInfo2.ExcelDirectory = tableInfoList[0].ExcelDirectory;
+        tableInfo2.TableConfig = null;
+        tableInfo2.TableConfigData = null;// tableInfoList[0].TableConfigData;
 
         FieldInfo fieldInfoTemp;
         List<FieldInfo> allFieldInfo = null;
@@ -242,6 +253,19 @@ public class TableInfo
                     }
                 }
             }
+        }
+
+        // 唯一性检查
+        FieldCheckRule uniqueCheckRule = new FieldCheckRule();
+        uniqueCheckRule.CheckType = TableCheckType.Unique;
+        uniqueCheckRule.CheckRuleString = "unique";
+        TableCheckHelper.CheckUnique(tableInfo2.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
+        if (errorString != null)
+        {
+            //string error = string.Format("表格{0}-{1}中列号为{2}的字段存在以下严重错误，导致无法继续，请修正错误后重试\n", newTableName, "", ExcelMethods.GetExcelColumnName(0 + 1));
+           // errorString = "主键列存在重复错误\n" + errorString;
+            AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败,因为主键{1},{2}", newTableName, tableInfo2.GetKeyColumnFieldInfo().FieldName, errorString));
+            //AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
         }
 
         return tableInfo2;

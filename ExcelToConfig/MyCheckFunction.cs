@@ -10,7 +10,355 @@ using System.Text.RegularExpressions;//先导入这个使用正则表达式
 /// </summary>
 public static class MyCheckFunction
 {
-    public static bool CheckIsChinese(FieldInfo fieldInfo, out string errorString)
+    public static bool CheckItemID5(TableInfo tableInfo, out string errorString)
+    {
+        // 获取检查涉及的字段数据
+        const string itemIdName = "id";
+        const string itemMainTypeName = "main_type";
+        const string itemSubTypeName = "sub_type";
+        const string itemColorName = "color";
+        const string itemLvlName = "item_lvl";
+
+        List<object> itemIdValueList = null;
+        List<object> itemMainTypeValueList = null;
+        List<object> itemSubTypeValueList = null;
+        List<object> itemColorValueList = null;
+        List<object> itemLvlValueList = null;
+
+        //先对以上字段非空检查
+        if (CheckStruct.IsAllowedNullNumber == true)
+        {
+            FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
+            numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
+            numberNotEmptyCheckRule.CheckRuleString = "notEmpty";
+
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemMainTypeName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n",tableInfo.TableName, itemMainTypeName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemSubTypeName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemSubTypeName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemColorName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemColorName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemLvlName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemLvlName, errorString);
+                return false;
+            }
+        }
+
+        //获取字段内容
+        if (tableInfo.GetFieldInfoByFieldName(itemIdName) != null)
+            itemIdValueList = tableInfo.GetFieldInfoByFieldName(itemIdName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n",tableInfo.TableName, itemIdName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemMainTypeName) != null)
+            itemMainTypeValueList = tableInfo.GetFieldInfoByFieldName(itemMainTypeName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemMainTypeName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemSubTypeName) != null)
+            itemSubTypeValueList = tableInfo.GetFieldInfoByFieldName(itemSubTypeName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemSubTypeName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemColorName) != null)
+            itemColorValueList = tableInfo.GetFieldInfoByFieldName(itemColorName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemColorName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemLvlName) != null)
+            itemLvlValueList = tableInfo.GetFieldInfoByFieldName(itemLvlName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemLvlName);
+            return false;
+        }
+
+        //resources-资源表
+        const string resourcesTableName = "resources";
+        const string resourcesIDName = "id";
+        TableInfo tableInfoCheckResources=null;
+        List<object> ResourcesIdValueList = null;
+        if (AppValues.TableInfo.ContainsKey(resourcesTableName))
+        {
+            tableInfoCheckResources = AppValues.TableInfo[resourcesTableName];
+            ResourcesIdValueList = tableInfoCheckResources.GetFieldInfoByFieldName(resourcesIDName).Data;
+        }
+       
+
+        int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
+        StringBuilder errorStringBuilder = new StringBuilder();
+        for (int i = 0; i < dataCount; ++i)
+        {
+            int itemDdValue = (int)itemIdValueList[i];
+            int itemMainTypeValue = (int)itemMainTypeValueList[i];
+            int itemSubTypeValue = (int)itemSubTypeValueList[i];
+            int itemColorValue = (int)itemColorValueList[i];
+            int itemLvlValue = (int)itemLvlValueList[i];
+
+            if(itemMainTypeValue<100 || itemMainTypeValue>999)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[100,999]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemMainTypeName, itemMainTypeValue);
+            }
+
+            if (itemSubTypeValue < 0 || itemSubTypeValue > 99)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,99]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemSubTypeName, itemSubTypeValue);
+            }
+
+            if (itemColorValue < 0 || itemColorValue > 9)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,9]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemColorName, itemColorValue);
+            }
+
+            if (itemLvlValue < 0 || itemLvlValue > 999)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,999]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemLvlName, itemLvlValue);
+            }
+
+            if ((itemDdValue/10000)!= (itemMainTypeValue*100+itemSubTypeValue))
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，前五位应为{3}\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemIdName,itemDdValue,itemMainTypeValue *100+itemSubTypeValue);
+            }
+            if(itemMainTypeValue==100)
+            {
+                if(ResourcesIdValueList!=null)
+                {
+                    if (!ResourcesIdValueList.Contains(itemIdValueList[i]))
+                    {
+                        errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，因为main_type=100的必须要在{3}有对应id\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemIdName, itemDdValue, resourcesTableName);
+                    }
+                }
+            }
+
+        }
+
+        string lackDataErrorString = errorStringBuilder.ToString();
+        if (string.IsNullOrEmpty(lackDataErrorString))
+        {
+            errorString = null;
+            return true;
+        }
+        else
+        {
+            errorString = string.Format("{0}表中存在以下配置缺失:\n{1}\n",tableInfo.TableName, lackDataErrorString);
+            return false;
+        }
+
+    }
+    public static bool CheckItemID(TableInfo tableInfo, out string errorString)
+    {
+        // 获取检查涉及的字段数据
+        const string itemIdName = "id";
+        const string itemMainTypeName = "main_type";
+        const string itemSubTypeName = "sub_type";
+        const string itemColorName = "color";
+        const string itemLvlName = "item_lvl";
+        const string itemTypeName = "type";
+
+        List<object> itemIdValueList = null;
+        List<object> itemMainTypeValueList = null;
+        List<object> itemSubTypeValueList = null;
+        List<object> itemColorValueList = null;
+        List<object> itemLvlValueList = null;
+        List<object> itemTypeValueList = null;
+
+        //先对以上字段非空检查
+        if (CheckStruct.IsAllowedNullNumber == true)
+        {
+            FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
+            numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
+            numberNotEmptyCheckRule.CheckRuleString = "notEmpty";
+
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemMainTypeName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemMainTypeName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemSubTypeName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemSubTypeName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemColorName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemColorName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemLvlName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemLvlName, errorString);
+                return false;
+            }
+            TableCheckHelper.CheckNotEmpty(tableInfo.GetFieldInfoByFieldName(itemTypeName), numberNotEmptyCheckRule, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("{0}表中{1}字段中{2}\n", tableInfo.TableName, itemTypeName, errorString);
+                return false;
+            }
+        }
+
+        //获取字段内容
+        if (tableInfo.GetFieldInfoByFieldName(itemIdName) != null)
+            itemIdValueList = tableInfo.GetFieldInfoByFieldName(itemIdName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemIdName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemMainTypeName) != null)
+            itemMainTypeValueList = tableInfo.GetFieldInfoByFieldName(itemMainTypeName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemMainTypeName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemSubTypeName) != null)
+            itemSubTypeValueList = tableInfo.GetFieldInfoByFieldName(itemSubTypeName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemSubTypeName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemColorName) != null)
+            itemColorValueList = tableInfo.GetFieldInfoByFieldName(itemColorName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemColorName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemLvlName) != null)
+            itemLvlValueList = tableInfo.GetFieldInfoByFieldName(itemLvlName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemLvlName);
+            return false;
+        }
+        if (tableInfo.GetFieldInfoByFieldName(itemTypeName) != null)
+            itemTypeValueList = tableInfo.GetFieldInfoByFieldName(itemTypeName).Data;
+        else
+        {
+            errorString = string.Format("\"{0}\"表中找不到名为\"{1}\"的字段，无法进行整表检查，请修正后重试\n", tableInfo.TableName, itemTypeName);
+            return false;
+        }
+
+        //resources-资源表
+        const string resourcesTableName = "resources";
+        const string resourcesIDName = "id";
+        TableInfo tableInfoCheckResources = null;
+        List<object> ResourcesIdValueList = null;
+        if (AppValues.TableInfo.ContainsKey(resourcesTableName))
+        {
+            tableInfoCheckResources = AppValues.TableInfo[resourcesTableName];
+            if (tableInfoCheckResources.GetFieldInfoByFieldName(resourcesIDName) != null)
+                ResourcesIdValueList = tableInfoCheckResources.GetFieldInfoByFieldName(resourcesIDName).Data;
+        }
+        //resources-背包表
+        const string packageTableName = "package";
+        const string packageIDName = "package";
+        TableInfo tableInfoCheckPackage = null;
+        List<object> packageIdValueList = null;
+        if (AppValues.TableInfo.ContainsKey(packageTableName))
+        {
+            tableInfoCheckPackage = AppValues.TableInfo[packageTableName];
+            if (tableInfoCheckPackage.GetFieldInfoByFieldName(packageIDName) != null)
+                packageIdValueList = tableInfoCheckPackage.GetFieldInfoByFieldName(packageIDName).Data;
+        }
+
+        int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
+        StringBuilder errorStringBuilder = new StringBuilder();
+        for (int i = 0; i < dataCount; ++i)
+        {
+            int itemIdValue = (int)itemIdValueList[i];
+            int itemMainTypeValue = (int)itemMainTypeValueList[i];
+            int itemSubTypeValue = (int)itemSubTypeValueList[i];
+            int itemColorValue = (int)itemColorValueList[i];
+            int itemLvlValue = (int)itemLvlValueList[i];
+            int itemTypeValue = (int)itemTypeValueList[i];
+
+            if (itemMainTypeValue < 100 || itemMainTypeValue > 999)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[100,999]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemMainTypeName, itemMainTypeValue);
+            }
+
+            if (itemSubTypeValue < 0 || itemSubTypeValue > 99)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,99]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemSubTypeName, itemSubTypeValue);
+            }
+
+            if (itemColorValue < 0 || itemColorValue > 9)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,9]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemColorName, itemColorValue);
+            }
+
+            if (itemLvlValue < 0 || itemLvlValue > 999)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，值范围应在[0,999]之间\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemLvlName, itemLvlValue);
+            }
+            int readid = itemMainTypeValue * 1000000 + itemSubTypeValue * 10000 + itemColorValue * 1000 + itemLvlValue;
+            if (itemIdValue  != readid)
+            {
+                errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，应为{3}\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemIdName, itemIdValue, readid);
+            }
+            if (itemMainTypeValue == 100)
+            {
+                if (ResourcesIdValueList != null)
+                {
+                    if (!ResourcesIdValueList.Contains(itemIdValueList[i]))
+                    {
+                        errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，因为main_type=100的必须要在{3}有对应id\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemIdName, itemIdValue, resourcesTableName);
+                    }
+                }
+            }
+            if (packageIdValueList != null)
+            {
+                if (!packageIdValueList.Contains(itemTypeValueList[i]))
+                {
+                    errorStringBuilder.AppendFormat("第{0}行字段{1}值{2}不符合要求，因为type字段的值必须要在{3}有对应id\n", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, itemTypeName, itemTypeValue, packageTableName);
+                }
+            }
+        }
+
+        string lackDataErrorString = errorStringBuilder.ToString();
+        if (string.IsNullOrEmpty(lackDataErrorString))
+        {
+            errorString = null;
+            return true;
+        }
+        else
+        {
+            errorString = string.Format("{0}表中存在以下配置缺失:\n{1}\n", tableInfo.TableName, lackDataErrorString);
+            return false;
+        }
+
+    }
+
+  public static bool CheckIsChinese(FieldInfo fieldInfo, out string errorString)
     {
         errorString = null;
         if (fieldInfo.DataType == DataType.String)

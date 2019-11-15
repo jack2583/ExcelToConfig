@@ -27,6 +27,11 @@ public partial class TableAnalyzeHelper
 
         string tableName = tableInfo.ExcelName;
 
+        string temps = Path.GetDirectoryName(filePath);
+        int tempi = temps.LastIndexOf(@"\");
+        string temps2= temps.Substring(tempi, temps.Length - tempi) ;
+        tableInfo.ExcelDirectory = temps2.Substring(1);
+
         // 当前解析到的列号
         int curColumnIndex = 0;
 
@@ -238,7 +243,7 @@ public partial class TableAnalyzeHelper
                             // 如果有表格配置进行解析
                             if (ds.Tables[ExcelTableSetting.ExcelConfigSheetName] != null)
                             {
-                                AppLog.Log("    解析config配置...", ConsoleColor.Green);
+                               // AppLog.Log("    解析config配置...", ConsoleColor.Green);
                                 tableInfo.TableConfig = GetTableConfigOfFirstColumn(ds.Tables[ExcelTableSetting.ExcelConfigSheetName], out errorString);
                                 if (!string.IsNullOrEmpty(errorString))
                                 {
@@ -263,17 +268,18 @@ public partial class TableAnalyzeHelper
                 }
                 else if (tbNum > 1)
                 {
-                    tableInfo2 = TableInfo.Merge(AppValues.TableInfoList[tableName]);
+                    tableInfo2 = TableInfo.Merge(tableName,AppValues.TableInfoList[tableName],out errorString);
                     // 唯一性检查
-                    FieldCheckRule uniqueCheckRule = new FieldCheckRule();
-                    uniqueCheckRule.CheckType = TableCheckType.Unique;
-                    uniqueCheckRule.CheckRuleString = "unique";
-                    TableCheckHelper.CheckUnique(tableInfo2.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
-                    if (errorString != null)
-                    {
-                        errorString = _GetTableAnalyzeErrorString(tableName, "", 0) + "主键列存在重复错误\n" + errorString;
-                        AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败\n{1}", tableName, errorString));
-                    }
+                    //FieldCheckRule uniqueCheckRule = new FieldCheckRule();
+                    //uniqueCheckRule.CheckType = TableCheckType.Unique;
+                    //uniqueCheckRule.CheckRuleString = "unique";
+                    //TableCheckHelper.CheckUnique(tableInfo2.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
+                    //if (errorString != null)
+                    //{
+                       
+                    //    errorString = _GetTableAnalyzeErrorString(tableName, "", 0) + "主键列存在重复错误\n" + errorString;
+                    //    AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败\n{1}", tableName, errorString));
+                    //}
 
                     AppValues.TableInfo.Add(tableName, tableInfo2);
                 }
@@ -283,22 +289,14 @@ public partial class TableAnalyzeHelper
                         AppValues.TableInfo.Add(tableName, AppValues.TableInfoList[tableName][0]);
                     else
                     {
-                       if( AppValues.App_Config_MergeTable==false)
-                            AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
-                       else
-                        {
-                            AppValues.TableInfo[tableName] = TableInfo.Merge(AppValues.TableInfoList[tableName]);
-                            // 唯一性检查
-                            FieldCheckRule uniqueCheckRule = new FieldCheckRule();
-                            uniqueCheckRule.CheckType = TableCheckType.Unique;
-                            uniqueCheckRule.CheckRuleString = "unique";
-                            TableCheckHelper.CheckUnique(AppValues.TableInfo[tableName].GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
-                            if (errorString != null)
-                            {
-                                errorString = _GetTableAnalyzeErrorString(tableName, "", 0) + "主键列存在重复错误\n" + errorString;
-                                AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
-                            }
-                        }
+                        AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
+                       // if ( AppValues.App_Config_MergeTable==false)
+                       //     AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格，请检查配置\n", tableName));
+                       //else
+                       // {
+                       //     AppValues.TableInfo[tableName] = TableInfo.Merge(tableName,AppValues.TableInfoList[tableName],out errorString);
+
+                       // }
                     }
                 }
 

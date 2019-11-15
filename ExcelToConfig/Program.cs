@@ -140,19 +140,6 @@ namespace ExcelToConfig
                                     AppValues.App_Config_ReadExcelType = kvptemp;
                                 continue;
                             }
-                            else if (kvp.Key == AppValues.Public_Config_MergeTable)
-                            {
-                                if (kvp.Value.ToLower() == "true")
-                                {
-                                    AppValues.App_Config_MergeTable = true;
-                                    continue;
-                                }
-                                else if (kvp.Value.ToLower() == "false")
-                                {
-                                    AppValues.App_Config_MergeTable = false;
-                                    break;
-                                }
-                            }
                             else if (kvp.Key == AppValues.Public_Config_Error)
                             {
                                 if (kvp.Value.ToLower() == "true")
@@ -675,6 +662,35 @@ namespace ExcelToConfig
                             }
                         }
                     }
+                    else if (paramName == AppValues.Public_Config_MergeTable)
+                    {
+                        foreach (KeyValuePair<string, string> kvp in param2)
+                        {
+                            if (kvp.Key == AppValues.Public_Config_IsExport)
+                            {
+                                if (kvp.Value.ToLower() == "true")
+                                    AppValues.IsMerge = true;
+                                else
+                                {
+                                    AppValues.IsMerge = false;
+                                    break;
+                                }
+                            }
+                            else 
+                            {
+                                if(!AppValues.MergeList.ContainsKey(kvp.Key))
+                                {
+                                    if (kvp.Value.ToLower() != "null")
+                                    {
+                                        string[] tempst = BatData.GetParam3(kvp.Value);
+                 
+                                        AppValues.MergeList.Add(kvp.Key, tempst);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
                 }
 
                 /*↑↑↑↑↑↑↑↑↑读取参数↑↑↑↑↑↑↑↑↑*/
@@ -779,13 +795,45 @@ namespace ExcelToConfig
                 TableAnalyzeHelper.AnalyzeAllTable(ExcelFolder.ExportTables);
 
                 AppLanguage.CreateLanguageDictFile();
+
+                //合并表格
+                if(AppValues.IsMerge==true)
+                {
+                    foreach(KeyValuePair<string,string[]> kvp in AppValues.MergeList)
+                    {
+                        if (!AppValues.MergeTableList.ContainsKey(kvp.Key))
+                            AppValues.MergeTableList.Add(kvp.Key, new List<TableInfo>());
+                        foreach (string s in kvp.Value)
+                        {
+                            if(AppValues.TableInfo.ContainsKey(s))
+                            {
+                                if (!AppValues.MergeTableList[kvp.Key].Contains(AppValues.TableInfo[s]))
+                                {
+                                    AppValues.MergeTableList[kvp.Key].Add(AppValues.TableInfo[s]);
+                                }
+                                AppValues.MergerTableName.Add(s);
+                            }
+                        }
+                    }
+
+                    foreach(KeyValuePair<string,List<TableInfo>> kvp in AppValues.MergeTableList)
+                    {
+                        TableInfo tableInfo = TableInfo.Merge(kvp.Key, kvp.Value, out errorString);
+                        AppValues.TableInfo.Add(kvp.Key, tableInfo);
+                    }
+                    
+                }
+
                 //检查表格
                 if (CheckStruct.IsNeedCheck == true)
                 {
                     foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                     {
+                        if (AppValues.MergeTableList.ContainsKey(kvp.Key))
+                            continue;
+
                         TableInfo tableInfo = kvp.Value;
-                        AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.ExcelName), ConsoleColor.Green);
+                        AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
                         errorString = null;
 
                         TableCheckHelper.CheckTable(tableInfo, out errorString);
@@ -794,7 +842,7 @@ namespace ExcelToConfig
                             AppLog.LogError(string.Format("检查完成比，存在以下错误：\n{0}",  errorString));
                         }
                         else
-                            AppLog.Log(string.Format("检查完成比，正确", tableInfo.ExcelName));
+                            AppLog.Log("检查完成比，正确");
                     }
 
                     if (AppLog.LogErrorContent.Length > 0)
@@ -807,8 +855,10 @@ namespace ExcelToConfig
                 //开始导出 AppValues.TableInfo
                 foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                 {
+
+
                     TableInfo tableInfo = kvp.Value;
-                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelName), ConsoleColor.Green);
+                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
                     errorString = null;
                     if (AppLanguage.IsMoreLanguage == true && AppLanguage.NeedLanguage != null)
                     {
@@ -821,12 +871,13 @@ namespace ExcelToConfig
                             }
                         }
                     }
+                    ExportToTxtHelper.ExportToTxt(tableInfo);
+                    if (AppValues.MergerTableName.Contains(kvp.Key))
+                        continue;
 
                     ExportToLuaHelper.ExportToLua(tableInfo);
 
                     ExportToJsonHelper.ExportToJson(tableInfo);
-
-                    ExportToTxtHelper.ExportToTxt(tableInfo);
 
                     ExportToErlangHelper.ExportToErlang(tableInfo);
                 }

@@ -77,14 +77,26 @@ public class AppValues
     public static string App_Config_ReadExcelType = "OleDb";
 
     /// <summary>
-    ///App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
+    ///App全局导出通用配置，bat脚本:合并导出相关
     /// </summary>
     public const string Public_Config_MergeTable = "MergeTable";
     /// <summary>
+    /// App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
+    /// </summary>
+    public const string Public_Config_IsExport = "IsMerge";
+    /// <summary>
     /// App全局导出通用配置,是否允许多个excel导出到同一个表中
     /// </summary>
-    public static bool App_Config_MergeTable = false;
-
+    public static bool IsMerge = false;
+    /// <summary>
+    ///  App全局导出通用配置,key=合并导出的tablename,list要合并的哪些表（不带中文）
+    /// </summary>
+    public static Dictionary<string, string[]> MergeList = new Dictionary<string, string[]>();
+    public static Dictionary<string, List<TableInfo>> MergeTableList = new Dictionary<string, List<TableInfo>>();
+    /// <summary>
+    /// 合并过的表格不导出
+    /// </summary>
+    public static List<string> MergerTableName = new List<string>();
     /// <summary>
     ///App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
     /// </summary>
