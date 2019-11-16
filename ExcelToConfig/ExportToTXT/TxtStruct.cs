@@ -57,6 +57,14 @@ public struct TxtStruct
     /// 是否在生成的文件名前加上前缀，如：cfg_
     /// </summary>
     public static string ExportNameBeforeAdd = "";
+    /// <summary>
+    /// App全局导出通用配置，bat脚本:是否config配置
+    /// </summary>
+    public const string Public_Config_IsExportConfig = "IsExportConfig";
+    /// <summary>
+    /// App全局导出通用配置,是否允是否config配置
+    /// </summary>
+    public static bool IsExportConfig = false;
 
     /// <summary>
     /// 某个Excel表的配置：声明对某张表格是否需要常规导出Txt的参数配置

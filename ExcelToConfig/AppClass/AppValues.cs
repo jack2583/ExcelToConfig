@@ -88,6 +88,8 @@ public class AppValues
     /// App全局导出通用配置,是否允许多个excel导出到同一个表中
     /// </summary>
     public static bool IsMerge = false;
+
+
     /// <summary>
     ///  App全局导出通用配置,key=合并导出的tablename,list要合并的哪些表（不带中文）
     /// </summary>

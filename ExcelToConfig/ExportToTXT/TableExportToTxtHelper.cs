@@ -12,6 +12,9 @@ public class TableExportToTxtHelper
         // DataTable dt = AppValues.ExcelDataSet[tableInfo.ExcelFilePath].Tables[ExcelTableSetting.ExcelDataSheetName];
         foreach (DataTable dt in AppValues.ExcelDataSet[tableInfo.ExcelFilePath].Tables)
         {
+            if (dt.TableName == "config$" && TxtStruct.IsExportConfig==false)
+                continue;
+
             StringBuilder content = new StringBuilder();
             for (int row = 0; row < dt.Rows.Count; ++row)
             {

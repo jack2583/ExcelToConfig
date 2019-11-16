@@ -7,3 +7,5 @@
 /packages/Newtonsoft.Json.12.0.2
 /ExcelToConfig/obj
 /packages
+/ExcelToConfig/ExcelOperateHelper.cs
+/ExcelToConfig/ExportToExcel

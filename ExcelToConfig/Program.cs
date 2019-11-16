@@ -815,13 +815,14 @@ namespace ExcelToConfig
                             }
                         }
                     }
-
-                    foreach(KeyValuePair<string,List<TableInfo>> kvp in AppValues.MergeTableList)
+                    foreach (KeyValuePair<string, List<TableInfo>> kvp in AppValues.MergeTableList)
                     {
-                        TableInfo tableInfo = TableInfo.Merge(kvp.Key, kvp.Value, out errorString);
-                        AppValues.TableInfo.Add(kvp.Key, tableInfo);
+                        if(kvp.Value.Count>0)
+                        {
+                            TableInfo tableInfo = TableInfo.Merge(kvp.Key, kvp.Value, out errorString);
+                            AppValues.TableInfo.Add(kvp.Key, tableInfo);
+                        }
                     }
-                    
                 }
 
                 //检查表格
