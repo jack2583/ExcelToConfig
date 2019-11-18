@@ -6,6 +6,16 @@ public class ExportToTxtHelper
     {
         string errorString = null;
 
+        if(AppValues.MergeTableList.ContainsKey(tableInfo.TableName))
+        {
+            TableExportToTxtHelper.ExportTableToTxt2(tableInfo, out errorString);
+            if (errorString != null)
+                AppLog.LogErrorAndExit(errorString);
+            else
+                AppLog.Log("合并表导出txt成功");
+            return;
+        }
+
         // 对表格按默认方式导出
         if (TableAnalyzeHelper.GetOneConfigData(tableInfo, TxtStruct.Excel_Config_ExportTxt, ref TxtStruct.IsExportTxt))
         {

@@ -859,7 +859,7 @@ namespace ExcelToConfig
 
 
                     TableInfo tableInfo = kvp.Value;
-                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
+                    
                     errorString = null;
                     if (AppLanguage.IsMoreLanguage == true && AppLanguage.NeedLanguage != null)
                     {
@@ -872,9 +872,16 @@ namespace ExcelToConfig
                             }
                         }
                     }
-                    ExportToTxtHelper.ExportToTxt(tableInfo);
+                   
                     if (AppValues.MergerTableName.Contains(kvp.Key))
+                    {
                         continue;
+                    }
+                    else
+                    {
+                        AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
+                        ExportToTxtHelper.ExportToTxt(tableInfo);
+                    }
 
                     ExportToLuaHelper.ExportToLua(tableInfo);
 

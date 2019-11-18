@@ -128,6 +128,7 @@
     <Compile Include="ExportToTXT\ExportToTxtHelper.cs" />
     <Compile Include="ExportToTXT\SaveTxt.cs" />
     <Compile Include="ExportToTXT\TableExportToTxtHelper.cs" />
+    <Compile Include="ExportToTXT\TableExportToTxtHelperGetOneField.cs" />
     <Compile Include="ExportToTXT\TxtStruct.cs" />
     <Compile Include="MyCheckFunction.cs" />
     <Compile Include="Program.cs" />
