@@ -187,6 +187,8 @@ public partial class TableCheckHelper
                                         else
                                             obj = double.Parse(jsonData3.ToString());
 
+                                        if ((int)obj == 0)
+                                            break;
                                         if (!targetFieldInfo.Data.Contains(obj))
                                         {
                                             stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
@@ -548,6 +550,9 @@ public partial class TableCheckHelper
                                                 else 
                                                     obj = double.Parse(jsonData3.ToString());
 
+                                                if ((int)obj == 0)
+                                                    break;
+
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
                                                     stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
@@ -583,6 +588,9 @@ public partial class TableCheckHelper
                                                     obj = Int64.Parse(jsonData3.ToString());
                                                 else
                                                     obj = double.Parse(jsonData3.ToString());
+
+                                                if ((int)obj == 0)
+                                                    break;
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
@@ -620,6 +628,9 @@ public partial class TableCheckHelper
                                                 else
                                                     obj = double.Parse(jsonData3.ToString());
 
+                                                if ((int)obj == 0)
+                                                    break;
+
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
                                                     stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
@@ -656,6 +667,9 @@ public partial class TableCheckHelper
                                                 else
                                                     obj = double.Parse(jsonData3.ToString());
 
+                                                if ((int)obj == 0)
+                                                    break;
+
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
                                                     stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
@@ -691,6 +705,9 @@ public partial class TableCheckHelper
                                                     obj = Int64.Parse(jsonData3.ToString());
                                                 else
                                                     obj = double.Parse(jsonData3.ToString());
+
+                                                if ((int)obj == 0)
+                                                    break;
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
