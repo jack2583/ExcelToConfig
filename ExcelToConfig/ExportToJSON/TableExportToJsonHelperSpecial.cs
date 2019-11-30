@@ -62,6 +62,14 @@ public partial class TableExportToJsonHelper
         if (SaveJson.SaveJsonFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(fileName), exportString) == true)
         {
             errorString = null;
+            try
+            {
+                LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(exportString);
+            }
+            catch (LitJson.JsonException exception)
+            {
+                errorString = "警告：导出json出现异常，请检查导出的json及Excel\n";
+            }
             return true;
         }
         else
@@ -86,6 +94,12 @@ public partial class TableExportToJsonHelper
 
             // content.Append(_GetJsonIndentation(currentLevel));
             // 生成key
+            //if(key==null | key.ToString()=="")
+            //{
+            //    errorString = "错误：嵌套导出的key不能为空！";
+            //    AppLog.LogErrorAndExit(errorString);
+            //    return;
+            //}
             if (key.GetType() == typeof(int) || key.GetType() == typeof(long) || key.GetType() == typeof(float))
                 content.Append("\"").Append(key).Append("\"");
             else if (key.GetType() == typeof(string))
@@ -127,6 +141,9 @@ public partial class TableExportToJsonHelper
                     {
                         if (oneTableValueFieldData == null)
                         {
+                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), "嵌套导出的值不能为空");
+                            //AppLog.LogErrorAndExit(errorString);
+                            //return;
                             content.Append("\"").Append(fieldInfo.FieldName).Append("\"");
                             content.Append(":");
                             switch (fieldInfo.DataType)
@@ -140,7 +157,7 @@ public partial class TableExportToJsonHelper
                                     }
                                 case DataType.String:
                                     {
-                                        content.Append(@"""").Append(",");
+                                        content.Append("\"\"").Append(",");
                                         break;
                                     }
                                 case DataType.Bool:
@@ -163,7 +180,8 @@ public partial class TableExportToJsonHelper
                     }
                 }
                 // 去掉最后一个子元素后多余的英文逗号
-                content.Remove(content.Length - 1, 1);
+                if(content.ToString().EndsWith(","))
+                    content.Remove(content.Length - 1, 1);
             }
             // 否则继续递归生成索引key
             else
@@ -175,7 +193,8 @@ public partial class TableExportToJsonHelper
                 if (errorString != null)
                     return;
 
-                content.Remove(content.Length - 1, 1);
+                if (content.ToString().EndsWith(","))
+                    content.Remove(content.Length - 1, 1);
                 //content.Append(",");
             }
 

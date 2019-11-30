@@ -11,7 +11,7 @@ namespace ExcelToConfig
         //第2个以后参数可选参数
         /*
          * 公共参数格式：PublicSetting(是否包含子目录=true|是否充许数字型为空=true|是否需要检查=false|ClientPath=)
-         * 公共参数格式：PublicSetting(IsIncludeSubfolder=true|IsAllowedNullNumber=true|IsNeedCheck=false|IsCopy=false|CopyBatName=copy.bat)
+         * 公共参数格式：PublicSetting(IsIncludeSubfolder=true|IsAllowedNullNumber=true|IsNeedCheck=false)
          * 多语言：MoreLanguage(IsMoreLanguage=false|NeedLanguage=_ft|OtherLanguage=_yn,_English|IsAddSaveType=false|IsGetSourceTextFile=false)
          * lang参数：Lang(IsLang=true|LangPath=lang.txt|IsLangNull=false)
          * config参数：Config(ConfigPat=config.txt)
@@ -27,7 +27,7 @@ namespace ExcelToConfig
          * 导出erlang参数格式：ExportErlang(IsExport=true|ExportPath=Save/Erl|IsExportKeepDirectoryStructure=true|IsFormat=true|ExportNameBeforeAdd=tb_)
          * 导出hrl参数格式：ExportHrl(IsExport=true|ExportPath=Save/hrl|IsExportKeepDirectoryStructure=true|ExportNameBeforeAdd=tb_)
          * 导出luafile参数格式：ExportLuaFile(IsExport=true|ExportPath=Save/luafile|IsExportKeepDirectoryStructure=true)
-         * 导出sqvn参数格式：Svn(SvnPath=|IsUpdateSvn=false|UpdateSvnCloseonend=2|IsCommitSvn=false|CommitSvnCloseonend=0)
+
          * AppLog参数格式：AppLog(IsPrintLog=true|IsPrintLogWarning=true|IsPrintLogError=true|IsSaveLog=true|IsSaveLogWarning=true|IsSaveLogError=true)
          */
 
@@ -108,24 +108,6 @@ namespace ExcelToConfig
 
                                 continue;
                             }
-                            else if (kvp.Key == AppValues.Public_Config_IsCopy)
-                            {
-                                if (kvp.Value.ToLower() == "true")
-                                {
-                                    AppValues.App_Config_IsCopy = true;
-                                    continue;
-                                }
-                                else if (kvp.Value.ToLower() == "false")
-                                {
-                                    AppValues.App_Config_IsCopy = false;
-                                    break;
-                                }
-                            }
-                            else if (kvp.Key == AppValues.Public_Config_CopyBatName)
-                            {
-                                AppValues.App_Config_CopyBatName = kvp.Value;
-                                continue;
-                            }
                             else if (kvp.Key == AppValues.Public_Config_ClientPath)
                             {
                                 AppValues.App_Config_ClientPath = Path.GetFullPath(kvp.Value);
@@ -133,8 +115,8 @@ namespace ExcelToConfig
                             }
                             else if (kvp.Key == AppValues.Public_Config_ReadExcelType)
                             {
-                                string kvptemp= kvp.Value;
-                                if(kvptemp== "ExcelDataReader")
+                                string kvptemp = kvp.Value;
+                                if (kvptemp == "ExcelDataReader")
                                     AppValues.App_Config_ReadExcelType = kvptemp;
                                 if (kvptemp == "OleDb")
                                     AppValues.App_Config_ReadExcelType = kvptemp;
@@ -539,39 +521,6 @@ namespace ExcelToConfig
                             }
                         }
                     }
-                    //公共Svn设置
-                    else if (paramName == SvnStruct.Public_Config_Svn)
-                    {
-                        foreach (KeyValuePair<string, string> kvp in param2)
-                        {
-                            if (kvp.Key == SvnStruct.Public_Config_SvnPath)
-                            {
-                                SvnStruct.SvnPath = Path.GetFullPath(kvp.Value);
-                            }
-                            else if (kvp.Key == SvnStruct.Public_Config_IsUpdateSvn)
-                            {
-                                if (kvp.Value.ToLower() == "false")
-                                    SvnStruct.IsUpdateSvn = false;
-                                else
-                                    continue;
-                            }
-                            else if (kvp.Key == SvnStruct.Public_Config_UpdateSvnCloseonend)
-                            {
-                                SvnStruct.UpdateSvnCloseonend = int.Parse(kvp.Value);
-                            }
-                            else if (kvp.Key == SvnStruct.Public_Config_IsCommitSvn)
-                            {
-                                if (kvp.Value.ToLower() == "false")
-                                    SvnStruct.IsCommitSvn = false;
-                                else
-                                    continue;
-                            }
-                            else if (kvp.Key == SvnStruct.Public_Config_CommitSvnCloseonend)
-                            {
-                                SvnStruct.CommitSvnCloseonend = int.Parse(kvp.Value);
-                            }
-                        }
-                    }
                     //AppLog设置
                     else if (paramName == AppLog.Public_Config_AppLog)
                     {
@@ -676,30 +625,25 @@ namespace ExcelToConfig
                                     break;
                                 }
                             }
-                            else 
+                            else
                             {
-                                if(!AppValues.MergeList.ContainsKey(kvp.Key))
+                                if (!AppValues.MergeList.ContainsKey(kvp.Key))
                                 {
                                     if (kvp.Value.ToLower() != "null")
                                     {
                                         string[] tempst = BatData.GetParam3(kvp.Value);
-                 
+
                                         AppValues.MergeList.Add(kvp.Key, tempst);
                                     }
                                 }
                             }
                         }
-
                     }
                 }
 
                 /*↑↑↑↑↑↑↑↑↑读取参数↑↑↑↑↑↑↑↑↑*/
 
                 /*↓↓↓↓↓↓↓↓↓公共参数设定↓↓↓↓↓↓↓↓↓*/
-
-                //判断是否更新SVN
-                if (SvnStruct.IsUpdateSvn)
-                    SVN.UpdateSvnDirectory(SvnStruct.SvnPath, SvnStruct.UpdateSvnCloseonend);
 
                 //解析Config。txt数据
                 if (File.Exists(AppValues.ConfigPath))
@@ -797,15 +741,15 @@ namespace ExcelToConfig
                 AppLanguage.CreateLanguageDictFile();
 
                 //合并表格
-                if(AppValues.IsMerge==true)
+                if (AppValues.IsMerge == true)
                 {
-                    foreach(KeyValuePair<string,string[]> kvp in AppValues.MergeList)
+                    foreach (KeyValuePair<string, string[]> kvp in AppValues.MergeList)
                     {
                         if (!AppValues.MergeTableList.ContainsKey(kvp.Key))
                             AppValues.MergeTableList.Add(kvp.Key, new List<TableInfo>());
                         foreach (string s in kvp.Value)
                         {
-                            if(AppValues.TableInfo.ContainsKey(s))
+                            if (AppValues.TableInfo.ContainsKey(s))
                             {
                                 if (!AppValues.MergeTableList[kvp.Key].Contains(AppValues.TableInfo[s]))
                                 {
@@ -817,7 +761,7 @@ namespace ExcelToConfig
                     }
                     foreach (KeyValuePair<string, List<TableInfo>> kvp in AppValues.MergeTableList)
                     {
-                        if(kvp.Value.Count>0)
+                        if (kvp.Value.Count > 0)
                         {
                             TableInfo tableInfo = TableInfo.Merge(kvp.Key, kvp.Value, out errorString);
                             AppValues.TableInfo.Add(kvp.Key, tableInfo);
@@ -840,7 +784,7 @@ namespace ExcelToConfig
                         TableCheckHelper.CheckTable(tableInfo, out errorString);
                         if (errorString != null)
                         {
-                            AppLog.LogError(string.Format("检查完成比，存在以下错误：\n{0}",  errorString));
+                            AppLog.LogError(string.Format("检查完成比，存在以下错误：\n{0}", errorString));
                         }
                         else
                             AppLog.Log("检查完成比，正确");
@@ -856,10 +800,8 @@ namespace ExcelToConfig
                 //开始导出 AppValues.TableInfo
                 foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                 {
-
-
                     TableInfo tableInfo = kvp.Value;
-                    
+
                     errorString = null;
                     if (AppLanguage.IsMoreLanguage == true && AppLanguage.NeedLanguage != null)
                     {
@@ -872,7 +814,7 @@ namespace ExcelToConfig
                             }
                         }
                     }
-                   
+
                     if (AppValues.MergerTableName.Contains(kvp.Key))
                     {
                         continue;
@@ -898,14 +840,10 @@ namespace ExcelToConfig
             }
             catch (Exception e)
             {
-#if DEBUG
-                AppLog.LogErrorAndExit(e.ToString());
-#else
-                if(AppValues.App_Config_Error==true)
+                if (AppValues.App_Config_Error == true)
                     AppLog.LogErrorAndExit(e.ToString());
                 else
                     AppLog.LogErrorAndExit("出现错误，请检查配置表");
-#endif
             }
         }
     }

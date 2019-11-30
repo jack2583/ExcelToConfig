@@ -136,8 +136,6 @@
     <Compile Include="ExcelClass\ExcelFolder.cs" />
     <Compile Include="PublicMethods\FileModule.cs" />
     <Compile Include="PublicMethods\StringModule.cs" />
-    <Compile Include="SVN.cs" />
-    <Compile Include="SvnStruct.cs" />
     <Compile Include="TableCheckHelper\CheckDateTime.cs" />
     <Compile Include="TableCheckHelper\CheckEffective.cs" />
     <Compile Include="TableCheckHelper\CheckFieldName.cs" />

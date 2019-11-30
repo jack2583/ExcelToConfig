@@ -38,26 +38,6 @@ public class AppValues
     public const string Public_Config_ExceptExportExcel = "ExceptExportExcel";
 
     /// <summary>
-    /// App全局导出通用配置,是否调用bat脚本复制文件参数
-    /// </summary>
-    public const string Public_Config_IsCopy = "IsCopy";
-
-    /// <summary>
-    /// App全局导出通用配置,是否调用bat脚本复制文件
-    /// </summary>
-    public static bool App_Config_IsCopy = false;
-
-    /// <summary>
-    /// App全局导出通用配置,bat脚本复制文件的名字参数
-    /// </summary>
-    public const string Public_Config_CopyBatName = "CopyBatName";
-
-    /// <summary>
-    /// App全局导出通用配置,bat脚本复制文件的名字
-    /// </summary>
-    public static string App_Config_CopyBatName = "copy.bat";
-
-    /// <summary>
     ///App全局导出通用配置，bat脚本:ClientPath目录所在路径
     /// </summary>
     public const string Public_Config_ClientPath = "ClientPath";
@@ -71,6 +51,7 @@ public class AppValues
     ///App全局导出通用配置，bat脚本:读取excel的方式
     /// </summary>
     public const string Public_Config_ReadExcelType = "ReadExcelType";
+
     /// <summary>
     /// App全局导出通用配置,读取excel的方式，OleDb 和 ExcelDataReader
     /// </summary>
@@ -80,29 +61,34 @@ public class AppValues
     ///App全局导出通用配置，bat脚本:合并导出相关
     /// </summary>
     public const string Public_Config_MergeTable = "MergeTable";
+
     /// <summary>
     /// App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
     /// </summary>
     public const string Public_Config_IsExport = "IsMerge";
+
     /// <summary>
     /// App全局导出通用配置,是否允许多个excel导出到同一个表中
     /// </summary>
     public static bool IsMerge = false;
 
-
     /// <summary>
     ///  App全局导出通用配置,key=合并导出的tablename,list要合并的哪些表（不带中文）
     /// </summary>
     public static Dictionary<string, string[]> MergeList = new Dictionary<string, string[]>();
+
     public static Dictionary<string, List<TableInfo>> MergeTableList = new Dictionary<string, List<TableInfo>>();
+
     /// <summary>
     /// 合并过的表格不导出
     /// </summary>
     public static List<string> MergerTableName = new List<string>();
+
     /// <summary>
-    ///App全局导出通用配置，bat脚本:是否允许多个excel导出到同一个表中
+    ///App全局导出通用配置，bat脚本:是否打印详错误
     /// </summary>
     public const string Public_Config_Error = "Error";
+
     /// <summary>
     /// App全局导出通用配置,是否允许多个excel导出到同一个表中
     /// </summary>

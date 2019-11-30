@@ -137,6 +137,7 @@ public partial class TableExportToJsonHelper
         }
 
         string exportString = content.ToString();
+       
 
         // 如果声明了要整理为带缩进格式的形式
         if (JsonStruct.ExportJsonIsFormat == true)
@@ -146,6 +147,15 @@ public partial class TableExportToJsonHelper
         if (SaveJson.SaveJsonFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
         {
             errorString = null;
+            try
+            {
+                LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(exportString);
+            }
+            catch (LitJson.JsonException exception)
+            {
+                errorString = "警告：导出json出现异常，请检查导出的json及Excel\n";
+            }
+
             return true;
         }
         else
