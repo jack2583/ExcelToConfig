@@ -191,7 +191,7 @@ public partial class TableCheckHelper
                                             break;
                                         if (!targetFieldInfo.Data.Contains(obj))
                                         {
-                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
                                         }
                                         break;
                                     }
@@ -199,7 +199,7 @@ public partial class TableCheckHelper
                                     {
                                         if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
                                         {
-                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                            stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
                                         }
                                         break;
                                     }
@@ -227,7 +227,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1,  Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1,  Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -235,7 +235,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
                                                 }
                                                 break;
                                             }
@@ -263,7 +263,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -271,7 +271,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString2[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString2[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
                                                 }
                                                 break;
                                             }
@@ -299,7 +299,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -307,7 +307,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString3[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString3[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
                                                 }
                                                 break;
                                             }
@@ -335,7 +335,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -343,7 +343,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString4[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString4[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1,  Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1,  Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
                                                 }
                                                 break;
                                             }
@@ -371,7 +371,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -379,7 +379,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString5[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString5[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
                                                 }
                                                 break;
                                             }
@@ -390,8 +390,8 @@ public partial class TableCheckHelper
                                     }
                                 }
                                 */
-                            }
-                            else if (jsonData.IsString == true)
+                        }
+                        else if (jsonData.IsString == true)
                             {
                                 if (j == 0)
                                 {
@@ -404,7 +404,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -425,7 +425,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -446,7 +446,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -467,7 +467,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -488,7 +488,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + 6, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合范围[{3},{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -555,7 +555,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1, z+1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -563,7 +563,7 @@ public partial class TableCheckHelper
                                             {
                                                 if(Double.Parse(jsonData3.ToJson())<(double)RulevalueceilString[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6,j+1,z+1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+ ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1,z+1, (double)RulevalueceilString[0], (double)RulevalueceilString[0], (double)RulevalueceilString[1]));
                                                 }
                                                 break;
                                             }
@@ -594,7 +594,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -602,7 +602,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString2[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString2[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+ ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString2[0], (double)RulevalueceilString2[1]));
                                                 }
                                                 break;
                                             }
@@ -633,7 +633,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -641,7 +641,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString3[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString3[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i+ ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString3[0], (double)RulevalueceilString3[1]));
                                                 }
                                                 break;
                                             }
@@ -672,7 +672,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -680,7 +680,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString4[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString4[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString4[0], (double)RulevalueceilString4[1]));
                                                 }
                                                 break;
                                             }
@@ -711,7 +711,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -719,7 +719,7 @@ public partial class TableCheckHelper
                                             {
                                                 if (Double.Parse(jsonData3.ToJson()) < (double)RulevalueceilString5[0] || Double.Parse(jsonData3.ToJson()) > (double)RulevalueceilString5[1])
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + 6, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合范围[{4},{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j+1, z+1, Double.Parse(jsonData3.ToJson()), (double)RulevalueceilString5[0], (double)RulevalueceilString5[1]));
                                                 }
                                                 break;
                                             }
@@ -743,7 +743,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -764,7 +764,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex+1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString2[0].ToString(), RulevalueceilString2[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -785,7 +785,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString3[0].ToString(), RulevalueceilString3[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -806,7 +806,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString4[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }
@@ -827,7 +827,7 @@ public partial class TableCheckHelper
 
                                                 if (!targetFieldInfo.Data.Contains(jsonData3.ToString()))
                                                 {
-                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + 6, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
+                                                    stringBuilder.AppendLine(string.Format("第{0}行第{1}组第{2}个值为：{3}不符合引用表字段[{4}-{5}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, z + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString5[0].ToString(), RulevalueceilString5[1].ToString()));
                                                 }
                                                 break;
                                             }

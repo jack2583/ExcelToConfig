@@ -28,11 +28,13 @@ public partial class TableExportToJsonHelper
                     string oneFieldString = _GetOneField(allField[column], row, out errorString);
                     if (errorString != null)
                     {
-                        errorString = string.Format("额外导出表格{0}为json文件失败，", tableInfo.TableName) + errorString;
+                        errorString = string.Format("导出表格{0}为json文件失败，", tableInfo.TableName) + errorString;
                         return false;
                     }
                     else
+                    {
                         content.Append(oneFieldString);
+                    }
                 }
 
                 // 去掉本行最后一个字段后多余的英文逗号，json语法不像lua那样最后一个字段后的逗号可有可无
