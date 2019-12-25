@@ -172,6 +172,10 @@ public partial class TableAnalyzeHelper
                     else
                         invalidInfo.Add(row, inputData);
                 }
+                else if(inputData=="0,")
+                {
+                    invalidInfo.Add(row, inputData);
+                }
                 else
                 {
                     double floatValue;

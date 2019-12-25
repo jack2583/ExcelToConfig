@@ -99,7 +99,7 @@ public partial class TableCheckHelper
                 // 如果json、tableString型字段下取值为null，可能填写的为空值，也可能是父集合类型标为无效
                 if (fieldInfo.ParentField != null && (bool)fieldInfo.ParentField.Data[i] == false)
                     continue;
-                else if (fieldInfo.Data[i] == null)
+                else if (fieldInfo.JsonString[i] == null)
                     emptyDataLines.Add(i);
             }
         }

@@ -33,6 +33,7 @@ namespace ExcelToConfig
 
         private static void Main(string[] args)
         {
+            LoadResourceDll.RegistDLL();
             try
             {
                 //if(!StringModule.GetDotNetVersion("4.0"))
@@ -815,14 +816,12 @@ namespace ExcelToConfig
                         }
                     }
 
+
+                    AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
+                    ExportToTxtHelper.ExportToTxt(tableInfo);
                     if (AppValues.MergerTableName.Contains(kvp.Key))
                     {
                         continue;
-                    }
-                    else
-                    {
-                        AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
-                        ExportToTxtHelper.ExportToTxt(tableInfo);
                     }
 
                     ExportToLuaHelper.ExportToLua(tableInfo);

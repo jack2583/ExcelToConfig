@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+//using Newtonsoft.Json;
 
 public partial class TableAnalyzeHelper
 {
@@ -29,13 +30,28 @@ public partial class TableAnalyzeHelper
                     fieldInfo.Data.Add(null);
                     fieldInfo.JsonString.Add(null);
                 }
+                else if (inputData == "[]")
+                {
+                    fieldInfo.Data.Add(null);
+                    fieldInfo.JsonString.Add("[]");
+                }
                 else
                 {
                     fieldInfo.JsonString.Add(inputData);
                     try
                     {
                         JsonData jsonData = JsonMapper.ToObject(inputData);
-                        fieldInfo.Data.Add(jsonData);
+                        //fieldInfo.Data.Add(jsonData);
+                        //Count = “jsonData.Count”引发了类型“System.InvalidOperationException”的异常
+                        try
+                        {
+                            if (jsonData.Count > 0)
+                                fieldInfo.Data.Add(jsonData);
+                        }
+                        catch
+                        {
+                            errorStringBuilder.AppendFormat("第{0}行所填json字符串（{1}）非法，原因为：不是合的json字符\n", row + ExcelTableSetting.DataFieldDataStartRowIndex + 1, inputData);
+                        }
                     }
                     catch (JsonException exception)
                     {

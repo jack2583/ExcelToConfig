@@ -54,8 +54,9 @@
     <Reference Include="MySql.Data">
       <HintPath>..\DLL\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data.SQLite">
@@ -130,6 +131,7 @@
     <Compile Include="ExportToTXT\TableExportToTxtHelper.cs" />
     <Compile Include="ExportToTXT\TableExportToTxtHelperGetOneField.cs" />
     <Compile Include="ExportToTXT\TxtStruct.cs" />
+    <Compile Include="LoadResourceDll.cs" />
     <Compile Include="MyCheckFunction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -164,12 +166,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.Config.xml">
       <SubType>Designer</SubType>
     </Content>
+    <EmbeddedResource Include="DLL\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="DLL\ExcelDataReader.DataSet.dll" />
+    <EmbeddedResource Include="DLL\ExcelDataReader.dll" />
+    <EmbeddedResource Include="DLL\ICSharpCode.SharpZipLib.dll" />
+    <EmbeddedResource Include="DLL\LitJson.dll" />
+    <EmbeddedResource Include="DLL\MySql.Data.dll" />
+    <EmbeddedResource Include="DLL\System.Data.SQLite.dll" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
