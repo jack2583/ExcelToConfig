@@ -48,7 +48,7 @@ public class AppValues
     public static string App_Config_ClientPath = null;
 
     /// <summary>
-    ///App全局导出通用配置，bat脚本:读取excel的方式
+    ///App全局导出通用配置，bat脚本:读取excel的方式 ExcelDataReader OleDb
     /// </summary>
     public const string Public_Config_ReadExcelType = "ReadExcelType";
 

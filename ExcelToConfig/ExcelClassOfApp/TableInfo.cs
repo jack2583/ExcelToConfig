@@ -152,8 +152,8 @@ public class TableInfo
         tableInfo2.ExcelName = tableInfoList[0].ExcelName;
         tableInfo2.TableName = newTableName;
         tableInfo2.ExcelDirectory = tableInfoList[0].ExcelDirectory;
-        tableInfo2.TableConfig = null;
-        tableInfo2.TableConfigData = null;// tableInfoList[0].TableConfigData;
+        tableInfo2.TableConfig = tableInfoList[0].TableConfig;
+        tableInfo2.TableConfigData = tableInfoList[0].TableConfigData;
 
         FieldInfo fieldInfoTemp;
         List<FieldInfo> allFieldInfo = null;

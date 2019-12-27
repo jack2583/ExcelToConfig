@@ -94,6 +94,11 @@ public struct JsonStruct
     public const string Public_Config_NotExportJsonNull = "ExportJsonNullConfig";
 
     /// <summary>
+    ///  导出lua文件配置，bat脚本：声明对某张表格设置导出json时空值显示为null还是[] 默认不忽略.false/true
+    /// </summary>
+    public const string Public_Config_JsonNullType = "JsonNullType";
+
+    /// <summary>
     /// 某个Excel表的配置：声明对某张表格设置特殊导出Json规则的配置参数名
     /// </summary>
    // public const string Excel_Config_SpecialExportJson = "tableExportConfig";//"TableSpecialExportJson";
@@ -136,6 +141,11 @@ public struct JsonStruct
     /// 某个Excel表的配置：声明对某张表格设置导出Json时是否忽略空值，如果忽略则不导出该字段。默认不忽略.false/true
     /// </summary>
     public static bool IsExportJsonNullConfig = false;
+
+    /// <summary>
+    /// 某个Excel表的配置：声明对某张表格设置导出Json时为空值，显示为null 还是[]
+    /// </summary>
+    public static bool IsJsonNullType = false;
 
     /// <summary>
     /// 某个Excel表的配置：声明某张表格导出为lua table时，是否将主键列的值作为table中的元素

@@ -272,7 +272,12 @@ public partial class TableExportToJsonHelper
     private static string _GetJsonValue(FieldInfo fieldInfo, int row)
     {
         if (fieldInfo.Data[row] == null)
-            return "null";
+        {
+            if (JsonStruct.IsJsonNullType == true)
+                return "null";
+            else
+                return "[]";
+        }
         else
         {
             // 将json字符串进行格式整理，去除引号之外的所有空白字符

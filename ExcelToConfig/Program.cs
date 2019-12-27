@@ -384,6 +384,13 @@ namespace ExcelToConfig
                                 else if (kvp.Value.ToLower() == "false")
                                     JsonStruct.IsExportJsonNullConfig = false;
                             }
+                            else if (kvp.Key == JsonStruct.Public_Config_JsonNullType)
+                            {
+                                if (kvp.Value.ToLower() == "true")
+                                    JsonStruct.IsJsonNullType = true;
+                                else if (kvp.Value.ToLower() == "false")
+                                    JsonStruct.IsJsonNullType = false;
+                            }
                         }
                     }
                     //公共Erlang设置
