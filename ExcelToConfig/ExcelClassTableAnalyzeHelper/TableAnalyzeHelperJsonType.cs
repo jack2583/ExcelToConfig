@@ -1,8 +1,8 @@
-﻿using LitJson;
+﻿//using LitJson;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-//using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 public partial class TableAnalyzeHelper
 {
@@ -40,7 +40,10 @@ public partial class TableAnalyzeHelper
                     fieldInfo.JsonString.Add(inputData);
                     try
                     {
-                        JsonData jsonData = JsonMapper.ToObject(inputData);
+                        LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(inputData);
+
+                        object jsonData2 = JsonConvert.DeserializeObject(inputData);
+                       // TestModel testModel = JsonConvert.DeserializeObject<TestModel>(inputData);
                         //fieldInfo.Data.Add(jsonData);
                         //Count = “jsonData.Count”引发了类型“System.InvalidOperationException”的异常
                         try

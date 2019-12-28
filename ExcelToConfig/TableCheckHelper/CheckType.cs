@@ -38,7 +38,8 @@ public partial class TableCheckHelper
                 if (!AppValues.TableInfo.ContainsKey(tableName))
                 {
                     errorString = string.Format("值引用检查规则声明错误，找不到名为{0}的表格\n", tableName);
-                    return false;
+                    Rulevalue = new object[] { tableName, null };
+                    return true;
                 }
 
                 if (string.IsNullOrEmpty(fieldIndexDefine))

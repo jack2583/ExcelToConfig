@@ -109,6 +109,19 @@ namespace ExcelToConfig
 
                                 continue;
                             }
+                            else if (kvp.Key == AppValues.Public_Config_IsRefCheckNotTable)
+                            {
+                                if (kvp.Value.ToLower() == "false")
+                                {
+                                    AppValues.IsRefCheckNotTable = false;
+                                }
+                                else if (kvp.Value.ToLower() == "true")
+                                {
+                                    AppValues.IsRefCheckNotTable = true;
+                                }
+
+                                continue;
+                            }
                             else if (kvp.Key == AppValues.Public_Config_ClientPath)
                             {
                                 AppValues.App_Config_ClientPath = Path.GetFullPath(kvp.Value);
@@ -788,7 +801,8 @@ namespace ExcelToConfig
                         TableInfo tableInfo = kvp.Value;
                         AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
                         errorString = null;
-
+                        //if (tableInfo.TableName == "main_task")
+                        //    AppLog.Log("打印日志：");
                         TableCheckHelper.CheckTable(tableInfo, out errorString);
                         if (errorString != null)
                         {
@@ -796,12 +810,12 @@ namespace ExcelToConfig
                         }
                         else
                             AppLog.Log("检查完成比，正确");
-                    }
 
-                    if (AppLog.LogErrorContent.Length > 0)
-                    {
-                        AppLog.SaveErrorInfoToFile("错误日志");
-                        AppLog.LogErrorAndExit("\n按任意键继续");
+                        if (AppLog.LogErrorContent.Length > 0)
+                        {
+                            AppLog.SaveErrorInfoToFile("错误日志");
+                            AppLog.LogErrorAndExit("\n按任意键继续");
+                        }
                     }
                 }
 

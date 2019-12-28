@@ -28,6 +28,15 @@ public class AppValues
     public const string Public_Config_IsNeedCheck = "IsNeedCheck";
 
     /// <summary>
+    /// App全局导出lua、json等通用配置，bat脚本：ref检查时是否忽略找不到的表格
+    /// </summary>
+    public const string Public_Config_IsRefCheckNotTable = "IsRefCheckNotTable";
+    /// <summary>
+    /// App全局导出通用配置,ref检查时是否忽略找不到的表格
+    /// </summary>
+    public static bool IsRefCheckNotTable = true;
+
+    /// <summary>
     /// App全局导出lua、json等通用配置，bat脚本：只导出部分表格式（优先判定）
     /// </summary>
     public const string Public_Config_OnlyExportPartExcel = "OnlyExportPartExcel";
@@ -55,7 +64,7 @@ public class AppValues
     /// <summary>
     /// App全局导出通用配置,读取excel的方式，OleDb 和 ExcelDataReader
     /// </summary>
-    public static string App_Config_ReadExcelType = "OleDb";
+    public static string App_Config_ReadExcelType = "ExcelDataReader";
 
     /// <summary>
     ///App全局导出通用配置，bat脚本:合并导出相关
@@ -87,7 +96,7 @@ public class AppValues
     /// <summary>
     ///App全局导出通用配置，bat脚本:是否打印详错误
     /// </summary>
-    public const string Public_Config_Error = "Error";
+    public const string Public_Config_Error = "IsError";
 
     /// <summary>
     /// App全局导出通用配置,是否允许多个excel导出到同一个表中

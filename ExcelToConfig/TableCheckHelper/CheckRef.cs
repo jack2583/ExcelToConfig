@@ -107,8 +107,16 @@ public partial class TableCheckHelper
 
                             if (!AppValues.TableInfo.ContainsKey(tableName))
                             {
-                                errorString = string.Format("值引用检查规则声明错误，找不到名为 {0} 的表格\n", tableName);
-                                return false;
+                                if (AppValues.IsRefCheckNotTable == true)
+                                {
+                                    errorString = string.Format("值引用检查规则声明错误，找不到名为 {0} 的表格\n", tableName);
+                                    return false;
+                                }
+                                else
+                                {
+                                    AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略该检查\n", tableName));
+                                    return true;
+                                }
                             }
                             if (string.IsNullOrEmpty(fieldIndexDefine))
                                 targetFieldInfo = AppValues.TableInfo[tableName].GetKeyColumnFieldInfo();
@@ -263,8 +271,16 @@ public partial class TableCheckHelper
 
                     if (!AppValues.TableInfo.ContainsKey(tableName))
                     {
-                        errorString = string.Format("值引用检查规则声明错误，找不到名为{0}的表格\n", START_STRING);
-                        return false;
+                        if (AppValues.IsRefCheckNotTable == true)
+                        {
+                            errorString = string.Format("值引用检查规则声明错误，找不到名为 {0} 的表格\n", START_STRING);
+                            return false;
+                        }
+                        else
+                        {
+                            AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略该检查\n", START_STRING));
+                            return true;
+                        }
                     }
                     if (string.IsNullOrEmpty(fieldIndexDefine))
                         targetFieldInfo = AppValues.TableInfo[tableName].GetKeyColumnFieldInfo();

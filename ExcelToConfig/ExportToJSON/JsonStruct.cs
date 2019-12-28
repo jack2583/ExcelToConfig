@@ -145,7 +145,7 @@ public struct JsonStruct
     /// <summary>
     /// 某个Excel表的配置：声明对某张表格设置导出Json时为空值，显示为null 还是[]
     /// </summary>
-    public static bool IsJsonNullType = false;
+    public static bool IsJsonNullType = true;
 
     /// <summary>
     /// 某个Excel表的配置：声明某张表格导出为lua table时，是否将主键列的值作为table中的元素

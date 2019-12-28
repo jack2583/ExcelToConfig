@@ -104,6 +104,20 @@ public partial class TableCheckHelper
         {
             return false;
         }
+        else
+        {
+            if ( RulevalueceilString[1] == null)
+            {
+                if (AppValues.IsRefCheckNotTable == false)
+                {
+                    AppLog.LogError(string.Format("找不到名为{0}的表格，已忽略该检查\n", RulevalueceilString[0]));
+                    errorString = null;
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
 
         CheckType checkTypeceilString2 = CheckType.Invalid;
         object[] RulevalueceilString2 = null;
@@ -180,15 +194,38 @@ public partial class TableCheckHelper
                                         TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
                                         FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
                                         object obj;
-                                        if (jsonData3.IsInt == true)
-                                            obj = int.Parse(jsonData3.ToString());
-                                        else if (jsonData3.IsLong == true)
-                                            obj = Int64.Parse(jsonData3.ToString());
-                                        else
-                                            obj = double.Parse(jsonData3.ToString());
 
-                                        if ((int)obj == 0)
+                                        if(targetFieldInfo.DataType==DataType.Int)
+                                        {
+                                            obj = int.Parse(jsonData3.ToString());
+                                            if ((int)obj == 0)
+                                                break;
+                                        }
+                                        else if (targetFieldInfo.DataType == DataType.Long)
+                                        {
+                                            obj = long.Parse(jsonData3.ToString());
+                                            if ((long)obj == 0)
+                                                break;
+                                        }
+                                        else if (targetFieldInfo.DataType == DataType.Float)
+                                        {
+                                            obj = double.Parse(jsonData3.ToString());
+                                            if ((double)obj == 0)
+                                                break;
+                                        }
+                                        else if (targetFieldInfo.DataType == DataType.String)
+                                        {
+                                            obj = jsonData3.ToString();
+                                            if (obj == null)
+                                                break;
+                                        }
+                                        else
+                                        {
+                                            obj = null;
                                             break;
+                                        }
+
+
                                         if (!targetFieldInfo.Data.Contains(obj))
                                         {
                                             stringBuilder.AppendLine(string.Format("第{0}行第{1}个值为：{2}不符合引用表字段[{3}-{4}]要求", i + ExcelTableSetting.DataFieldDataStartRowIndex + 1, j + 1, Double.Parse(jsonData3.ToJson()), RulevalueceilString[0].ToString(), RulevalueceilString[1].ToString()));
@@ -391,7 +428,7 @@ public partial class TableCheckHelper
                                 }
                                 */
                         }
-                        else if (jsonData.IsString == true)
+                         else if (jsonData.IsString == true)
                             {
                                 if (j == 0)
                                 {
@@ -543,15 +580,35 @@ public partial class TableCheckHelper
                                                 TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString[0].ToString()];
                                                 FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString[1].ToString(), targetTableInfo, out errorString);
                                                 object obj;
-                                                if (jsonData3.IsInt == true)
+                                                if (targetFieldInfo.DataType == DataType.Int)
+                                                {
                                                     obj = int.Parse(jsonData3.ToString());
-                                                else if (jsonData3.IsLong == true)
-                                                    obj = Int64.Parse(jsonData3.ToString());
-                                                else 
+                                                    if ((int)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Long)
+                                                {
+                                                    obj = long.Parse(jsonData3.ToString());
+                                                    if ((long)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Float)
+                                                {
                                                     obj = double.Parse(jsonData3.ToString());
-
-                                                if ((int)obj == 0)
+                                                    if ((double)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.String)
+                                                {
+                                                    obj = jsonData3.ToString();
+                                                    if (obj == null)
+                                                        break;
+                                                }
+                                                else
+                                                {
+                                                    obj = null;
                                                     break;
+                                                }
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
@@ -582,15 +639,35 @@ public partial class TableCheckHelper
                                                 TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString2[0].ToString()];
                                                 FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString2[1].ToString(), targetTableInfo, out errorString);
                                                 object obj;
-                                                if (jsonData3.IsInt == true)
+                                                if (targetFieldInfo.DataType == DataType.Int)
+                                                {
                                                     obj = int.Parse(jsonData3.ToString());
-                                                else if (jsonData3.IsLong == true)
-                                                    obj = Int64.Parse(jsonData3.ToString());
-                                                else
+                                                    if ((int)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Long)
+                                                {
+                                                    obj = long.Parse(jsonData3.ToString());
+                                                    if ((long)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Float)
+                                                {
                                                     obj = double.Parse(jsonData3.ToString());
-
-                                                if ((int)obj == 0)
+                                                    if ((double)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.String)
+                                                {
+                                                    obj = jsonData3.ToString();
+                                                    if (obj == null)
+                                                        break;
+                                                }
+                                                else
+                                                {
+                                                    obj = null;
                                                     break;
+                                                }
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
@@ -621,15 +698,35 @@ public partial class TableCheckHelper
                                                 TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString3[0].ToString()];
                                                 FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString3[1].ToString(), targetTableInfo, out errorString);
                                                 object obj;
-                                                if (jsonData3.IsInt == true)
+                                                if (targetFieldInfo.DataType == DataType.Int)
+                                                {
                                                     obj = int.Parse(jsonData3.ToString());
-                                                else if (jsonData3.IsLong == true)
-                                                    obj = Int64.Parse(jsonData3.ToString());
-                                                else
+                                                    if ((int)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Long)
+                                                {
+                                                    obj = long.Parse(jsonData3.ToString());
+                                                    if ((long)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Float)
+                                                {
                                                     obj = double.Parse(jsonData3.ToString());
-
-                                                if ((int)obj == 0)
+                                                    if ((double)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.String)
+                                                {
+                                                    obj = jsonData3.ToString();
+                                                    if (obj == null)
+                                                        break;
+                                                }
+                                                else
+                                                {
+                                                    obj = null;
                                                     break;
+                                                }
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
@@ -660,15 +757,35 @@ public partial class TableCheckHelper
                                                 TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString4[0].ToString()];
                                                 FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString4[1].ToString(), targetTableInfo, out errorString);
                                                 object obj;
-                                                if (jsonData3.IsInt == true)
+                                                if (targetFieldInfo.DataType == DataType.Int)
+                                                {
                                                     obj = int.Parse(jsonData3.ToString());
-                                                else if (jsonData3.IsLong == true)
-                                                    obj = Int64.Parse(jsonData3.ToString());
-                                                else
+                                                    if ((int)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Long)
+                                                {
+                                                    obj = long.Parse(jsonData3.ToString());
+                                                    if ((long)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Float)
+                                                {
                                                     obj = double.Parse(jsonData3.ToString());
-
-                                                if ((int)obj == 0)
+                                                    if ((double)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.String)
+                                                {
+                                                    obj = jsonData3.ToString();
+                                                    if (obj == null)
+                                                        break;
+                                                }
+                                                else
+                                                {
+                                                    obj = null;
                                                     break;
+                                                }
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {
@@ -699,15 +816,35 @@ public partial class TableCheckHelper
                                                 TableInfo targetTableInfo = AppValues.TableInfo[RulevalueceilString5[0].ToString()];
                                                 FieldInfo targetFieldInfo = GetFieldByIndexDefineString(RulevalueceilString5[1].ToString(), targetTableInfo, out errorString);
                                                 object obj;
-                                                if (jsonData3.IsInt == true)
+                                                if (targetFieldInfo.DataType == DataType.Int)
+                                                {
                                                     obj = int.Parse(jsonData3.ToString());
-                                                else if (jsonData3.IsLong == true)
-                                                    obj = Int64.Parse(jsonData3.ToString());
-                                                else
+                                                    if ((int)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Long)
+                                                {
+                                                    obj = long.Parse(jsonData3.ToString());
+                                                    if ((long)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.Float)
+                                                {
                                                     obj = double.Parse(jsonData3.ToString());
-
-                                                if ((int)obj == 0)
+                                                    if ((double)obj == 0)
+                                                        break;
+                                                }
+                                                else if (targetFieldInfo.DataType == DataType.String)
+                                                {
+                                                    obj = jsonData3.ToString();
+                                                    if (obj == null)
+                                                        break;
+                                                }
+                                                else
+                                                {
+                                                    obj = null;
                                                     break;
+                                                }
 
                                                 if (!targetFieldInfo.Data.Contains(obj))
                                                 {

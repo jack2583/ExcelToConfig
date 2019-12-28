@@ -200,12 +200,12 @@
     <Content Include="App.Config.xml">
       <SubType>Designer</SubType>
     </Content>
-    <EmbeddedResource Include="DLL\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="DLL\ExcelDataReader.DataSet.dll" />
     <EmbeddedResource Include="DLL\ExcelDataReader.dll" />
     <EmbeddedResource Include="DLL\ICSharpCode.SharpZipLib.dll" />
     <EmbeddedResource Include="DLL\LitJson.dll" />
     <EmbeddedResource Include="DLL\MySql.Data.dll" />
+    <EmbeddedResource Include="DLL\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="DLL\System.Data.SQLite.dll" />
   </ItemGroup>
   <ItemGroup>

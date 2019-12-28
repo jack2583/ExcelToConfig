@@ -176,7 +176,7 @@ public class AppLog
             if (LogStr.Length > 0)
             {
                 string fileNameTime = string.Format("{0:yyyy年MM月dd日 HH时mm分ss秒}.txt", DateTime.Now);
-                string fileName = string.Format("{0}{1}", SaveName, fileNameTime);
+                string fileName = SaveName;// string.Format("{0}{1}", SaveName, fileNameTime);
                 string path1 = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
                 string savePath = FileModule.CombinePath(path1, fileName);
                 StreamWriter writer = new StreamWriter(savePath, false, new UTF8Encoding(false));
