@@ -68,7 +68,7 @@ public partial class TableExportToJsonHelper
             }
             catch (LitJson.JsonException exception)
             {
-                errorString = "警告：导出json出现异常，请检查导出的json及Excel\n";
+                errorString = "错误：导出json出现异常，请检查导出的json及Excel\n";
             }
             return true;
         }

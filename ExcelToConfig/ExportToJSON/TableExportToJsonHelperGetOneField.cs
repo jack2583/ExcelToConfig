@@ -615,7 +615,7 @@ public partial class TableExportToJsonHelper
 
             LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(content.ToString());
             if (jsonData.Count == 0)
-                AppLog.Log(string.Format("警告：名为{0}类型为{1}的字段，第{2}行的值未设置为-1，但所有值都为空，请确认是否为这样", fieldInfo.FieldName, fieldInfo.DataTypeString,  row + ExcelTableSetting.DataFieldDataStartRowIndex+1), ConsoleColor.Yellow);
+                AppLog.LogWarning(string.Format("警告：名为{0}类型为{1}的字段，第{2}行的值未设置为-1，但所有值都为空，请确认是否为这样", fieldInfo.FieldName, fieldInfo.DataTypeString,  row + ExcelTableSetting.DataFieldDataStartRowIndex+1), ConsoleColor.Yellow);
             
         }
 

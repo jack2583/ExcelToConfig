@@ -38,7 +38,7 @@ namespace ExcelToConfig
             {
                 //if(!StringModule.GetDotNetVersion("4.0"))
                 //{
-                //    AppLog.Log("警告：你可能未安装framework4.0，请下载安装：\n"+"https://microsoft-net-framework-3-0.updatestar.com", ConsoleColor.Yellow);
+                //    AppLog.LogWarning("警告：你可能未安装framework4.0，请下载安装：\n"+"https://microsoft-net-framework-3-0.updatestar.com", ConsoleColor.Yellow);
                 //}
 
                 /*↓↓↓↓↓↓↓↓↓读取参数↓↓↓↓↓↓↓↓↓*/

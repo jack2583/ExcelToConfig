@@ -110,7 +110,7 @@ public partial class TableCheckHelper
             {
                 if (AppValues.IsRefCheckNotTable == false)
                 {
-                    AppLog.LogError(string.Format("找不到名为{0}的表格，已忽略该检查\n", RulevalueceilString[0]));
+                    AppLog.Log(string.Format("找不到名为{0}的表格，已忽略字段{1}({2})这个检查:{3}\n", RulevalueceilString[0], fieldInfo.FieldName, fieldInfo.Desc, checkRule.CheckRuleString),ConsoleColor.Yellow);
                     errorString = null;
                     return true;
                 }

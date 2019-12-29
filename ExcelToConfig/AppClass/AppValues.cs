@@ -34,7 +34,7 @@ public class AppValues
     /// <summary>
     /// App全局导出通用配置,ref检查时是否忽略找不到的表格
     /// </summary>
-    public static bool IsRefCheckNotTable = true;
+    public static bool IsRefCheckNotTable = false;
 
     /// <summary>
     /// App全局导出lua、json等通用配置，bat脚本：只导出部分表格式（优先判定）

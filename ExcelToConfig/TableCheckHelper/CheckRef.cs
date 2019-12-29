@@ -114,7 +114,8 @@ public partial class TableCheckHelper
                                 }
                                 else
                                 {
-                                    AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略该检查\n", tableName));
+                                    AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略字段{1}({2})这个检查{3}：\n", tableName, fieldInfo.FieldName, fieldInfo.Desc, checkRule.CheckRuleString));
+                                    errorString = null;
                                     return true;
                                 }
                             }
@@ -278,7 +279,8 @@ public partial class TableCheckHelper
                         }
                         else
                         {
-                            AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略该检查\n", START_STRING));
+                            AppLog.LogWarning(errorString = string.Format("找不到名为{0}的表格，已忽略字段{1}({2}这个检查：{3}\n", START_STRING, fieldInfo.FieldName, fieldInfo.Desc, checkRule.CheckRuleString));
+                            errorString = null;
                             return true;
                         }
                     }
