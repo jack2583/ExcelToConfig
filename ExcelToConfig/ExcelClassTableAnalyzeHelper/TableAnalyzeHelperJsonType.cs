@@ -40,14 +40,14 @@ public partial class TableAnalyzeHelper
                     fieldInfo.JsonString.Add(inputData);
                     try
                     {
-                        LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(inputData);
-
-                        object jsonData2 = JsonConvert.DeserializeObject(inputData);
-                       // TestModel testModel = JsonConvert.DeserializeObject<TestModel>(inputData);
-                        //fieldInfo.Data.Add(jsonData);
-                        //Count = “jsonData.Count”引发了类型“System.InvalidOperationException”的异常
                         try
                         {
+                            LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(inputData);
+
+                            object jsonData2 = JsonConvert.DeserializeObject(inputData);
+                            // TestModel testModel = JsonConvert.DeserializeObject<TestModel>(inputData);
+                            //fieldInfo.Data.Add(jsonData);
+                            //Count = “jsonData.Count”引发了类型“System.InvalidOperationException”的异常
                             if (jsonData.Count > 0)
                                 fieldInfo.Data.Add(jsonData);
                         }

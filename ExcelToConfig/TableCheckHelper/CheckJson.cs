@@ -173,10 +173,10 @@ public partial class TableCheckHelper
                     continue;
 
                 if (!fieldInfoDataString.StartsWith("["))
-                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 2)));
+                    stringBuilder.AppendLine(string.Format("第{0}行首字符不合要求，应为：[  而填入值为{1}", i, fieldInfoDataString.Substring(0, 1)));
 
                 if (!fieldInfoDataString.EndsWith("]"))
-                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length - 2, 2)));
+                    stringBuilder.AppendLine(string.Format("第{0}行末尾字符不合要求，应为：]  而填入值为{1}", i, fieldInfoDataString.Substring(fieldInfoDataString.Length - 1, 1)));
 
                 JsonData jsonData = fieldInfo.Data[i] as JsonData;
                 if (jsonData != null)
@@ -1005,5 +1005,16 @@ public partial class TableCheckHelper
             errorString = null;
             return true;
         }
+    }
+    /// <summary>
+    /// 用于int、long、float或string型取值必须在另一字段（可能还是这张表格也可能跨表）中有对应值的检查
+    /// json格式，一维数组：[id,num,bind]等  Jsonstruct:(item-id|noCheck|[0,2])
+    /// </summary>
+    public static bool CheckJsonstruct(FieldInfo fieldInfo, FieldCheckRule checkRule, out string errorString)
+    {
+        errorString = null;
+
+
+        return true;
     }
 }
