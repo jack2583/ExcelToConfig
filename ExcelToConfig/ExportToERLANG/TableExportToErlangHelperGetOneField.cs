@@ -8,6 +8,10 @@ public partial class TableExportToErlangHelper
     private static string _GetOneField(FieldInfo fieldInfo, int row, int level, out string errorString)
     {
         errorString = null;
+        if (fieldInfo.ParentField == null && fieldInfo.DatabaseFieldName == null)
+        {
+            return null;
+        }
 
         // 变量名
         // content.Append(fieldInfo.FieldName);
@@ -18,9 +22,13 @@ public partial class TableExportToErlangHelper
         {
             case DataType.Int:
             case DataType.Long:
+                {
+                    value = _GetIntValue(fieldInfo, row, level);
+                    break;
+                }
             case DataType.Float:
                 {
-                    value = _GetNumberValue(fieldInfo, row, level);
+                    value = _GetFloatValue(fieldInfo, row, level);
                     break;
                 }
             case DataType.String:
@@ -102,7 +110,7 @@ public partial class TableExportToErlangHelper
                 // 变量名，注意array下属的子元素在json中不含key的声明
                 if (fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array)
                 {
-                    content.Append(fieldInfo.FieldName);
+                    content.Append(fieldInfo.DatabaseFieldName);
                     content.Append(" = ");
                 }
             }
@@ -130,7 +138,7 @@ public partial class TableExportToErlangHelper
                     // 变量名，注意array下属的子元素在json中不含key的声明
                     if (fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array)
                     {
-                        content.Append(fieldInfo.FieldName);
+                        content.Append(fieldInfo.DatabaseFieldName);
                         content.Append(" = ");
                     }
                 }
@@ -162,24 +170,56 @@ public partial class TableExportToErlangHelper
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "0";
             else
-                return "null";
+                return "0";//return "NULL";
         else
             return fieldInfo.Data[row].ToString();
     }
+    private static string _GetIntValue(FieldInfo fieldInfo, int row, int level)
+    {
+        if (fieldInfo.Data[row] == null)
+            if (ErlangStruct.IsExportErlangNullConfig == true)
+                return "0.0";
+            else
+                return "0.0";//return "NULL";
+        else
+            return fieldInfo.Data[row].ToString() + ".0";
+    }
+    private static string _GetFloatValue(FieldInfo fieldInfo, int row, int level)
+    {
+        if (fieldInfo.Data[row] == null)
+            if (ErlangStruct.IsExportErlangNullConfig == true)
+                return "0.0";
+            else
+                return "0.0";//return "NULL";
+        else
+        {
+            string t1 = fieldInfo.Data[row].ToString();
+            int tmp;
+            if (!int.TryParse(t1, out tmp))//如果转换失败（为false）时输出括号内容
+            {
+                return t1;
+            }
 
+            else
+            {
+                return t1 + ".0";
+            }
+        }
+
+    }
     private static string _GetStringValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return "null";
+                return @"<<"""">>"; //return "null";
             else
-                return @"<< "" >>";
+                return @"<<"""">>";
         StringBuilder content = new StringBuilder();
         if (fieldInfo.Data[row].ToString().Length == 0)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return "null";
+                return @"<<"""">>"; //return "null";
             else
-                return @"<< "" >>";
+                return @"<<"""">>";
 
         if (fieldInfo.ExportTable == FieldInfo.ExportTableType.ToErlang)
         {
@@ -226,7 +266,7 @@ public partial class TableExportToErlangHelper
                 if (ErlangStruct.IsExportErlangNullConfig == false)
                     return "null";
                 else
-                    return @"<< "" >>";
+                    return @"<< """" >>";
         StringBuilder content = new StringBuilder();
 
         if (fieldInfo.Data[row] != null)
@@ -246,7 +286,7 @@ public partial class TableExportToErlangHelper
         else
         {
             if (AppLang.IsLangNull == true)
-                content.Append(@"<< "" >>");
+                content.Append(@"<< """" >>");
             else
                 content.Append("null");
         }
@@ -258,89 +298,103 @@ public partial class TableExportToErlangHelper
     {
         StringBuilder content = new StringBuilder();
 
-        DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[LuaStruct.DateToExportFormatKey].ToString());
-        switch (dateFormatType)
+        if (fieldInfo.Data[row] == null)
+           content.Append("null");
+        else
         {
-            case DateFormatType.FormatString:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[MySQLStruct.DateToExportFormatKey].ToString())).Append("\"");
-
-                    break;
-                }
-            case DateFormatType.ReferenceDateSec:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
-
-                    break;
-                }
-            case DateFormatType.ReferenceDateMsec:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalMilliseconds);
-
-                    break;
-                }
-            case DateFormatType.DataTable:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                    {
-                        double totalSeconds = ((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds;
-                        content.Append("os.date(\"!*t\", ").Append(totalSeconds).Append(")");
-                    }
-
-                    break;
-                }
-            default:
-                {
-                    AppLog.LogErrorAndExit("错误：用_GetDateValue函数导出erlang文件的date型的DateFormatType非法");
-                    break;
-                }
+            DateTime dt = (DateTime)(fieldInfo.Data[row]);
+            content.Append("{{").Append(dt.Year).Append(",").Append(dt.Month).Append(",").Append(dt.Day).Append("}, {0,0,0}}");
         }
 
-        return content.ToString();
+            //DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[LuaStruct.DateToExportFormatKey].ToString());
+            //switch (dateFormatType)
+            //{
+            //    case DateFormatType.FormatString:
+            //        {
+            //            if (fieldInfo.Data[row] == null)
+            //                content.Append("null");
+            //            else
+            //                content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[MySQLStruct.DateToExportFormatKey].ToString())).Append("\"");
+
+            //            break;
+            //        }
+            //    case DateFormatType.ReferenceDateSec:
+            //        {
+            //            if (fieldInfo.Data[row] == null)
+            //                content.Append("null");
+            //            else
+            //                content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
+
+            //            break;
+            //        }
+            //    case DateFormatType.ReferenceDateMsec:
+            //        {
+            //            if (fieldInfo.Data[row] == null)
+            //                content.Append("null");
+            //            else
+            //                content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalMilliseconds);
+
+            //            break;
+            //        }
+            //    case DateFormatType.DataTable:
+            //        {
+            //            if (fieldInfo.Data[row] == null)
+            //                content.Append("null");
+            //            else
+            //            {
+            //                double totalSeconds = ((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds;
+            //                content.Append("os.date(\"!*t\", ").Append(totalSeconds).Append(")");
+            //            }
+
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            AppLog.LogErrorAndExit("错误：用_GetDateValue函数导出erlang文件的date型的DateFormatType非法");
+            //            break;
+            //        }
+            //}
+
+            return content.ToString();
     }
 
     private static string _GetTimeValue(FieldInfo fieldInfo, int row, int level)
     {
         StringBuilder content = new StringBuilder();
-
-        TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey].ToString());
-        switch (timeFormatType)
+        if (fieldInfo.Data[row] == null)
+            content.Append("null");
+        else
         {
-            case TimeFormatType.FormatString:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey].ToString())).Append("\"");
-
-                    break;
-                }
-            case TimeFormatType.ReferenceTimeSec:
-                {
-                    if (fieldInfo.Data[row] == null)
-                        content.Append("null");
-                    else
-                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
-
-                    break;
-                }
-            default:
-                {
-                    AppLog.LogErrorAndExit("错误：用_GetTimeValue函数导出erlang文件的time型的TimeFormatType非法");
-                    break;
-                }
+            DateTime dt = (DateTime)(fieldInfo.Data[row]);
+            content.Append("{").Append(dt.Hour).Append(",").Append(dt.Minute).Append(",").Append(dt.Second).Append("}");
         }
+        //TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey].ToString());
+        //switch (timeFormatType)
+        //{
+        //    case TimeFormatType.FormatString:
+        //        {
+        //            if (fieldInfo.Data[row] == null)
+        //                content.Append("null");
+        //            else
+        //                content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey].ToString())).Append("\"");
+
+        //            break;
+        //        }
+        //    case TimeFormatType.ReferenceTimeSec:
+        //        {
+        //            if (fieldInfo.Data[row] == null)
+        //                content.Append("null");
+        //            else
+        //                content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
+
+        //            break;
+        //        }
+        //    default:
+        //        {
+        //            AppLog.LogErrorAndExit("错误：用_GetTimeValue函数导出erlang文件的time型的TimeFormatType非法");
+        //            break;
+        //        }
+        //}
 
         return content.ToString();
     }
@@ -353,13 +407,13 @@ public partial class TableExportToErlangHelper
             if (ErlangStruct.IsExportErlangNullConfig == false)
                 return "null";
             else
-                return "#{}";
+                return "[]";
 
         StringBuilder content = new StringBuilder();
         // 如果该dict数据用-1标为无效，则赋值为null
         if ((bool)fieldInfo.Data[row] == false)
             if (ErlangStruct.IsExportErlangNullConfig == true)
-                content.Append("#{}");
+                content.Append("[]");
             else
                 return "null";
         else
@@ -376,7 +430,7 @@ public partial class TableExportToErlangHelper
                     return null;
                 else
                 {
-                    content.AppendFormat("'{0}'", childField.FieldName);
+                    content.AppendFormat("{0}", childField.FieldName);
                     content.Append("=> ");
                     content.Append(oneFieldString).Append(",");
                 }
@@ -398,7 +452,7 @@ public partial class TableExportToErlangHelper
         errorString = null;
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return "null";
+                return "[]";
             else
                 return "[]";
 
@@ -409,7 +463,7 @@ public partial class TableExportToErlangHelper
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "[]";
             else
-                return "null";
+                return "[]";
         else
         {
             // 包裹dict或array所生成table的左括号
@@ -422,9 +476,9 @@ public partial class TableExportToErlangHelper
                 if (errorString != null)
                     return null;
                 else
-                    content.Append(oneFieldString).Append(",");
+                    content.Append(oneFieldString).Append(", ");
             }
-            content.Remove(content.Length - 1, 1);
+            content.Remove(content.Length - 2, 2);
             // 包裹dict或array所生成table的右括号
             //--level;
             //content.Append(_GetErlangIndentation(level));
@@ -438,20 +492,31 @@ public partial class TableExportToErlangHelper
     private static string _GetJsonValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
-            if (ErlangStruct.IsExportErlangNullConfig == true)
-                return "#{}";
+        {
+            if(fieldInfo.JsonString[row]==null)
+            {
+                if (ErlangStruct.IsExportErlangNullConfig == true)
+                    return "[]";
+                else
+                    return "null";
+            }
             else
-                return "null";
+            {
+                return "[]";
+            }
+           
+        }
+
         if (fieldInfo.Data[row].ToString() == "")
             if (ErlangStruct.IsExportErlangNullConfig == true)
-                return "#{}";
+                return "[]";
             else
-                return "null";
+                return "[]"; //return "null";
         else if (fieldInfo.Data[row].ToString() == "[]")
             if (ErlangStruct.IsExportErlangNullConfig == true)
                 return "[]";
             else
-                return "null";
+                return "[]"; //return "null";
 
         JsonData jsonData = fieldInfo.Data[row] as JsonData;
         //if (jsonData == null)
@@ -470,7 +535,7 @@ public partial class TableExportToErlangHelper
         {
             // 处理键值对中的值为null的情况
             if (ErlangStruct.IsExportErlangNullConfig == true)
-                content.Append("#{}");
+                content.Append("[]");
             else
                 content.Append("null");
         }
@@ -491,9 +556,9 @@ public partial class TableExportToErlangHelper
                 string keyName = childKeyNames[i];
                 double temp;
                 if (double.TryParse(keyName, out temp) == true)
-                    content.AppendFormat("'{0}'", keyName);
+                    content.AppendFormat("{0}", keyName);
                 else
-                    content.AppendFormat("'{0}'", keyName);
+                    content.AppendFormat("{0}", keyName);
 
                 content.Append("=> ");
                 //}
@@ -528,9 +593,9 @@ public partial class TableExportToErlangHelper
                         content.AppendFormat("[{0}] = ", i + 1);
 
                     _AnalyzeJsonData(content, jsonData[i], level);
-                    content.Append(",");
+                    content.Append(", ");
                 }
-                content.Remove(content.Length - 1, 1);
+                content.Remove(content.Length - 2, 2);
                 --level;
                 //// content.Append(_GetErlangIndentation(level));
                 content.Append("]");

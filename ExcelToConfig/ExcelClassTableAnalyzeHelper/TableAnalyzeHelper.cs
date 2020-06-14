@@ -297,7 +297,7 @@ public partial class TableAnalyzeHelper
                        //     AppValues.TableInfo[tableName] = TableInfo.Merge(tableName,AppValues.TableInfoList[tableName],out errorString);
 
                        // }
-                    }
+                }
                 }
 
                 stopwatch.Stop();
@@ -341,8 +341,29 @@ public partial class TableAnalyzeHelper
         fieldInfo.CheckRule = string.IsNullOrEmpty(checkRuleString) ? null : checkRuleString;
         // 导出到数据库中的字段名及类型
         if (ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex >= 0)
-            fieldInfo.DatabaseInfoString = dt.Rows[ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex][columnIndex].ToString().Trim();
+        {
+            string databaseInfoString = dt.Rows[ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex][columnIndex].ToString().Trim();
+            fieldInfo.DatabaseInfoString = databaseInfoString;
+            if (string.IsNullOrEmpty(databaseInfoString))
+            {
+                fieldInfo.DatabaseFieldName = null;
+                fieldInfo.DatabaseFieldType = null;
+            }
+            else
+            {
+                int leftBracketIndex = databaseInfoString.IndexOf('(');
+                int rightBracketIndex = databaseInfoString.LastIndexOf(')');
+                if (leftBracketIndex == -1 || rightBracketIndex == -1 || leftBracketIndex > rightBracketIndex)
+                {
+                    errorString = "导出到数据库中表字段信息声明错误，必须在字段名后的括号中声明对应数据库中的数据类型";
+                    nextFieldColumnIndex = columnIndex + 1;
+                    return null;
+                }
 
+                fieldInfo.DatabaseFieldName = databaseInfoString.Substring(0, leftBracketIndex);
+                fieldInfo.DatabaseFieldType = databaseInfoString.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1);
+            }
+        }
         // 引用父FileInfo
         fieldInfo.ParentField = parentField;
 

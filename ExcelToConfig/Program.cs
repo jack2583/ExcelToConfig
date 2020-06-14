@@ -12,6 +12,8 @@ namespace ExcelToConfig
         /*
          * 公共参数格式：PublicSetting(是否包含子目录=true|是否充许数字型为空=true|是否需要检查=false|ClientPath=)
          * 公共参数格式：PublicSetting(IsIncludeSubfolder=true|IsAllowedNullNumber=true|IsNeedCheck=false)
+         * 公共参数格式：MergeTable()
+         * 公共参数格式：MergeTable(IsMerge=true|IsMergeSingle=false|item=item100,item101|monster=monster301,monster306)
          * 多语言：MoreLanguage(IsMoreLanguage=false|NeedLanguage=_ft|OtherLanguage=_yn,_English|IsAddSaveType=false|IsGetSourceTextFile=false)
          * lang参数：Lang(IsLang=true|LangPath=lang.txt|IsLangNull=false)
          * config参数：Config(ConfigPat=config.txt)
@@ -64,7 +66,7 @@ namespace ExcelToConfig
                     }
                     param = BatData.GetParam(args[i]);
                     param2 = BatData.GetParam2(param);
-                    //公共通用设置
+                    //公共PublicSetting通用设置
                     if (paramName == AppValues.Public_Config_PublicSetting)
                     {
                         foreach (KeyValuePair<string, string> kvp in param2)
@@ -632,6 +634,7 @@ namespace ExcelToConfig
                             }
                         }
                     }
+                    //公共MergeTable设置
                     else if (paramName == AppValues.Public_Config_MergeTable)
                     {
                         foreach (KeyValuePair<string, string> kvp in param2)
@@ -643,6 +646,16 @@ namespace ExcelToConfig
                                 else
                                 {
                                     AppValues.IsMerge = false;
+                                    break;
+                                }
+                            }
+                            else if (kvp.Key == AppValues.Public_Config_ExportSingle)
+                            {
+                                if (kvp.Value.ToLower() == "true")
+                                    AppValues.IsExportSingle = true;
+                                else
+                                {
+                                    AppValues.IsExportSingle = false;
                                     break;
                                 }
                             }
@@ -795,6 +808,7 @@ namespace ExcelToConfig
                 {
                     foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
                     {
+                        //合并过的表不再检查
                         if (AppValues.MergeTableList.ContainsKey(kvp.Key))
                             continue;
 
@@ -840,10 +854,16 @@ namespace ExcelToConfig
 
                     AppLog.Log(string.Format("导出表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
                     ExportToTxtHelper.ExportToTxt(tableInfo);
-                    if (AppValues.MergerTableName.Contains(kvp.Key))
+
+                    //合并过的表不再导出
+                    if(AppValues.IsExportSingle == false)
                     {
-                        continue;
+                        if (AppValues.MergerTableName.Contains(kvp.Key))
+                        {
+                            continue;
+                        }
                     }
+
 
                     ExportToLuaHelper.ExportToLua(tableInfo);
 
@@ -860,10 +880,17 @@ namespace ExcelToConfig
             }
             catch (Exception e)
             {
+
                 if (AppValues.App_Config_Error == true)
                     AppLog.LogErrorAndExit(e.ToString());
                 else
+                {
+#if DEBUG
+                    AppLog.LogErrorAndExit(e.ToString());
+#endif
                     AppLog.LogErrorAndExit("出现错误，请检查配置表");
+                }
+                
             }
         }
     }

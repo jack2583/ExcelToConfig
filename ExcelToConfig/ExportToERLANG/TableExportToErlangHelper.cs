@@ -255,7 +255,7 @@ public partial class TableExportToErlangHelper
                         if (column > 1)
                             content.Append(",");
 
-                        content.Append("'").Append(fieldInfo.FieldName).Append("' => ").AppendLine(oneFieldString);
+                        content.Append("'").Append(fieldInfo.DatabaseFieldName).Append("' => ").AppendLine(oneFieldString);
                     }
                 }
             }
@@ -301,14 +301,23 @@ public partial class TableExportToErlangHelper
         // 判断是否设置要将主键列的值作为导出的table中的元素
         bool isAddKeyToLuaTable = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(ErlangStruct.Excel_Config_AddKeyToErlangTable) && tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable].Count > 0 && "true".Equals(tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable][0], StringComparison.CurrentCultureIgnoreCase);
 
-        // 逐行读取表格内容生成lua table
-        List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
+        //if(tableInfo.ExcelName== "ad_watch_videoType_info-视频类型信息")
+        //{
+        //    errorString = "该表没有字段";
+        //}
+        // 逐行读取表格内容生成erlang table
+        List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
         int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
         for (int row = 0; row < dataCount; ++row)
         {
             // 将主键列作为key生成
 
             FieldInfo keyColumnField = allField[0];
+            if(keyColumnField.DatabaseFieldName==null)
+            {
+                errorString = null;
+                return true;
+            }
 
             if (keyColumnField.DataType == DataType.Int || keyColumnField.DataType == DataType.Long)
                 content.Append("get(").Append(keyColumnField.Data[row]).Append(")->");
@@ -316,11 +325,11 @@ public partial class TableExportToErlangHelper
             else if (keyColumnField.DataType == DataType.String)
             {
                 string FieldString = keyColumnField.Data[row].ToString();// _GetOneField(keyColumnField, row, currentLevel, out errorString);
-                content.Append("get(").Append(FieldString).Append(")->");
+                content.Append("get(").Append(FieldString.ToLower()).Append(")->");
             }
             else
             {
-                errorString = "用ExportTableToLua导出不支持的主键列数据类型";
+                errorString = "用ExportTableToErlang导出不支持的主键列数据类型";
                 AppLog.LogErrorAndExit(errorString);
                 return false;
             }
@@ -368,9 +377,9 @@ public partial class TableExportToErlangHelper
                         content.Append(",");
 
                     if (ErlangStruct.ExportErlangIsFormat == true)
-                        content.Append("'").Append(allField[column].FieldName).Append("' => ").AppendLine(oneFieldString);
+                        content.Append("'").Append(allField[column].DatabaseFieldName.ToLower()).Append("' => ").AppendLine(oneFieldString);
                     else
-                        content.Append("'").Append(allField[column].FieldName).Append("' => ").Append(oneFieldString);
+                        content.Append("'").Append(allField[column].DatabaseFieldName.ToLower()).Append("' => ").Append(oneFieldString);
                     //content.AppendLine(",");
                 }
             }
@@ -400,8 +409,12 @@ public partial class TableExportToErlangHelper
         //}
         StringBuilder stringBuilder = new StringBuilder();
         // 生成数据内容开头
+        string erlangTableName = tableInfo.TableName;
+
+        TableAnalyzeHelper.GetOneConfigData(tableInfo, ErlangStruct.Excel_Config_ExportErlangOtherName, ref erlangTableName);
+
         stringBuilder.AppendLine("%%--- coding:utf-8 ---");
-        stringBuilder.Append("-module(").Append(ErlangStruct.ExportNameBeforeAdd + tableInfo.TableName).AppendLine(").");
+        stringBuilder.Append("-module(").Append(ErlangStruct.ExportNameBeforeAdd + erlangTableName).AppendLine(").");
         stringBuilder.AppendLine(@"-export([get/1,get_list/0]).");
         stringBuilder.Append(exportString2);
 
@@ -412,7 +425,7 @@ public partial class TableExportToErlangHelper
         for (int i = 0; i < dataCount; i++)
         {
             string FieldString = allField[0].Data[i].ToString();// _GetOneField(allField[0], i, currentLevel, out errorString);
-            stringBuilder.Append(FieldString).Append(",");
+            stringBuilder.Append(FieldString.ToLower()).Append(",");
         }
         stringBuilder.Remove(stringBuilder.Length - 1, 1);
         stringBuilder.AppendLine("].");
@@ -422,7 +435,7 @@ public partial class TableExportToErlangHelper
         //    exportString = _GetColumnInfo(tableInfo) + exportString;
 
         // 保存为erlang文件
-        if (SaveErlang.SaveErlangFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
+        if (SaveErlang.SaveErlangFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(erlangTableName), exportString) == true)
         {
             errorString = null;
             return true;

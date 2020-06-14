@@ -84,6 +84,10 @@ public class FieldInfo
     /// 如果该字段是array或dict类型，其下属的字段信息存放在该变量中
     /// </summary>
     public List<FieldInfo> ChildField { get; set; }
+    /// <summary>
+    /// 如果该字段是array或dict类型，其下属的字段name存放在该变量中
+    /// </summary>
+    public List<string> ChildFieldString { get; set; }
 
     /// <summary>
     /// 如果该字段是array或dict的子元素，存储其父元素的引用
@@ -104,6 +108,102 @@ public class FieldInfo
     //导出类型
     public ExportTableType ExportTable { get; set; }
 
+    /// <summary>
+    /// 将字段B的数据追加到字段A中，如果字段B数据不存在，以追加等数量的字段B所在表的主键数量null或false
+    /// </summary>
+    /// <param name="FieldA"></param>
+    /// <param name="FieldB"></param>
+    /// <param name="FieldBPrimaryKeyCount"></param>
+    /// <param name="errorString"></param>
+    /// <returns></returns>
+    public static FieldInfo AddDataByOtherField(FieldInfo FieldA, FieldInfo FieldB, int FieldBPrimaryKeyCount,int row, out string errorString)
+    {
+        FieldInfo FieldReturn = FieldA;
+        if (FieldReturn.DataType.Equals(FieldB.DataType) == false)
+        {
+            errorString=string.Format("错误：数据追加的字段类型必须一致，字段为{0}的类型为{1}(Excel表第：{2}行)与字段为{3}的类型为{4}不同", FieldReturn.FieldName, FieldReturn.DataType, ExcelTableSetting.DataFieldDataTypeRowIndex, FieldB.FieldName, FieldB.DataType);
+            return FieldReturn;
+        }
+
+        if (FieldReturn.Data == null)
+            FieldReturn.Data = new List<object>();
+
+        if (FieldReturn.ChildField == null && FieldB.ChildField !=null)
+            FieldReturn.ChildField = new List<FieldInfo>();
+
+        if (FieldB.Data==null || FieldB.Data.Count==0)
+        {
+            //如果为bool dict array 则默认为fasel否则默认为null
+            if(FieldReturn.DataType==DataType.Bool || FieldReturn.DataType==DataType.Dict || FieldReturn.DataType==DataType.Array)
+            {
+                for (int i = 0; i < FieldBPrimaryKeyCount; ++i)
+                {
+                    FieldReturn.Data.Add(false);
+                    //FieldA.ChildField.Add(null);
+                   
+                }
+            }
+            else
+            {
+                for (int i = 0; i < FieldBPrimaryKeyCount; ++i)
+                {
+                    FieldReturn.Data.Add(null);
+                    //FieldA.ChildField.Add(null);
+                   
+                }
+            }
+        }
+        else
+        {
+            int iRow = row;
+            for (int i = row; i < FieldBPrimaryKeyCount; ++i)
+            {
+                FieldReturn.Data.Add(FieldB.Data[i]);
+                if(FieldReturn.ChildField!=null)
+                {
+                    if(FieldB.ChildField != null)
+                    {
+                        if (FieldReturn.ChildField.Count == FieldB.ChildField.Count)
+                        {
+                            foreach (FieldInfo ChildFieldInfo1 in FieldReturn.ChildField)
+                            {
+                                FieldInfo fieldAA = ChildFieldInfo1;
+                               if (FieldB.ChildFieldString.Contains(ChildFieldInfo1.FieldName))
+                                {
+                                    int index = FieldB.ChildFieldString.IndexOf(ChildFieldInfo1.FieldName);
+                                    FieldInfo FieldReturnA= AddDataByOtherField(fieldAA, FieldB.ChildField[index], FieldBPrimaryKeyCount, row, out errorString);
+                                    fieldAA = FieldReturnA;
+                                }
+                               else
+                                {
+                                    errorString = string.Format("出现错误,因为字段{0}的ChildField:{1}无法合并", FieldReturn, FieldB);
+                                    return FieldReturn;
+                                }
+                                int indexA = FieldReturn.ChildFieldString.IndexOf(fieldAA.FieldName);
+                                FieldReturn.ChildField[indexA].Data = fieldAA.Data;
+                            }
+                        }
+                        else
+                        {
+                            errorString = string.Format("出现错误,因为字段{0}与{1}的ChildField数量不同", FieldReturn, FieldB);
+                            return FieldReturn;
+                        }
+                    }
+                }
+                else
+                {
+                    if (FieldB.ChildField != null)
+                    {
+                        errorString = string.Format("出现错误,因为字段{0}不存在ChildField，但在字段{1}中存在ChildField", FieldReturn, FieldB);
+                        return FieldReturn;
+                    }
+                }
+                iRow++;
+            }
+        }
+        errorString = null;
+        return FieldReturn;
+    }
     /// <summary>
     /// 导出时的特殊处理
     /// </summary>

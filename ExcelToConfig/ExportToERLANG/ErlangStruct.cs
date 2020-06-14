@@ -121,6 +121,11 @@ public struct ErlangStruct
     /// <summary>
     /// 某个Excel表的配置：声明对某张表格是否需要常规导出Erlang的参数配置
     /// </summary>
+    public const string Excel_Config_ExportErlangOtherName = "ExportErlangOtherName";
+
+    /// <summary>
+    /// 某个Excel表的配置：声明对某张表格是否需要常规导出Erlang的参数配置
+    /// </summary>
     public static bool IsExportErlang = false;
 
     /// <summary>

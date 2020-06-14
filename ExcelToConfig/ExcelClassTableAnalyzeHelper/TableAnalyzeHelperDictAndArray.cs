@@ -33,6 +33,7 @@ public partial class TableAnalyzeHelper
         fieldInfo.ArrayChildDataType = childDataType;
         // 解析之后的几列作为array的下属元素
         fieldInfo.ChildField = new List<FieldInfo>();
+        fieldInfo.ChildFieldString = new List<string>();
         nextFieldColumnIndex = columnIndex + 1;
         int tempCount = childCount;
         int seq = 1;
@@ -55,6 +56,7 @@ public partial class TableAnalyzeHelper
                     ++seq;
 
                     fieldInfo.ChildField.Add(childFieldInfo);
+                    fieldInfo.ChildFieldString.Add(childFieldInfo.FieldName);
                     --tempCount;
                 }
             }
@@ -173,6 +175,7 @@ public partial class TableAnalyzeHelper
         }
         // 解析之后的几列作为array的下属元素
         fieldInfo.ChildField = new List<FieldInfo>();
+        fieldInfo.ChildFieldString = new List<string>();
         nextFieldColumnIndex = columnIndex + 1;
         int tempCount = childCount;
         while (tempCount > 0)
@@ -199,6 +202,7 @@ public partial class TableAnalyzeHelper
                         inputFieldNames.Add(childFieldInfo.FieldName);
 
                     fieldInfo.ChildField.Add(childFieldInfo);
+                    fieldInfo.ChildFieldString.Add(childFieldInfo.FieldName);
                     --tempCount;
                 }
             }

@@ -82,6 +82,16 @@ public class AppValues
     public static bool IsMerge = false;
 
     /// <summary>
+    /// App全局导出通用配置，bat脚本:合并后的表是否导出单个
+    /// </summary>
+    public const string Public_Config_ExportSingle = "IsMergeSingle";
+
+    /// <summary>
+    /// App全局导出通用配置,是否允许合并后的表是否导出单个
+    /// </summary>
+    public static bool IsExportSingle = false;
+
+    /// <summary>
     ///  App全局导出通用配置,key=合并导出的tablename,list要合并的哪些表（不带中文）
     /// </summary>
     public static Dictionary<string, string[]> MergeList = new Dictionary<string, string[]>();
