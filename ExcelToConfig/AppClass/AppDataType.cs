@@ -22,3 +22,29 @@ public enum DataType
     Dict,
     MapString,
 }
+/// <summary>
+/// 本工具所支持的导出类型定义
+/// </summary>
+public enum ExportType
+{
+    /// <summary>
+    /// 无效类型
+    /// </summary>
+    Invalid,
+
+    txt,
+    lua,
+    lua2,
+    lua3,
+    lua4,
+    lua5,
+    json,
+    json2,
+    json3,
+    json4,
+    json5,
+    erlang,
+    MySql,
+    Sqlite,
+
+}

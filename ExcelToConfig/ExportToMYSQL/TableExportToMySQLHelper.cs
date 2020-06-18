@@ -92,7 +92,7 @@ public class TableExportToMySQLHelper
             // Utils.LogWarning(Utils.CombineString(warningInfo, " ,"));
         }
         // 按Excel表格中字段定义新建数据库表格
-        string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT) && tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0 ? tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0] : string.Empty;
+        string comment = tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT) && tableInfo.TableConfigData2[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0 ? tableInfo.TableConfigData2[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0] : string.Empty;
         _CreateTable(tableName, tableInfo, comment, out errorString);
         if (string.IsNullOrEmpty(errorString))
         {
@@ -137,7 +137,7 @@ public class TableExportToMySQLHelper
         string fieldNameDefineString = Utils.CombineString(fileNames, ", ");
 
         // 用户是否配置该表中string型字段中的空单元格导出至MySQL中为NULL，默认为空字符串
-        bool isWriteNullForEmptyString = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING) && tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING].Count > 0 && "true".Equals(tableInfo.TableConfig[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING][0], StringComparison.CurrentCultureIgnoreCase);
+        bool isWriteNullForEmptyString = tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING) && tableInfo.TableConfigData2[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING].Count > 0 && "true".Equals(tableInfo.TableConfigData2[MySQLStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING][0], StringComparison.CurrentCultureIgnoreCase);
 
         // 逐行生成插入数据的SQL语句中的value定义部分
         StringBuilder valueDefineStringBuilder = new StringBuilder();

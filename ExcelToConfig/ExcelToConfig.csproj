@@ -122,6 +122,7 @@
     <Compile Include="ExcelClass\ExcelTableSetting.cs" />
     <Compile Include="ExcelClass\ReadExcelHelper.cs" />
     <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelper.cs" />
+    <Compile Include="ExcelConfigSetting.cs" />
     <Compile Include="Export.cs" />
     <Compile Include="ExportToERLANG\ErlangStruct.cs" />
     <Compile Include="ExportToERLANG\ExportToErlangHelper.cs" />
@@ -160,7 +161,14 @@
     <Compile Include="ExportToTXT\TableExportToTxtHelper.cs" />
     <Compile Include="ExportToTXT\TableExportToTxtHelperGetOneField.cs" />
     <Compile Include="ExportToTXT\TxtStruct.cs" />
-    <Compile Include="IExport.cs" />
+    <Compile Include="IBatExportPublicSetting.cs" />
+    <Compile Include="IBatExportSetting.cs" />
+    <Compile Include="ICheckSetting.cs" />
+    <Compile Include="IExcelConfigSetting.cs" />
+    <Compile Include="IExportSave.cs" />
+    <Compile Include="IExportSetting.cs" />
+    <Compile Include="IExportMethods.cs" />
+    <Compile Include="IReadExcelSetting.cs" />
     <Compile Include="LoadResourceDll.cs" />
     <Compile Include="MyCheckFunction.cs" />
     <Compile Include="Program.cs" />

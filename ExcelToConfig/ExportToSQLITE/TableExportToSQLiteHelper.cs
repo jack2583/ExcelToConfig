@@ -56,9 +56,9 @@ public class TableExportToSQLiteHelper
     public static bool ExportTableToDatabase(TableInfo tableInfo, out string errorString)
     {
         AppLog.Log(string.Format("导入SQLite数据库 \"{0}\"：", tableInfo.TableName), ConsoleColor.Green);
-        if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME))
+        if (tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME))
         {
-            List<string> inputParams = tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME];
+            List<string> inputParams = tableInfo.TableConfigData2[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_NAME];
             if (inputParams == null || inputParams.Count < 1 || string.IsNullOrEmpty(inputParams[0]))
             {
                 AppLog.LogWarning("警告：未在表格配置中声明该表导出到_QLITE数据库中的表名，此表将不被导出到数据库，请确认是否真要如此");
@@ -92,13 +92,13 @@ public class TableExportToSQLiteHelper
             // 按Excel表格中字段定义新建数据库表格
             //string comment = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE) && tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE].Count > 0 ? tableInfo.TableConfig[AppValues.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT_SQLITE ][0] : string.Empty;
             string comment = string.Empty;
-            if (tableInfo.TableConfig != null)
+            if (tableInfo.TableConfigData2 != null)
             {
-                if (tableInfo.TableConfig.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT))
+                if (tableInfo.TableConfigData2.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT))
                 {
-                    if (tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0)
+                    if (tableInfo.TableConfigData2[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT].Count > 0)
                     {
-                        comment = tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0];
+                        comment = tableInfo.TableConfigData2[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_TABLE_COMMENT][0];
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class TableExportToSQLiteHelper
         string fieldNameDefineString = Utils.CombineString(fileNames, ", ");
 
         // 用户是否配置该表中string型字段中的空单元格导出至SQLite中为NULL，默认为空字符串
-        bool isWriteNullForEmptyString = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING) && tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING].Count > 0 && "true".Equals(tableInfo.TableConfig[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING][0], StringComparison.CurrentCultureIgnoreCase);
+        bool isWriteNullForEmptyString = tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING) && tableInfo.TableConfigData2[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING].Count > 0 && "true".Equals(tableInfo.TableConfigData2[SQLiteStruct.CONFIG_NAME_EXPORT_DATABASE_WRITE_NULL_FOR_EMPTY_STRING][0], StringComparison.CurrentCultureIgnoreCase);
 
         // 逐行生成插入数据的SQL语句中的value定义部分
         StringBuilder valueDefineStringBuilder = new StringBuilder();

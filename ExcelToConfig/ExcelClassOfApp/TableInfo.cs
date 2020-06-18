@@ -49,9 +49,11 @@ public class TableInfo
     public string ExcelFileName { get; set; }
 
     // 表格配置参数
-    public Dictionary<string, List<string>> TableConfig { get; set; }
+    public Dictionary<string, string> TableConfigData { get; set; }
+    // 表格配置参数
+    public Dictionary<string, List<string>> TableConfigData2 { get; set; }
 
-    public DataTable TableConfigData { get; set; }
+    public DataTable TableConfig { get; set; }
 
     // 存储每个字段的信息以及按字段存储的所有数据
     private List<FieldInfo> _fieldInfo = new List<FieldInfo>();
@@ -167,16 +169,26 @@ public class TableInfo
     /// 指定TableInfo与当前TableInfo合并
     /// </summary>
     /// <param name="tableInfoList"></param>
-    public static TableInfo Merge(string newTableName, List<TableInfo> tableInfoList,out string errorString)
+    public static TableInfo Merge(string newTableName, List<TableInfo> tableInfoList, out string errorString)
     {
         errorString = null;
-        TableInfo tableInfo2 = new TableInfo();
-        tableInfo2.ExcelFilePath = tableInfoList[0].ExcelFilePath;
-        tableInfo2.ExcelName = tableInfoList[0].ExcelName;
-        tableInfo2.TableName = newTableName;
-        tableInfo2.ExcelDirectory = tableInfoList[0].ExcelDirectory;
-        tableInfo2.TableConfig = tableInfoList[0].TableConfig;
-        tableInfo2.TableConfigData = tableInfoList[0].TableConfigData;
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach(TableInfo t in tableInfoList)
+        {
+            stringBuilder.AppendLine(t.ExcelName);
+        }
+        AppLog.Log(string.Format("开始合并表格{0},由以下表合成：\n{1}", newTableName,stringBuilder.ToString()),ConsoleColor.Green);
+
+        TableInfo tableInfoFirst = new TableInfo();
+        tableInfoFirst.ExcelFilePath = tableInfoList[0].ExcelFilePath;
+        tableInfoFirst.ExcelName = tableInfoList[0].ExcelName;
+        tableInfoFirst.TableName = newTableName;
+        tableInfoFirst.ExcelDirectory = tableInfoList[0].ExcelDirectory;
+        tableInfoFirst.TableConfigData = tableInfoList[0].TableConfigData;
+        tableInfoFirst.TableConfigData2 = tableInfoList[0].TableConfigData2;
+        tableInfoFirst.TableConfig = tableInfoList[0].TableConfig;
+
+
 
         FieldInfo fieldInfoTemp;
         List<FieldInfo> allFieldInfo = null;
@@ -184,94 +196,123 @@ public class TableInfo
         List<string> fieldName = new List<string>();
         foreach (TableInfo tableInfo in tableInfoList)
         {
-            allFieldInfo = new List<FieldInfo>();
-            allFieldInfo = tableInfo.GetAllFieldInfo();
-                foreach (FieldInfo fieldInfo in allFieldInfo)
+            FieldInfo tableInfoKeyField = tableInfo.GetKeyColumnFieldInfo();
+            FieldInfo tableInfoFirstKeyField = tableInfoFirst.GetKeyColumnFieldInfo();
+            if (tableInfoFirstKeyField != null)
+            {
+                if (!(String.Equals(tableInfoFirstKeyField.FieldName, tableInfoKeyField.FieldName)
+                    && String.Equals(tableInfoFirstKeyField.DataType, tableInfoKeyField.DataType)
+                    && String.Equals(tableInfoFirstKeyField.DatabaseFieldName, tableInfoKeyField.DatabaseFieldName)
+                    && String.Equals(tableInfoFirstKeyField.DatabaseFieldType, tableInfoKeyField.DatabaseFieldType)))
                 {
-                    if (!fieldName.Contains(fieldInfo.FieldName))
-                    {
-                        fieldInfoTemp = new FieldInfo();
-                        fieldInfoTemp.TableName = fieldInfo.TableName;
-                        fieldInfoTemp.SheetName = fieldInfo.SheetName;
-                        //Excel表第1行信息
-                        fieldInfoTemp.Desc = fieldInfo.Desc;
-                        //Excel表第2行信息
-                        fieldInfoTemp.FieldName = fieldInfo.FieldName;
-                        //Excel表第3行信息
-                        fieldInfoTemp.DataType = fieldInfo.DataType;
-                        fieldInfoTemp.DataTypeString = fieldInfo.DataTypeString;
-                        fieldInfoTemp.ExtraParam = fieldInfo.ExtraParam;//类似：date(input=#1970sec|toLua=yyyy年MM月dd日 HH时mm分ss秒)
-                                                                        //Excel表第4行信息
-                        fieldInfoTemp.CheckRule = fieldInfo.CheckRule;
-                        //Excel表第5行信息
-                        fieldInfoTemp.DatabaseFieldName = fieldInfo.DatabaseFieldName;
-                        fieldInfoTemp.DatabaseFieldType = fieldInfo.DatabaseFieldType;
 
-                        //其他信息
-                        fieldInfoTemp.ArrayChildDataType = fieldInfo.ArrayChildDataType;
-                        fieldInfoTemp.ArrayChildDataTypeString = fieldInfo.ArrayChildDataTypeString;
-                        fieldInfoTemp.ColumnSeq = fieldInfo.ColumnSeq;
-                        fieldInfoTemp.IsIgnoreClientExport = fieldInfo.IsIgnoreClientExport;
-                        fieldInfoTemp.TableStringFormatDefine = fieldInfo.TableStringFormatDefine;
-                        fieldInfoTemp.MapStringFormatDefine = fieldInfo.MapStringFormatDefine;
-                        fieldInfoTemp.ChildField = fieldInfo.ChildField;
-                        fieldInfoTemp.ParentField = fieldInfo.ParentField;
-
-                    tableInfo2.AddField(fieldInfoTemp);
-                    fieldName.Add(fieldInfo.FieldName);
+                    AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的主键名必须一致，表{0}的主键与其他表格主键不同", tableInfo.ExcelName));
                 }
             }
+
+            allFieldInfo = new List<FieldInfo>();
+            allFieldInfo = tableInfo.GetAllFieldInfo();
+            foreach (FieldInfo fieldInfo in allFieldInfo)
+            {
+                if (!fieldName.Contains(fieldInfo.FieldName))
+                {
+                    fieldInfoTemp = new FieldInfo();
+                    fieldInfoTemp.TableName = fieldInfo.TableName;
+                    fieldInfoTemp.SheetName = fieldInfo.SheetName;
+                    //Excel表第1行信息
+                    fieldInfoTemp.Desc = fieldInfo.Desc;
+                    //Excel表第2行信息
+                    fieldInfoTemp.FieldName = fieldInfo.FieldName;
+                    //Excel表第3行信息
+                    fieldInfoTemp.DataType = fieldInfo.DataType;
+                    fieldInfoTemp.DataTypeString = fieldInfo.DataTypeString;
+                    fieldInfoTemp.ExtraParam = fieldInfo.ExtraParam;//类似：date(input=#1970sec|toLua=yyyy年MM月dd日 HH时mm分ss秒)
+                                                                    //Excel表第4行信息
+                    fieldInfoTemp.CheckRule = fieldInfo.CheckRule;
+                    //Excel表第5行信息
+                    fieldInfoTemp.DatabaseFieldName = fieldInfo.DatabaseFieldName;
+                    fieldInfoTemp.DatabaseFieldType = fieldInfo.DatabaseFieldType;
+
+                    //其他信息
+                    fieldInfoTemp.ArrayChildDataType = fieldInfo.ArrayChildDataType;
+                    fieldInfoTemp.ArrayChildDataTypeString = fieldInfo.ArrayChildDataTypeString;
+                    fieldInfoTemp.ColumnSeq = fieldInfo.ColumnSeq;
+                    fieldInfoTemp.IsIgnoreClientExport = fieldInfo.IsIgnoreClientExport;
+                    fieldInfoTemp.TableStringFormatDefine = fieldInfo.TableStringFormatDefine;
+                    fieldInfoTemp.MapStringFormatDefine = fieldInfo.MapStringFormatDefine;
+                    fieldInfoTemp.ChildField = fieldInfo.ChildField;
+                    fieldInfoTemp.ParentField = fieldInfo.ParentField;
+
+                    tableInfoFirst.AddField(fieldInfoTemp);
+                    fieldName.Add(fieldInfo.FieldName);
+                }
+                else
+                {
+                    FieldInfo tableInfoFirstField = tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName);
+                    if (!(String.Equals(tableInfoFirstField.FieldName, fieldInfo.FieldName)
+                        && String.Equals(tableInfoFirstField.DataType, fieldInfo.DataType)
+                        && String.Equals(tableInfoFirstField.DatabaseFieldName, fieldInfo.DatabaseFieldName)
+                        && String.Equals(tableInfoFirstField.DatabaseFieldType, fieldInfo.DatabaseFieldType)))
+                    {
+
+                        AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的字段必须一致，表{0}的字段{1}与其他表格不同", tableInfo.ExcelName, fieldInfo.FieldName));
+                    }
+                }
+
+            }
+
+
         }
         List<FieldInfo> allFieldInfo2 = new List<FieldInfo>();
-        allFieldInfo2 = tableInfo2.GetAllFieldInfo();
+        allFieldInfo2 = tableInfoFirst.GetAllFieldInfo();
         List<string> fieldNameB = new List<string>();
         foreach (FieldInfo fieldInfo in allFieldInfo2)
         {
-            if (tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data == null)
-                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data = new List<object>();
+            if (tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data == null)
+                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data = new List<object>();
 
-            if (tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys == null)
-                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys = new List<object>();
+            if (tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys == null)
+                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys = new List<object>();
 
-            if (tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString == null)
-                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString = new List<string>();
+            if (tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString == null)
+                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString = new List<string>();
         }
-            foreach (TableInfo tableInfo in tableInfoList)
+        foreach (TableInfo tableInfo in tableInfoList)
+        {
+            int count = tableInfo.GetAllFieldInfo()[0].Data.Count;
+            if (count > 0)
             {
-                int count = tableInfo.GetAllFieldInfo()[0].Data.Count;
-                if (count > 0)
+                allFieldInfoA = new List<FieldInfo>();
+                allFieldInfoA = tableInfo.GetAllFieldInfo();
+                for (int i = 0; i < count; ++i)
                 {
-                    allFieldInfoA = new List<FieldInfo>();
-                    allFieldInfoA = tableInfo.GetAllFieldInfo();
-                    for (int i = 0; i < count; ++i)
+                    foreach (FieldInfo fieldInfo in allFieldInfo2)
                     {
-                        foreach (FieldInfo fieldInfo in allFieldInfo2)
+                        if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName) != null)
                         {
-                            if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName) != null)
-                            {
                             object data = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).Data[i];
                             if (data != null)
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(data);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(data);
                             else
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(null);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(null);
 
                             //object langkeys = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys[i];
                             if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys != null)
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys[i]);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys[i]);
                             else
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(null);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(null);
 
                             // string jsonstring = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i];
                             if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString != null)
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i]);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString[i]);
                             else
-                                tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(null);
+                                tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(null);
                         }
                         else
                         {
-                            tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(null);
-                            tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(null);
-                            tableInfo2.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(null);
+                            tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(null);
+                            tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).LangKeys.Add(null);
+                            tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString.Add(null);
                         }
                     }
                 }
@@ -282,16 +323,16 @@ public class TableInfo
         FieldCheckRule uniqueCheckRule = new FieldCheckRule();
         uniqueCheckRule.CheckType = TableCheckType.Unique;
         uniqueCheckRule.CheckRuleString = "unique";
-        TableCheckHelper.CheckUnique(tableInfo2.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
+        TableCheckHelper.CheckUnique(tableInfoFirst.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
         if (errorString != null)
         {
             //string error = string.Format("表格{0}-{1}中列号为{2}的字段存在以下严重错误，导致无法继续，请修正错误后重试\n", newTableName, "", ExcelMethods.GetExcelColumnName(0 + 1));
-           // errorString = "主键列存在重复错误\n" + errorString;
-            AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败,因为主键{1},{2}", newTableName, tableInfo2.GetKeyColumnFieldInfo().FieldName, errorString));
+            // errorString = "主键列存在重复错误\n" + errorString;
+            AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败,因为主键{1},{2}", newTableName, tableInfoFirst.GetKeyColumnFieldInfo().FieldName, errorString));
             //AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
         }
 
-        return tableInfo2;
+        return tableInfoFirst;
     }
     //    catch(Exception e)
     //    {
@@ -317,9 +358,10 @@ public class TableInfo
         newTableInfo.ExcelName = oldTableInfo.ExcelName;
         newTableInfo.TableName = newTableName;
         newTableInfo.ExcelDirectory = oldTableInfo.ExcelDirectory;
-        newTableInfo.TableConfig = oldTableInfo.TableConfig;
         newTableInfo.TableConfigData = oldTableInfo.TableConfigData;
-       
+        newTableInfo.TableConfigData2 = oldTableInfo.TableConfigData2;
+        newTableInfo.TableConfig = oldTableInfo.TableConfig;
+
 
         FieldInfo newPrimaryKeyField = new FieldInfo();
         FieldInfo oldPrimaryKeyField = oldTableInfo.GetKeyColumnFieldInfo();
@@ -346,9 +388,9 @@ public class TableInfo
         foreach (TableInfo tableInfoTemp in tableInfoList)
         {
             FieldInfo fieldInfoTemp = tableInfoTemp.GetKeyColumnFieldInfo();
-            if (newPrimaryKeyField.FieldName.Equals(fieldInfoTemp.FieldName)==false)
+            if (newPrimaryKeyField.FieldName.Equals(fieldInfoTemp.FieldName) == false)
             {
-                AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的主键名必须一致，表{0}的主键名为{1}与其他表格主键为{2}不同,其他表格包括：{3}", tableInfoTemp.ExcelName, fieldInfoTemp.FieldName, newPrimaryKeyField.FieldName, tempMergeTable1.ToString())) ;
+                AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的主键名必须一致，表{0}的主键名为{1}与其他表格主键为{2}不同,其他表格包括：{3}", tableInfoTemp.ExcelName, fieldInfoTemp.FieldName, newPrimaryKeyField.FieldName, tempMergeTable1.ToString()));
             }
 
             if (newPrimaryKeyField.DataType.Equals(fieldInfoTemp.DataType) == false)
@@ -361,10 +403,10 @@ public class TableInfo
             //    AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的主键导入数据库（Excel第{0}行）必须一致：表{1}的导入数据库{2}与其他表格主键不同,其他表格包括：{3}", ExcelTableSetting.DataFieldExportDataBaseFieldInFoRowIndex, tableInfoTemp.ExcelName, fieldInfoTemp.DatabaseInfoString, tempMergeTable1.ToString()));
             //}
 
-            newPrimaryKeyField = FieldInfo.AddDataByOtherField(newPrimaryKeyField, fieldInfoTemp, fieldInfoTemp.Data.Count,0,out errorString);
-            if(errorString!=null)
+            newPrimaryKeyField = FieldInfo.AddDataByOtherField(newPrimaryKeyField, fieldInfoTemp, fieldInfoTemp.Data.Count, 0, out errorString);
+            if (errorString != null)
             {
-                AppLog.LogErrorAndExit("合并遇到错误："+errorString);
+                AppLog.LogErrorAndExit("合并遇到错误：" + errorString);
             }
         }
         // 唯一性检查
@@ -378,7 +420,7 @@ public class TableInfo
         }
         newTableInfo.AddField(newPrimaryKeyField);
 
-        
+
         // 合并其他字段及字段类型，但不合并数据
         List<string> newTableFieldNames = new List<string>();
         newTableFieldNames.Add(newPrimaryKeyField.FieldName);
@@ -393,10 +435,10 @@ public class TableInfo
                     continue;
 
                 //如果已合并过该字段，则进行检查字段类型、数据库类型是否相同
-                if(newTableFieldNames.Contains(tempFieldInfo.FieldName))
+                if (newTableFieldNames.Contains(tempFieldInfo.FieldName))
                 {
                     FieldInfo tempNewTableInfoFieldInfo = newTableInfo.GetFieldInfoByFieldName(tempFieldInfo.FieldName);
-                    if (tempFieldInfo.DataType.Equals(tempNewTableInfoFieldInfo.DataType)==false)
+                    if (tempFieldInfo.DataType.Equals(tempNewTableInfoFieldInfo.DataType) == false)
                     {
                         AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的字段名与类型必须一致，表{0}中为{1}的字段(类型为：{2})与其他表格同名字段类型为{3},其他表格包括：{4}", tableInfoTemp.ExcelName, tempFieldInfo.FieldName, tempFieldInfo.DataType, tempNewTableInfoFieldInfo.DataType, tempMergeTable2.ToString()));
                     }
@@ -406,18 +448,18 @@ public class TableInfo
                     //    AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的字段名与类型必须一致，表{0}中为{1}的字段(导出入数据类型为：{2})与其他表格同名字段导入数据库类型为{3},其他表格包括：{4}", tableInfoTemp.ExcelName, tempFieldInfo.FieldName, tempFieldInfo.DatabaseInfoString, tempNewTableInfoFieldInfo.DatabaseInfoString, tempMergeTable2.ToString()));
                     //}
 
-                    if(tempNewTableInfoFieldInfo.ChildField==null)
+                    if (tempNewTableInfoFieldInfo.ChildField == null)
                     {
-                        if(tempFieldInfo.ChildField!=null)
+                        if (tempFieldInfo.ChildField != null)
                         {
                             tempNewTableInfoFieldInfo.ChildField = tempFieldInfo.ChildField;
                         }
                     }
                     else
                     {
-                        if(tempNewTableInfoFieldInfo.ChildField.Count== tempFieldInfo.ChildField.Count)
+                        if (tempNewTableInfoFieldInfo.ChildField.Count == tempFieldInfo.ChildField.Count)
                         {
-                           //继续判断其他条件
+                            //继续判断其他条件
                         }
                         else
                         {
@@ -460,7 +502,7 @@ public class TableInfo
             if (tempFieldInfo.ChildField == null)
                 continue;
 
-            foreach(FieldInfo ChildFieldInfo1 in tempFieldInfo.ChildField)
+            foreach (FieldInfo ChildFieldInfo1 in tempFieldInfo.ChildField)
             {
                 if (ChildFieldInfo1.ChildField == null)
                 {
@@ -530,7 +572,7 @@ public class TableInfo
             FieldInfo FieldReturn = new FieldInfo();
             foreach (TableInfo tableInfoTemp in tableInfoList)//遍历所有待合并表
             {
-                if(tableInfoTemp.IsContainField(fieldA.FieldName))//如果存在字段就获取到该字段
+                if (tableInfoTemp.IsContainField(fieldA.FieldName))//如果存在字段就获取到该字段
                 {
                     fieldB = tableInfoTemp.GetFieldInfoByFieldName(fieldA.FieldName);
                 }
@@ -540,7 +582,7 @@ public class TableInfo
                     fieldB.Data = null;
                 }
                 fieldA = FieldInfo.AddDataByOtherField(fieldA, fieldB, tableInfoTemp.GetKeyColumnFieldInfo().Data.Count, 0, out errorString);
-                    
+
             }
             //newTableInfo.AddField(fieldA);
         }

@@ -23,9 +23,9 @@ public class ExportToLuaHelper
         //}
 
         // 以下为旧的代码。判断是否设置了特殊导出规则
-        if (tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey("tableExportConfig"))
+        if (tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey("tableExportConfig"))
         {
-            List<string> inputParams = tableInfo.TableConfig[LuaStruct.Excel_Config_SpecialExportLua];
+            List<string> inputParams = tableInfo.TableConfigData2[LuaStruct.Excel_Config_SpecialExportLua];
             if (inputParams.Contains(LuaStruct.Excel_Config_NotExportLuaOriginalTable))
             {
                 LuaStruct.IsExportLua = false;

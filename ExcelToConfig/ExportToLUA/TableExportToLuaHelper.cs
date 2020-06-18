@@ -38,7 +38,7 @@ public partial class TableExportToLuaHelper
         int currentLevel = 1;
 
         // 判断是否设置要将主键列的值作为导出的table中的元素
-        bool isAddKeyToLuaTable = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(LuaStruct.Excel_Config_AddKeyToLuaTable) && tableInfo.TableConfig[LuaStruct.Excel_Config_AddKeyToLuaTable].Count > 0 && "true".Equals(tableInfo.TableConfig[LuaStruct.Excel_Config_AddKeyToLuaTable][0], StringComparison.CurrentCultureIgnoreCase);
+        bool isAddKeyToLuaTable = tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(LuaStruct.Excel_Config_AddKeyToLuaTable) && tableInfo.TableConfigData2[LuaStruct.Excel_Config_AddKeyToLuaTable].Count > 0 && "true".Equals(tableInfo.TableConfigData2[LuaStruct.Excel_Config_AddKeyToLuaTable][0], StringComparison.CurrentCultureIgnoreCase);
 
         // 逐行读取表格内容生成lua table
         List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();

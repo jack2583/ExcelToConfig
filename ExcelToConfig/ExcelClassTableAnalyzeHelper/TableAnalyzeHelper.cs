@@ -243,15 +243,16 @@ public partial class TableAnalyzeHelper
                             // 如果有表格配置进行解析
                             if (ds.Tables[ExcelTableSetting.ExcelConfigSheetName] != null)
                             {
-                               // AppLog.Log("    解析config配置...", ConsoleColor.Green);
-                                tableInfo.TableConfig = GetTableConfigOfFirstColumn(ds.Tables[ExcelTableSetting.ExcelConfigSheetName], out errorString);
+                                // AppLog.Log("    解析config配置...", ConsoleColor.Green);
+                                tableInfo.TableConfigData=GetTableConfigData(ds.Tables[ExcelTableSetting.ExcelConfigSheetName], out errorString);
+                                tableInfo.TableConfigData2 = GetTableConfigOfFirstColumn(ds.Tables[ExcelTableSetting.ExcelConfigSheetName], out errorString);
                                 if (!string.IsNullOrEmpty(errorString))
                                 {
                                     AppLog.LogErrorAndExit(string.Format("错误：解析表格{0}的配置失败\n{1}", kvp.Key, errorString));
                                 }
                                 else
                                 {
-                                    tableInfo.TableConfigData = ds.Tables[ExcelTableSetting.ExcelConfigSheetName];
+                                    tableInfo.TableConfig = ds.Tables[ExcelTableSetting.ExcelConfigSheetName];
                                 }
                             }
                             if (!AppValues.TableInfoList.ContainsKey(tableName))

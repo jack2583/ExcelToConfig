@@ -811,7 +811,7 @@ namespace ExcelToConfig
                         //合并过的表不再检查
                         if (AppValues.MergeTableList.ContainsKey(kvp.Key))
                             continue;
-
+                        
                         TableInfo tableInfo = kvp.Value;
                         AppLog.Log(string.Format("检查表格\"{0}\"：", tableInfo.ExcelNameTips), ConsoleColor.Green);
                         errorString = null;

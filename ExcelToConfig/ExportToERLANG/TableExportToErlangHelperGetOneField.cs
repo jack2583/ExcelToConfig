@@ -22,13 +22,9 @@ public partial class TableExportToErlangHelper
         {
             case DataType.Int:
             case DataType.Long:
-                {
-                    value = _GetIntValue(fieldInfo, row, level);
-                    break;
-                }
             case DataType.Float:
                 {
-                    value = _GetFloatValue(fieldInfo, row, level);
+                    value = _GetNumberValue(fieldInfo, row, level);
                     break;
                 }
             case DataType.String:
@@ -97,6 +93,8 @@ public partial class TableExportToErlangHelper
             errorString = string.Format("第{0}行第{1}列的数据存在错误无法导出，", row + ExcelTableSetting.DataFieldDataStartRowIndex + 1, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1)) + errorString;
             return null;
         }
+        if (value == null)
+            return null;
         StringBuilder content = new StringBuilder();
         // 变量名前的缩进
         //content.Append(_GetErlangIndentation(level));
@@ -174,16 +172,6 @@ public partial class TableExportToErlangHelper
         else
             return fieldInfo.Data[row].ToString();
     }
-    private static string _GetIntValue(FieldInfo fieldInfo, int row, int level)
-    {
-        if (fieldInfo.Data[row] == null)
-            if (ErlangStruct.IsExportErlangNullConfig == true)
-                return "0.0";
-            else
-                return "0.0";//return "NULL";
-        else
-            return fieldInfo.Data[row].ToString() + ".0";
-    }
     private static string _GetFloatValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
@@ -194,26 +182,29 @@ public partial class TableExportToErlangHelper
         else
         {
             string t1 = fieldInfo.Data[row].ToString();
-            int tmp;
-            if (!int.TryParse(t1, out tmp))//如果转换失败（为false）时输出括号内容
+            int ti;
+            if (!int.TryParse(t1, out ti))//如果转换失败（为false）时输出括号内容
             {
                 return t1;
             }
 
             else
             {
-                return t1 + ".0";
+                return ti + ".0"; //成功时输出数字+.0
             }
-        }
 
+
+            
+        }
+            
     }
     private static string _GetStringValue(FieldInfo fieldInfo, int row, int level)
     {
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return @"<<"""">>"; //return "null";
+                return null; //return "null";
             else
-                return @"<<"""">>";
+                return null; //return @"<<"""">>";
         StringBuilder content = new StringBuilder();
         if (fieldInfo.Data[row].ToString().Length == 0)
             if (ErlangStruct.IsExportErlangNullConfig == false)
@@ -235,6 +226,15 @@ public partial class TableExportToErlangHelper
             // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
             // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理。之前做法为Replace("\\", "\\\\")，即将单元格中输入内容均视为普通字符，忽略转义的处理
             string str = fieldInfo.Data[row].ToString().Replace("\n", "\\n").Replace("\\\"", "\"");//.Replace("\n", "\\n").Replace("\"", "\"");
+            //int ti;
+            //if (!int.TryParse(str, out ti))//如果转换失败（为false）时输出括号内容
+            //{
+            //    content.Append(str);
+            //}
+            //else
+            //{
+            //    content.Append(str+".0"); ; //成功时输出数字+.0
+            //}
             content.Append(str);
             if (str.Length == 0)
                 content.Append("\">>");
@@ -249,7 +249,7 @@ public partial class TableExportToErlangHelper
     {
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return "null";
+                return null;
             else
                 return "false";
 
@@ -299,7 +299,7 @@ public partial class TableExportToErlangHelper
         StringBuilder content = new StringBuilder();
 
         if (fieldInfo.Data[row] == null)
-           content.Append("null");
+           return null;
         else
         {
             DateTime dt = (DateTime)(fieldInfo.Data[row]);
@@ -362,7 +362,7 @@ public partial class TableExportToErlangHelper
     {
         StringBuilder content = new StringBuilder();
         if (fieldInfo.Data[row] == null)
-            content.Append("null");
+            return null;
         else
         {
             DateTime dt = (DateTime)(fieldInfo.Data[row]);
@@ -452,7 +452,7 @@ public partial class TableExportToErlangHelper
         errorString = null;
         if (fieldInfo.Data[row] == null)
             if (ErlangStruct.IsExportErlangNullConfig == false)
-                return "[]";
+                return null;
             else
                 return "[]";
 
@@ -496,7 +496,7 @@ public partial class TableExportToErlangHelper
             if(fieldInfo.JsonString[row]==null)
             {
                 if (ErlangStruct.IsExportErlangNullConfig == true)
-                    return "[]";
+                    return null;
                 else
                     return "null";
             }
@@ -560,7 +560,7 @@ public partial class TableExportToErlangHelper
                 else
                     content.AppendFormat("{0}", keyName);
 
-                content.Append("=> ");
+                content.Append("=>");
                 //}
                 _AnalyzeJsonData(content, jsonData[i], level);
                 content.Append(",");

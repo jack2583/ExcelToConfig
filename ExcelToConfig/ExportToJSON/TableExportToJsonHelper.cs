@@ -149,14 +149,14 @@ public partial class TableExportToJsonHelper
         if (SaveJson.SaveJsonFile(tableInfo.ExcelName, ExcelMethods.GetSaveTableName(tableInfo.TableName), exportString) == true)
         {
             errorString = null;
-            try
-            {
-                LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(exportString);
-            }
-            catch (LitJson.JsonException exception)
-            {
-                errorString = "错误：导出json出现异常，请检查导出的json及Excel\n";
-            }
+            //try
+            //{
+            //    LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(exportString);
+            //}
+            //catch (LitJson.JsonException exception)
+            //{
+            //    errorString = "错误：导出json出现异常，请检查导出的json及Excel\n";
+            //}
 
             return true;
         }

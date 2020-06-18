@@ -57,7 +57,7 @@ public partial class TableExportToTxtHelper
             }
             else
             {
-                errorString = string.Format("{0}的数据表{1}保存为txt文件失败\n", tableInfo.ExcelName, tableInfo.TableConfig);
+                errorString = string.Format("{0}的数据表{1}保存为txt文件失败\n", tableInfo.ExcelName, tableInfo.TableConfigData2);
                 stringBuilder.Append(errorString);
                 //return false;
             }
@@ -208,7 +208,7 @@ public partial class TableExportToTxtHelper
         }
         catch
         {
-            errorString = string.Format("{0}的数据表{1}保存为txt文件失败\n", tableInfo.ExcelName, tableInfo.TableConfig);
+            errorString = string.Format("{0}的数据表{1}保存为txt文件失败\n", tableInfo.ExcelName, tableInfo.TableConfigData2);
             return false;
         }
 

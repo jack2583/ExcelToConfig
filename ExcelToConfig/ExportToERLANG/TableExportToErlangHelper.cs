@@ -299,7 +299,7 @@ public partial class TableExportToErlangHelper
         int currentLevel = 1;
 
         // 判断是否设置要将主键列的值作为导出的table中的元素
-        bool isAddKeyToLuaTable = tableInfo.TableConfig != null && tableInfo.TableConfig.ContainsKey(ErlangStruct.Excel_Config_AddKeyToErlangTable) && tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable].Count > 0 && "true".Equals(tableInfo.TableConfig[ErlangStruct.Excel_Config_AddKeyToErlangTable][0], StringComparison.CurrentCultureIgnoreCase);
+        bool isAddKeyToLuaTable = tableInfo.TableConfigData2 != null && tableInfo.TableConfigData2.ContainsKey(ErlangStruct.Excel_Config_AddKeyToErlangTable) && tableInfo.TableConfigData2[ErlangStruct.Excel_Config_AddKeyToErlangTable].Count > 0 && "true".Equals(tableInfo.TableConfigData2[ErlangStruct.Excel_Config_AddKeyToErlangTable][0], StringComparison.CurrentCultureIgnoreCase);
 
         //if(tableInfo.ExcelName== "ad_watch_videoType_info-视频类型信息")
         //{
