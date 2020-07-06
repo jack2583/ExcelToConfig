@@ -23,7 +23,7 @@ public partial class TableAnalyzeHelper
         TableInfo tableInfo = new TableInfo();
         tableInfo.ExcelFilePath = filePath;
         tableInfo.ExcelName = Path.GetFileNameWithoutExtension(filePath);
-        tableInfo.TableName = ExcelMethods.GetTableName(tableInfo.ExcelName);
+        tableInfo.TableName = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
 
         string tableName = tableInfo.ExcelName;
 
@@ -89,7 +89,7 @@ public partial class TableAnalyzeHelper
                 }
 
                 // 非空检查（因为string型检查是否符合变量名规范时以及未声明数值型字段中允许空时，均已对主键列进行过非空检查，这里只需对数据值字段且声明数值型字段中允许空的情况下进行非空检查）
-                if (CheckStruct.IsAllowedNullNumber == true && (primaryKeyColumnType == DataType.Int || primaryKeyColumnType == DataType.Long))
+                if (ExcelFolder.IsAllowedNullNumber == true && (primaryKeyColumnType == DataType.Int || primaryKeyColumnType == DataType.Long))
                 {
                     FieldCheckRule notEmptyCheckRule = new FieldCheckRule();
                     uniqueCheckRule.CheckType = TableCheckType.NotEmpty;
@@ -150,7 +150,10 @@ public partial class TableAnalyzeHelper
     /// <param name="ExportTables"></param>
     public static void AnalyzeAllTable(Dictionary<string, string> ExportTables)
     {
-        AppLog.Log("开始解析Excel文件：");
+        //检测Excel是否打开
+        ReadExcelHelper.GetFileState(ExcelFolder.ExportTables);
+
+        AppLog.Log("\n开始解析Excel文件：");
         Stopwatch stopwatch = new Stopwatch();//计算运行时间
         foreach (KeyValuePair<string, string> kvp in ExportTables)
         {
@@ -312,7 +315,7 @@ public partial class TableAnalyzeHelper
             //导出txt用
             AppValues.ExcelDataSet.Add(kvp.Value, ds);
         }
-        AppLog.Log("所有配置表解析完毕！！！");
+        AppLog.Log("\n所有配置表解析完毕！！！\n");
     }
 
     /// <summary>

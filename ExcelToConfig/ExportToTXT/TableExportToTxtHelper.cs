@@ -23,7 +23,7 @@ public partial class TableExportToTxtHelper
                 string str = null;
                 for (int column = 0; column < dt.Columns.Count; ++column)
                 {
-                    str = str + "{" + column + "}" + TxtStruct.ExportTxtSplitChar;
+                    str = str + "{" + column + "}" + TxtStruct.ExportSpaceString;
                     strList.Add(dt.Rows[row][column].ToString());
                 }
 
@@ -36,7 +36,7 @@ public partial class TableExportToTxtHelper
                 //str2 = str2.Remove(str2.Length - 1);
                 //  str = str.TrimEnd(TxtStruct.ExportTxtSplitChar);
                 // content.Append(str).Append(TxtStruct.ExportTxtLineChar);
-                content.Append(string.Format(str, str2)).Append(TxtStruct.ExportTxtLineChar);
+                content.Append(string.Format(str, str2)).Append(TxtStruct.ExportLineString);
                 //content.AppendFormat(str, str2).Append(TxtStruct.ExportTxtLineChar);
             }
             string exportString = content.ToString();
@@ -106,7 +106,7 @@ public partial class TableExportToTxtHelper
         StringBuilder tempStringBuilder = new StringBuilder();
         for (int i = 0; i < allFieldInfoIgnoreSetDataStructure.Count; ++i)
         {
-            tempStringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+            tempStringBuilder.Append(TxtStruct.ExportSpaceString);
             FieldInfo fieldInfo = allFieldInfoIgnoreSetDataStructure[i];
             tempStringBuilder.Append(fieldInfo.DatabaseInfoString);
         }
@@ -117,7 +117,7 @@ public partial class TableExportToTxtHelper
         StringBuilder tempStringBuilder2 = new StringBuilder();
         for (int i = 0; i < allFieldInfoIgnoreSetDataStructure.Count; ++i)
         {
-            tempStringBuilder2.Append(TxtStruct.ExportTxtSplitChar);
+            tempStringBuilder2.Append(TxtStruct.ExportSpaceString);
             FieldInfo fieldInfo = allFieldInfoIgnoreSetDataStructure[i];
             tempStringBuilder2.Append(fieldInfo.CheckRule);
         }
@@ -129,7 +129,7 @@ public partial class TableExportToTxtHelper
         StringBuilder tempStringBuilder3 = new StringBuilder();
         for (int i = 0; i < allFieldInfoIgnoreSetDataStructure.Count; ++i)
         {
-            tempStringBuilder3.Append(TxtStruct.ExportTxtSplitChar);
+            tempStringBuilder3.Append(TxtStruct.ExportSpaceString);
             FieldInfo fieldInfo = allFieldInfoIgnoreSetDataStructure[i];
             tempStringBuilder3.Append(fieldInfo.DataType);
         }
@@ -141,7 +141,7 @@ public partial class TableExportToTxtHelper
         StringBuilder tempStringBuilder4 = new StringBuilder();
         for (int i = 0; i < allFieldInfoIgnoreSetDataStructure.Count; ++i)
         {
-            tempStringBuilder4.Append(TxtStruct.ExportTxtSplitChar);
+            tempStringBuilder4.Append(TxtStruct.ExportSpaceString);
             FieldInfo fieldInfo = allFieldInfoIgnoreSetDataStructure[i];
             // 如果是array下属的子元素，字段名生成格式为“array字段名[从1开始的下标序号]”。dict下属的子元素，生成格式为“dict字段名.下属字段名”
             if (fieldInfo.ParentField != null)
@@ -172,7 +172,7 @@ public partial class TableExportToTxtHelper
         StringBuilder tempStringBuilder5 = new StringBuilder();
         for (int i = 0; i < allFieldInfoIgnoreSetDataStructure.Count; ++i)
         {
-            tempStringBuilder5.Append(TxtStruct.ExportTxtSplitChar);
+            tempStringBuilder5.Append(TxtStruct.ExportSpaceString);
             FieldInfo fieldInfo = allFieldInfoIgnoreSetDataStructure[i];
             tempStringBuilder5.Append(fieldInfo.Desc.Replace("\n", "\\n"));
         }
@@ -228,7 +228,7 @@ public partial class TableExportToTxtHelper
                     {
                         StringBuilder stringBuilder = rowContentList[row];
                         // 先增加与上一字段间的分隔符
-                        stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                        stringBuilder.Append(TxtStruct.ExportSpaceString);
                         // 再生成本行对应的内容
                         if (fieldInfo.Data[row] != null)
 
@@ -243,7 +243,7 @@ public partial class TableExportToTxtHelper
                     {
                         StringBuilder stringBuilder = rowContentList[row];
                         // 先增加与上一字段间的分隔符
-                        stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                        stringBuilder.Append(TxtStruct.ExportSpaceString);
                         // 再生成本行对应的内容
                         if (fieldInfo.Data[row] != null)
 
@@ -256,7 +256,7 @@ public partial class TableExportToTxtHelper
                     for (int row = 0; row < rowCount; ++row)
                     {
                         StringBuilder stringBuilder = rowContentList[row];
-                        stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                        stringBuilder.Append(TxtStruct.ExportSpaceString);
                         if (fieldInfo.Data[row] != null)
                         {
                             if ((bool)fieldInfo.Data[row] == true)
@@ -272,7 +272,7 @@ public partial class TableExportToTxtHelper
                     for (int row = 0; row < rowCount; ++row)
                     {
                         StringBuilder stringBuilder = rowContentList[row];
-                        stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                        stringBuilder.Append(TxtStruct.ExportSpaceString);
                         if (fieldInfo.Data[row] != null)
                             stringBuilder.Append(fieldInfo.JsonString[row]);
                     }
@@ -298,7 +298,7 @@ public partial class TableExportToTxtHelper
                                 for (int row = 0; row < rowCount; ++row)
                                 {
                                     StringBuilder stringBuilder = rowContentList[row];
-                                    stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                                    stringBuilder.Append(TxtStruct.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
                                         stringBuilder.Append(((DateTime)(fieldInfo.Data[row])).ToString(exportFormatString));
                                 }
@@ -309,7 +309,7 @@ public partial class TableExportToTxtHelper
                                 for (int row = 0; row < rowCount; ++row)
                                 {
                                     StringBuilder stringBuilder = rowContentList[row];
-                                    stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                                    stringBuilder.Append(TxtStruct.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
                                         stringBuilder.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
                                 }
@@ -320,7 +320,7 @@ public partial class TableExportToTxtHelper
                                 for (int row = 0; row < rowCount; ++row)
                                 {
                                     StringBuilder stringBuilder = rowContentList[row];
-                                    stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                                    stringBuilder.Append(TxtStruct.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
                                         stringBuilder.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalMilliseconds);
                                 }
@@ -344,7 +344,7 @@ public partial class TableExportToTxtHelper
                                 for (int row = 0; row < rowCount; ++row)
                                 {
                                     StringBuilder stringBuilder = rowContentList[row];
-                                    stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                                    stringBuilder.Append(TxtStruct.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
                                         stringBuilder.Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat].ToString()));
                                 }
@@ -355,7 +355,7 @@ public partial class TableExportToTxtHelper
                                 for (int row = 0; row < rowCount; ++row)
                                 {
                                     StringBuilder stringBuilder = rowContentList[row];
-                                    stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                                    stringBuilder.Append(TxtStruct.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
                                         stringBuilder.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
                                 }
@@ -375,7 +375,7 @@ public partial class TableExportToTxtHelper
                     for (int row = 0; row < rowCount; ++row)
                     {
                         StringBuilder stringBuilder = rowContentList[row];
-                        stringBuilder.Append(TxtStruct.ExportTxtSplitChar);
+                        stringBuilder.Append(TxtStruct.ExportSpaceString);
                         if ((bool)fieldInfo.Data[row] == false)
                             stringBuilder.Append("-1");
                     }

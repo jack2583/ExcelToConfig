@@ -144,8 +144,9 @@ public class AppValues
     /// </summary>
     public const string Public_Config_ConfigPath = "ConfigPath";
 
+
     /// <summary>
-    /// 配置文件（配置自定义的检查规则）的文件名
+    /// 存储每个bat参数解析后的信息："MergeTable(IsMerge=true|item=item100,item101)"
     /// </summary>
-    public static string ConfigPath = FileModule.CombinePath(AppValues.ProgramFolderPath, "config.txt");
+    public static Dictionary<string, BatParamInfo> BatParamInfo = new Dictionary<string, BatParamInfo>();
 }

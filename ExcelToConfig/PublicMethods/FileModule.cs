@@ -58,54 +58,54 @@ public class FileModule
     /// <param name="isMoreLangue">是否为多语言</param>
     /// <param name="TempFileFileNameStartString">临时文件前缀</param>
     /// <returns></returns>
-    public static Dictionary<string, List<string>> RemoveTempFile(Dictionary<string, List<string>> allFilePaths, bool isMoreLangue, string TempFileFileNameStartString = ExcelTableSetting.ExcelTempFileFileNameStartString)
-    {
-        Dictionary<string, List<string>> allFilePathsTemp = new Dictionary<string, List<string>>();
-        if (isMoreLangue == false)
-        {
-            foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
-            {
-                if (!kvp.Key.StartsWith(TempFileFileNameStartString))
-                {
-                    allFilePathsTemp.Add(kvp.Key, kvp.Value);
-                }
-            }
-        }
-        else//多语言下处理
-        {
-            if (AppLanguage.OtherLanguage == null)
-            {
-                foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
-                {
-                    if (!kvp.Key.StartsWith(TempFileFileNameStartString))
-                    {
-                        allFilePathsTemp.Add(kvp.Key, kvp.Value);
-                    }
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
-                {
-                    if (!kvp.Key.StartsWith(TempFileFileNameStartString))
-                    {
-                        bool isNeedLanguage = true;
-                        foreach (string str in AppLanguage.OtherLanguage)
-                        {
-                            if (ExcelMethods.GetTableName(kvp.Key).EndsWith(str))
-                            {
-                                isNeedLanguage = false;
-                                break;
-                            }
-                        }
-                        if (isNeedLanguage == true)
-                            allFilePathsTemp.Add(kvp.Key, kvp.Value);
-                    }
-                }
-            }
-        }
-        return allFilePathsTemp;
-    }
+    //public static Dictionary<string, List<string>> RemoveTempFile(Dictionary<string, List<string>> allFilePaths, bool isMoreLangue, string TempFileFileNameStartString = ExcelTableSetting.ExcelTempFileFileNameStartString)
+    //{
+    //    Dictionary<string, List<string>> allFilePathsTemp = new Dictionary<string, List<string>>();
+    //    if (isMoreLangue == false)
+    //    {
+    //        foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
+    //        {
+    //            if (!kvp.Key.StartsWith(TempFileFileNameStartString))
+    //            {
+    //                allFilePathsTemp.Add(kvp.Key, kvp.Value);
+    //            }
+    //        }
+    //    }
+    //    else//多语言下处理
+    //    {
+    //        if (AppLanguage.OtherLanguageArr == null)
+    //        {
+    //            foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
+    //            {
+    //                if (!kvp.Key.StartsWith(TempFileFileNameStartString))
+    //                {
+    //                    allFilePathsTemp.Add(kvp.Key, kvp.Value);
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            foreach (KeyValuePair<string, List<string>> kvp in allFilePaths)
+    //            {
+    //                if (!kvp.Key.StartsWith(TempFileFileNameStartString))
+    //                {
+    //                    bool isNeedLanguage = true;
+    //                    foreach (string str in AppLanguage.OtherLanguageArr)
+    //                    {
+    //                        if (ExcelMethods.GetTableName(kvp.Key).EndsWith(str))
+    //                        {
+    //                            isNeedLanguage = false;
+    //                            break;
+    //                        }
+    //                    }
+    //                    if (isNeedLanguage == true)
+    //                        allFilePathsTemp.Add(kvp.Key, kvp.Value);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return allFilePathsTemp;
+    //}
 
     /// <summary>
     /// 检查是否存在同名文件，若存在则中止程序
@@ -135,7 +135,7 @@ public class FileModule
         {
             AppLog.LogError(SameNameFileTemp);
             AppLog.LogError("\n存在上面所列同名文件，包含子文件夹都不充许存在同名文件\n");
-            AppLog.SaveErrorInfoToFile("错误日志");
+            AppLog.SaveErrorInfoToFile("错误日志.txt");
             AppLog.LogErrorAndExit("\n按任意键继续");
         }
     }
@@ -164,7 +164,7 @@ public class FileModule
         if (IsExportKeepDirectoryStructure == true)
         {
             // 获取表格相对于Excel文件夹的相对路径
-            string excelFolderPath = ExcelFolder.ExcelFolderPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+            string excelFolderPath = ExcelFolder.ExcelPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
             if (!excelFolderPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 excelFolderPath = excelFolderPath + Path.DirectorySeparatorChar;
 
@@ -191,5 +191,6 @@ public class FileModule
         }
         else
             return exportRootPath;
+
     }
 }

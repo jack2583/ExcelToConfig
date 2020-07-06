@@ -27,23 +27,18 @@ public enum DataType
 /// </summary>
 public enum ExportType
 {
-    /// <summary>
-    /// 无效类型
-    /// </summary>
-    Invalid,
-
-    txt,
-    lua,
-    lua2,
-    lua3,
-    lua4,
-    lua5,
-    json,
-    json2,
-    json3,
-    json4,
-    json5,
-    erlang,
+    Txt,
+    Lua,
+    Lua2,
+    Lua3,
+    Lua4,
+    Lua5,
+    Json,
+    Json2,
+    Json3,
+    Json4,
+    Json5,
+    Erlang,
     MySql,
     Sqlite,
 

@@ -42,13 +42,18 @@ public class ExcelMethods
     /// </summary>
     /// <param name="excelName">Excel名字，如item-物品 或item</param>
     /// <returns></returns>
-    public static string GetTableName(string excelName, string splitStr = "-")
+    public static string GetTableName(string excelName, string splitStr = "-", string TheLanguage = "")
     {
         if (excelName.Contains(splitStr))
         {
             string[] fileNames = null;
             fileNames = excelName.Split(new string[] { splitStr }, StringSplitOptions.RemoveEmptyEntries);
             excelName = fileNames[0];
+        }
+        if(TheLanguage !="" && excelName.EndsWith(TheLanguage))
+        {
+            excelName = excelName.Substring(0, excelName.Length- TheLanguage.Length);
+
         }
 
         return excelName;
@@ -61,15 +66,16 @@ public class ExcelMethods
     /// <returns></returns>
     public static string GetSaveTableName(string tableName)
     {
-        if (AppLanguage.IsAddSaveType == true || AppLanguage.IsMoreLanguage == false || AppLanguage.NeedLanguage == null || tableName.EndsWith(AppLanguage.NeedLanguage))
-        {
-            return tableName;
-        }
-        else
-            return tableName.Substring(0, tableName.Length - AppLanguage.NeedLanguage.Length);
+        return null;
+        //    if (AppLanguage.IsAddSaveType == true || AppLanguage.IsMoreLanguage == false || AppLanguage.NeedLanguage == null || tableName.EndsWith(AppLanguage.NeedLanguage))
+        //    {
+        //        return tableName;
+        //    }
+        //    else
+        //        return tableName.Substring(0, tableName.Length - AppLanguage.NeedLanguage.Length);
     }
 
-    public static List<string> GetExcelSheetName(string excelName, DataTable dtSheet)
+public static List<string> GetExcelSheetName(string excelName, DataTable dtSheet)
     {
         List<string> excelSheetNames = new List<string>();
 

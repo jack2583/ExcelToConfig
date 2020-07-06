@@ -21,7 +21,8 @@ public class TableInfo
     public string ExcelName { get; set; }
 
     /// <summary>
-    /// 不带中文且不组后缀的Excel文件名，即数据表名，Excel文件不带后缀的名称，如 item_ft
+    /// 不带中文且不组后缀的Excel文件名，即数据表名，Excel文件不带后缀的名称，如 item
+    /// 如果是多语言则会同时去掉多语言后缀
     /// </summary>
     public string TableName { get; set; }
 
@@ -30,7 +31,7 @@ public class TableInfo
     /// 如：C:\Users\Administrator\Desktop
     /// Path.GetDirectoryName(ExcelFilePath)
     /// </summary>
-    public string ExcelDirectoryName { get; set; }
+    //public string ExcelDirectoryName { get; set; }
     public string ExcelDirectory { get; set; }
     public string ExcelNameTips
     {
@@ -46,7 +47,7 @@ public class TableInfo
     ///如：text.xlsx
     ///Path.GetFileName(ExcelFilePath)
     /// </summary>
-    public string ExcelFileName { get; set; }
+    //public string ExcelFileName { get; set; }
 
     // 表格配置参数
     public Dictionary<string, string> TableConfigData { get; set; }
@@ -173,12 +174,12 @@ public class TableInfo
     {
         errorString = null;
         StringBuilder stringBuilder = new StringBuilder();
-        foreach(TableInfo t in tableInfoList)
-        {
-            stringBuilder.AppendLine(t.ExcelName);
-        }
-        AppLog.Log(string.Format("开始合并表格{0},由以下表合成：\n{1}", newTableName,stringBuilder.ToString()),ConsoleColor.Green);
-
+        //foreach(TableInfo t in tableInfoList)
+        //{
+        //    stringBuilder.AppendLine(t.ExcelName);
+        //}
+        AppLog.Log(string.Format("\n开始合并表格{0}", newTableName));
+      //  AppLog.Log(string.Format("{0}",stringBuilder.ToString()), ConsoleColor.Green);
         TableInfo tableInfoFirst = new TableInfo();
         tableInfoFirst.ExcelFilePath = tableInfoList[0].ExcelFilePath;
         tableInfoFirst.ExcelName = tableInfoList[0].ExcelName;
@@ -194,22 +195,28 @@ public class TableInfo
         List<FieldInfo> allFieldInfo = null;
         List<FieldInfo> allFieldInfoA = null;
         List<string> fieldName = new List<string>();
+
+        //逐个表合并
         foreach (TableInfo tableInfo in tableInfoList)
         {
+           
             FieldInfo tableInfoKeyField = tableInfo.GetKeyColumnFieldInfo();
             FieldInfo tableInfoFirstKeyField = tableInfoFirst.GetKeyColumnFieldInfo();
+
+            //检查主键是否相同
             if (tableInfoFirstKeyField != null)
             {
-                if (!(String.Equals(tableInfoFirstKeyField.FieldName, tableInfoKeyField.FieldName)
-                    && String.Equals(tableInfoFirstKeyField.DataType, tableInfoKeyField.DataType)
-                    && String.Equals(tableInfoFirstKeyField.DatabaseFieldName, tableInfoKeyField.DatabaseFieldName)
-                    && String.Equals(tableInfoFirstKeyField.DatabaseFieldType, tableInfoKeyField.DatabaseFieldType)))
+                if (!(string.Equals(tableInfoFirstKeyField.FieldName, tableInfoKeyField.FieldName)
+                    && string.Equals(tableInfoFirstKeyField.DataType, tableInfoKeyField.DataType)
+                    && string.Equals(tableInfoFirstKeyField.DatabaseFieldName, tableInfoKeyField.DatabaseFieldName)
+                    && string.Equals(tableInfoFirstKeyField.DatabaseFieldType, tableInfoKeyField.DatabaseFieldType)))
                 {
 
                     AppLog.LogErrorAndExit(string.Format("合并遇到错误：合并表格的主键名必须一致，表{0}的主键与其他表格主键不同", tableInfo.ExcelName));
                 }
             }
 
+            //合并字段信息
             allFieldInfo = new List<FieldInfo>();
             allFieldInfo = tableInfo.GetAllFieldInfo();
             foreach (FieldInfo fieldInfo in allFieldInfo)
@@ -266,6 +273,7 @@ public class TableInfo
         List<FieldInfo> allFieldInfo2 = new List<FieldInfo>();
         allFieldInfo2 = tableInfoFirst.GetAllFieldInfo();
         List<string> fieldNameB = new List<string>();
+        //所有字段先赋值
         foreach (FieldInfo fieldInfo in allFieldInfo2)
         {
             if (tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data == null)
@@ -277,8 +285,15 @@ public class TableInfo
             if (tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString == null)
                 tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).JsonString = new List<string>();
         }
+
+        //合并字段的值
+        //Dictionary<主键, 源自哪个Excel表>
+        Dictionary<string, string> KeyColumn = new Dictionary<string, string>();
+        string KeyColumnName = tableInfoList[0].GetKeyColumnFieldInfo().FieldName;
+        StringBuilder sbkey = new StringBuilder();
         foreach (TableInfo tableInfo in tableInfoList)
         {
+            AppLog.Log(string.Format("将表[{0}]合并到[{1}]", tableInfo.ExcelName, newTableName), ConsoleColor.Green);
             int count = tableInfo.GetAllFieldInfo()[0].Data.Count;
             if (count > 0)
             {
@@ -290,7 +305,16 @@ public class TableInfo
                     {
                         if (tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName) != null)
                         {
+ 
                             object data = tableInfo.GetFieldInfoByFieldName(fieldInfo.FieldName).Data[i];
+                            if (string.Equals(fieldInfo.FieldName, KeyColumnName))
+                            {
+                                if (!KeyColumn.ContainsKey(data.ToString()))
+                                    KeyColumn.Add(data.ToString(), tableInfo.ExcelName);
+                                else
+                                    sbkey.AppendLine(string.Format("错误：表{0}使用了已存在主键值{1}", tableInfo.ExcelName, data.ToString()));
+                                   // AppLog.LogErrorAndExit(string.Format("错误：表{0}使用了已存在主键值{1}", tableInfo.ExcelName, data.ToString()));
+                            }
                             if (data != null)
                                 tableInfoFirst.GetFieldInfoByFieldName(fieldInfo.FieldName).Data.Add(data);
                             else
@@ -317,20 +341,23 @@ public class TableInfo
                     }
                 }
             }
+            AppLog.Log("合并成完");
         }
 
+        if(sbkey.Length>0)
+            AppLog.LogErrorAndExit(sbkey.ToString());
         // 唯一性检查
-        FieldCheckRule uniqueCheckRule = new FieldCheckRule();
-        uniqueCheckRule.CheckType = TableCheckType.Unique;
-        uniqueCheckRule.CheckRuleString = "unique";
-        TableCheckHelper.CheckUnique(tableInfoFirst.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
-        if (errorString != null)
-        {
-            //string error = string.Format("表格{0}-{1}中列号为{2}的字段存在以下严重错误，导致无法继续，请修正错误后重试\n", newTableName, "", ExcelMethods.GetExcelColumnName(0 + 1));
-            // errorString = "主键列存在重复错误\n" + errorString;
-            AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败,因为主键{1},{2}", newTableName, tableInfoFirst.GetKeyColumnFieldInfo().FieldName, errorString));
-            //AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
-        }
+        //FieldCheckRule uniqueCheckRule = new FieldCheckRule();
+        //uniqueCheckRule.CheckType = TableCheckType.Unique;
+        //uniqueCheckRule.CheckRuleString = "unique";
+        //TableCheckHelper.CheckUnique(tableInfoFirst.GetKeyColumnFieldInfo(), uniqueCheckRule, out errorString);
+        //if (errorString != null)
+        //{
+        //    //string error = string.Format("表格{0}-{1}中列号为{2}的字段存在以下严重错误，导致无法继续，请修正错误后重试\n", newTableName, "", ExcelMethods.GetExcelColumnName(0 + 1));
+        //    // errorString = "主键列存在重复错误\n" + errorString;
+        //    AppLog.LogErrorAndExit(string.Format("错误：合并{0}失败,因为主键{1},{2}", newTableName, tableInfoFirst.GetKeyColumnFieldInfo().FieldName, errorString));
+        //    //AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的表格,且合并时发生错误失败\n{1}", tableName, errorString));
+        //}
 
         return tableInfoFirst;
     }

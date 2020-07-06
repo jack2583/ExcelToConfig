@@ -100,7 +100,7 @@ public partial class TableExportToLuaHelper
                     return false;
                 }
             }
-            else if (CheckStruct.IsAllowedNullNumber == true)
+            else if (ExcelFolder.IsAllowedNullNumber == true)
             {
                 FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
                 numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
@@ -188,8 +188,8 @@ public partial class TableExportToLuaHelper
                 return false;
             }
         }
-        // 进行数据完整性检查
-        if (CheckStruct.IsNeedCheck == true)
+        // 进行数据完整性检查 
+        if (ExcelFolder.IsNeedCheck == true)
         {
             TableCheckHelper.CheckTableIntegrity(indexField, data, integrityCheckRules, out errorString);
             if (errorString != null)

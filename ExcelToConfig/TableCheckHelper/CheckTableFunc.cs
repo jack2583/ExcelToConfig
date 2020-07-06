@@ -10,12 +10,12 @@ public partial class TableCheckHelper
     /// </summary>
     public static bool CheckTableFunc(TableInfo tableInfo, out string errorString)
     {
-        if (tableInfo.TableConfigData2 == null || !tableInfo.TableConfigData2.ContainsKey(CheckStruct.CONFIG_NAME_CHECK_TABLE))
+        if (tableInfo.TableConfigData2 == null || !tableInfo.TableConfigData2.ContainsKey(global::CheckTableInfo.CONFIG_NAME_CHECK_TABLE))
         {
             errorString = null;
             return true;
         }
-        List<string> checkTableFuncNames = tableInfo.TableConfigData2[CheckStruct.CONFIG_NAME_CHECK_TABLE];
+        List<string> checkTableFuncNames = tableInfo.TableConfigData2[global::CheckTableInfo.CONFIG_NAME_CHECK_TABLE];
         if (checkTableFuncNames.Count < 1)
         {
             errorString = null;

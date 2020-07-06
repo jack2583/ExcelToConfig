@@ -53,7 +53,7 @@ public partial class TableAnalyzeHelper
 
         for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
         {
-            // 如果本行该字段的父元素标记为无效则该数据也标为无效
+            // 如果本行该字段的父元素标记为无效则该数据也标为无效 ExcelFolder
             if (parentField != null && (bool)parentField.Data[row - ExcelTableSetting.DataFieldDataStartRowIndex] == false)
                 fieldInfo.Data.Add(null);
             else
@@ -61,7 +61,7 @@ public partial class TableAnalyzeHelper
                 string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                 if (string.IsNullOrEmpty(inputData))
                 {
-                    if (CheckStruct.IsAllowedNullNumber == true)
+                    if (ExcelFolder.IsAllowedNullNumber == true)
                         fieldInfo.Data.Add(null);
                     else
                         invalidInfo.Add(row, inputData);
@@ -114,7 +114,7 @@ public partial class TableAnalyzeHelper
                 string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                 if (string.IsNullOrEmpty(inputData))
                 {
-                    if (CheckStruct.IsAllowedNullNumber == true)
+                    if (ExcelFolder.IsAllowedNullNumber == true)
                         fieldInfo.Data.Add(null);
                     else
                         invalidInfo.Add(row, inputData);
@@ -167,7 +167,7 @@ public partial class TableAnalyzeHelper
                 string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                 if (string.IsNullOrEmpty(inputData))
                 {
-                    if (CheckStruct.IsAllowedNullNumber == true)
+                    if (ExcelFolder.IsAllowedNullNumber == true)
                         fieldInfo.Data.Add(null);
                     else
                         invalidInfo.Add(row, inputData);
@@ -254,31 +254,16 @@ public partial class TableAnalyzeHelper
     private static bool _AnalyzeStringType(FieldInfo fieldInfo, TableInfo tableInfo, DataTable dt, int columnIndex, FieldInfo parentField, out int nextFieldColumnIndex, out string errorString)
     {
         // 检查string型字段数据格式声明是否正确
-        if (!"string(toErlang)".Equals(fieldInfo.DataTypeString) && !"string(trim)".Equals(fieldInfo.DataTypeString) && !"string".Equals(fieldInfo.DataTypeString))
+        if (!"string(trim)".Equals(fieldInfo.DataTypeString) && !"string".Equals(fieldInfo.DataTypeString))
         {
-            errorString = string.Format("错误：string型字段定义非法，若要导出erlang特殊字符，声明为：string(toErlang)。若要自动去除输入字符串的首尾空白字符请将数据类型声明为\"string(trim)\"，否则声明为\"string\"，而你输入的为\"{0}\"", fieldInfo.DataTypeString);
+            errorString = string.Format("错误：string型字段定义非法，若要自动去除输入字符串的首尾空白字符请将数据类型声明为\"string(trim)\"，否则声明为\"string\"，而你输入的为\"{0}\"", fieldInfo.DataTypeString);
             nextFieldColumnIndex = columnIndex + 1;
             return false;
         }
 
         fieldInfo.Data = new List<object>();
 
-        if ("string(toErlang)".Equals(fieldInfo.DataTypeString, StringComparison.CurrentCultureIgnoreCase))
-        {
-            fieldInfo.ExportTable = FieldInfo.ExportTableType.ToErlang;
-            for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
-            {
-                if (parentField != null && (bool)parentField.Data[row - ExcelTableSetting.DataFieldDataStartRowIndex] == false)
-                    fieldInfo.Data.Add(null);
-                else
-                {
-                    string str = dt.Rows[row][columnIndex].ToString();
-                    AppLanguage.GetLanguageDictData(str);
-                    fieldInfo.Data.Add(AppLanguage.GetNewLanguageText(str));
-                }
-            }
-        }
-        else if ("string(trim)".Equals(fieldInfo.DataTypeString, StringComparison.CurrentCultureIgnoreCase))
+        if ("string(trim)".Equals(fieldInfo.DataTypeString, StringComparison.CurrentCultureIgnoreCase))
         {
             for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
             {

@@ -69,7 +69,7 @@ public partial class TableCheckHelper
         }
         else if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float)
         {
-            if (CheckStruct.IsAllowedNullNumber == true)
+            if (ExcelFolder.IsAllowedNullNumber == true)
             {
                 for (int i = 0; i < fieldInfo.Data.Count; ++i)
                 {

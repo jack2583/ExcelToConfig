@@ -93,7 +93,7 @@ public static class MyCheckFunction
         }
 
         //先对以上字段非空检查
-        if (CheckStruct.IsAllowedNullNumber == true)
+        if (ExcelFolder.IsAllowedNullNumber == true)
         {
             FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
             numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
@@ -559,7 +559,7 @@ public static class MyCheckFunction
         }
 
         // 先对heroId、quality、seq三个字段进行非空检查，避免填写空值
-        if (CheckStruct.IsAllowedNullNumber == true)
+        if (ExcelFolder.IsAllowedNullNumber == true)
         {
             FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
             numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;

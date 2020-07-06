@@ -24,7 +24,9 @@ public partial class TableAnalyzeHelper
             }
             else
             {
-                string inputData = dt.Rows[row][columnIndex].ToString().Trim();
+                string inputData =dt.Rows[row][columnIndex].ToString().Trim();
+                AppLanguage.GetLanguageDictData(inputData);
+                inputData = AppLanguage.GetNewLanguageText(inputData);
                 if (string.IsNullOrEmpty(inputData))
                 {
                     fieldInfo.Data.Add(null);

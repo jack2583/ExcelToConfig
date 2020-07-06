@@ -105,7 +105,7 @@ public partial class TableExportToErlangHelper
                     return false;
                 }
             }
-            else if (CheckStruct.IsAllowedNullNumber == true)
+            else if (CheckTableInfo.IsAllowedNullNumber == true)
             {
                 FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
                 numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
@@ -194,7 +194,7 @@ public partial class TableExportToErlangHelper
             }
         }
         // 进行数据完整性检查
-        if (CheckStruct.IsNeedCheck == true)
+        if (CheckTableInfo.IsNeedCheck == true)
         {
             TableCheckHelper.CheckTableIntegrity(indexField, data, integrityCheckRules, out errorString);
             if (errorString != null)

@@ -106,7 +106,7 @@ public partial class TableCheckHelper
                     return false;
                 }
             }
-            else if (CheckStruct.IsAllowedNullNumber == true)
+            else if (global::ExcelFolder.IsAllowedNullNumber == true)
             {
                 FieldCheckRule numberNotEmptyCheckRule = new FieldCheckRule();
                 numberNotEmptyCheckRule.CheckType = TableCheckType.NotEmpty;
@@ -195,7 +195,7 @@ public partial class TableCheckHelper
             }
         }
         // 进行数据完整性检查
-        if (CheckStruct.IsNeedCheck == true)
+        if (global::ExcelFolder.IsNeedCheck == true)
         {
             TableCheckHelper.CheckTableIntegrity(indexField, data, integrityCheckRules, out errorString);
             if (errorString != null)

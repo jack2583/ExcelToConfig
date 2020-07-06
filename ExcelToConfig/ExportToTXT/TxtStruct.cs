@@ -99,10 +99,10 @@ public struct TxtStruct
     /// <summary>
     /// 导出txt文件中的字段分隔符，默认为Tab键
     /// </summary>
-    public static char ExportTxtSplitChar = '\t';
+    public static char ExportSpaceString = '\t';
 
     /// <summary>
     ///  导出txt文件中的换行符，默认为\n键
     /// </summary>
-    public static char ExportTxtLineChar = '\n';
+    public static char ExportLineString = '\n';
 }

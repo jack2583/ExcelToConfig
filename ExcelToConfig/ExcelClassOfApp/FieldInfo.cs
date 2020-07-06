@@ -68,10 +68,14 @@ public class FieldInfo
     // 该字段在表格中的列号（从0计）
     public int ColumnSeq { get; set; }
 
-    // 是否忽略进行lua、csv、json等客户端方式导出（未填写字段名但填写了数据库导出信息的字段，仅进行数据库导出）
+    /// <summary>
+    /// 是否忽略进行lua、csv、json等客户端方式导出（未填写字段名但填写了数据库导出信息的字段，仅进行数据库导出）
+    /// </summary>
     public bool IsIgnoreClientExport { get; set; }
 
-    // 存储额外属性，比如date类型的输入、导出选项等
+    /// <summary>
+    /// 存储额外属性，比如date类型的输入、导出选项等
+    /// </summary>
     public Dictionary<string, object> ExtraParam { get; set; }
 
     // 如果该字段为tableString型，存储解析之后的格式定义
