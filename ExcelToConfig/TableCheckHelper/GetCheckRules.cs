@@ -60,6 +60,13 @@ public partial class TableCheckHelper
             checkRule.CheckRuleString = ruleString;
             oneCheckRule.Add(checkRule);
         }
+        else if (ruleString.StartsWith("sum", StringComparison.CurrentCultureIgnoreCase))
+        {
+            FieldCheckRule checkRule = new FieldCheckRule();
+            checkRule.CheckType = TableCheckType.CheckSum;
+            checkRule.CheckRuleString = ruleString;
+            oneCheckRule.Add(checkRule);
+        }
         else if (ruleString.StartsWith("refStr", StringComparison.CurrentCultureIgnoreCase))
         {
             FieldCheckRule checkRule = new FieldCheckRule();

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using LitJson;
 
-class ExportJson : Export
+class ExportServerJson : Export
 {
     private static string _DateToExportFormatKey = "dateToLuaFormat";
     private static string _TimeToExportFormatKey = "timeToLuaFormat";
 
     public static void ExportToJson()
     {
-        string ExportType = "Json";
+        string ExportType = "ServerJson";
+
         if (AppValues.ConfigData.ContainsKey("AllExport" + ExportType))
         {
             if (string.Equals("false", AppValues.ConfigData["AllExport" + ExportType].Trim().ToLower()))
@@ -27,7 +28,7 @@ class ExportJson : Export
         batExportPublicSetting.GetParamValue();
 
         BatExportSetting batExportSetting = new BatExportSetting();
-        batExportSetting.ExportTypeParam =  "ExportJson";
+        batExportSetting.ExportTypeParam = "ExportServerJson";
         batExportSetting.ExportPath = "";
         batExportSetting.IsExport = false;
         batExportSetting.IsExportKeepDirectoryStructure = false;
@@ -60,7 +61,7 @@ class ExportJson : Export
             TableInfo tableInfo = kvp.Value;
             errorString = null;
             ExcelConfigSetting excelConfigSetting = new ExcelConfigSetting();
-            excelConfigSetting.IsExportParam = "Export"+ ExportType;// ExportType + "IsExport";
+            excelConfigSetting.IsExportParam = "Export" + ExportType;// ExportType + "IsExport";
             excelConfigSetting.ExportPathParam = ExportType + "ExportPath";
             excelConfigSetting.IsExportKeepDirectoryStructureParam = ExportType + "IsExportKeepDirectoryStructure";
             excelConfigSetting.ExportNameParam = ExportType + "ExportName";
@@ -89,7 +90,7 @@ class ExportJson : Export
             excelConfigSetting.IsAddKeyToLuaTableParam = ExportType + "IsAddKeyToLuaTable";
             excelConfigSetting.DateToExportFormatParam = ExportType + "DateToExportFormat";
             excelConfigSetting.TimeToExportFormatParam = ExportType + "TimeToExportFormat";
-            excelConfigSetting.SpecialExportParam ="SpecialExport"+ ExportType;
+            excelConfigSetting.SpecialExportParam = "SpecialExport" + ExportType;
 
             if (AppValues.ConfigData.ContainsKey("Export" + ExportType))
                 excelConfigSetting.IsExportParam = AppValues.ConfigData["Export" + ExportType].Trim();
@@ -155,8 +156,8 @@ class ExportJson : Export
             excelConfigSetting.GetParamValue(tableInfo);
 
             Export export = new Export();
-            export.GetValue(tableInfo,excelConfigSetting, batExportSetting, batExportPublicSetting);
-           // export.GetExportName(excelConfigSetting.ExportName, tableInfo.ExcelName, export.ExcelNameSplitString);
+            export.GetValue(tableInfo, excelConfigSetting, batExportSetting, batExportPublicSetting);
+            // export.GetExportName(excelConfigSetting.ExportName, tableInfo.ExcelName, export.ExcelNameSplitString);
 
 
             string m = "";
@@ -169,7 +170,7 @@ class ExportJson : Export
 
             if (export.IsExport == true)
             {
-                AppLog.Log(string.Format("\n开始{0}导出{1}：", m ,ExportType), ConsoleColor.Green, false);
+                AppLog.Log(string.Format("\n开始{0}导出{1}：", m, ExportType), ConsoleColor.Green, false);
                 AppLog.Log(string.Format("{0}", tableInfo.ExcelNameTips), ConsoleColor.Green);
 
                 if (export.IsExportJsonArrayFormat == true)
@@ -222,7 +223,7 @@ class ExportJson : Export
 
                     SpecialExportTableToJson(tableInfo, export, param, out errorString);
                     if (errorString != null)
-                        AppLog.LogErrorAndExit(string.Format("{0}导出特殊失败：\n{1}\n",m, errorString));
+                        AppLog.LogErrorAndExit(string.Format("{0}导出特殊失败：\n{1}\n", m, errorString));
                 }
             }
 
@@ -242,7 +243,7 @@ class ExportJson : Export
             content.Append("{");
 
             // 逐行读取表格内容生成json
-            List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
+            List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
             FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
             int dataCount = keyColumnInfo.Data.Count;
             int fieldCount = allField.Count;
@@ -289,7 +290,7 @@ class ExportJson : Export
                         // 变量名，注意array下属的子元素在json中不含key的声明
                         if (!(allField[column].ParentField != null && allField[column].ParentField.DataType == DataType.Array))
                         {
-                            contentTemp.Append("\"").Append(allField[column].FieldName).Append("\"");
+                            contentTemp.Append("\"").Append(allField[column].DatabaseFieldName).Append("\"");
                             contentTemp.Append(":");
                         }
                         contentTemp.Append(oneFieldString);
@@ -329,7 +330,7 @@ class ExportJson : Export
                     contentOneRow.Append("}");
 
                     // 每行的json object后加英文逗号
-                    if(row < dataCount)
+                    if (row < dataCount)
                         contentOneRow.Append(",");
                 }
                 content.Append(contentOneRow.ToString());
@@ -350,7 +351,7 @@ class ExportJson : Export
                 exportString = _FormatJson(exportString);
 
             export.ExportContent = exportString;
-            string s = ExcelMethods.GetTableName(tableInfo.ExcelName,"-",ExcelFolder.TheLanguage);
+            string s = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
             export.SaveFile(s);
             AppLog.Log(string.Format("成功导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
             errorString = null;
@@ -377,7 +378,7 @@ class ExportJson : Export
             content.Append("[");
 
             // 逐行读取表格内容生成json
-            List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
+            List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
             int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
             int fieldCount = allField.Count;
             for (int row = 0; row < dataCount; ++row)
@@ -402,7 +403,7 @@ class ExportJson : Export
                         // 变量名，注意array下属的子元素在json中不含key的声明
                         if (!(allField[column].ParentField != null && allField[column].ParentField.DataType == DataType.Array))
                         {
-                            contentTemp.Append("\"").Append(allField[column].FieldName).Append("\"");
+                            contentTemp.Append("\"").Append(allField[column].DatabaseFieldName).Append("\"");
                             contentTemp.Append(":");
                         }
                         contentTemp.Append(oneFieldString);
@@ -568,7 +569,7 @@ class ExportJson : Export
                         oneTableValueFieldData = _GetOneField(fieldInfo, export, rowIndex, out errorString);//
                         if (errorString != null)
                         {
-                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
+                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.DatabaseFieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
                             return;
                         }
                         else
@@ -580,7 +581,7 @@ class ExportJson : Export
                             // 变量名，注意array下属的子元素在json中不含key的声明
                             if (!(fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array))
                             {
-                                contentTemp.Append("\"").Append(fieldInfo.FieldName).Append("\"");
+                                contentTemp.Append("\"").Append(fieldInfo.DatabaseFieldName).Append("\"");
                                 contentTemp.Append(":");
                             }
                             contentTemp.Append(oneTableValueFieldData);
@@ -590,10 +591,10 @@ class ExportJson : Export
 
                             if (oneTableValueFieldData == null)
                             {
-                                errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), "嵌套导出的值不能为空");
+                                errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.DatabaseFieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), "嵌套导出的值不能为空");
                                 //AppLog.LogErrorAndExit(errorString);
                                 //return;
-                                content.Append("\"").Append(fieldInfo.FieldName).Append("\"");
+                                content.Append("\"").Append(fieldInfo.DatabaseFieldName).Append("\"");
                                 content.Append(":");
                                 switch (fieldInfo.DataType)
                                 {
@@ -650,26 +651,26 @@ class ExportJson : Export
                 --currentLevel;
                 // content.Append(_GetJsonIndentation(currentLevel));
                 content.Append("},"); // content.AppendLine("},");
-                
+
                 //AppLog.Log(content2.Length.ToString());
             }
             errorString = null;
         }
-        catch(ArgumentOutOfRangeException e)
+        catch (ArgumentOutOfRangeException e)
         {
             errorString = e.ToString();
         }
 
-       
+
     }
 
     private static string _GetOneField(FieldInfo fieldInfo, Export export, int row, out string errorString)
     {
         errorString = null;
-        //if (fieldInfo.ParentField == null && fieldInfo.DatabaseFieldName == null)
-        //{
-        //    return null;
-        //}
+        if (fieldInfo.ParentField == null && fieldInfo.DatabaseFieldName == null)
+        {
+            return null;
+        }
         // 变量名前的缩进
         // content.Append(_GetJsonIndentation(level));
 
@@ -1294,16 +1295,16 @@ class ExportJson : Export
                     // 变量名，注意array下属的子元素在json中不含key的声明
                     if (!(childField.ParentField != null && childField.ParentField.DataType == DataType.Array))
                     {
-                        contentTemp.Append("\"").Append(childField.FieldName).Append("\"");
+                        contentTemp.Append("\"").Append(childField.DatabaseFieldName).Append("\"");
                         contentTemp.Append(":");
                     }
                     contentTemp.Append(oneFieldString);
                     // 一个字段结尾加逗号
                     contentTemp.Append(",");
 
-                    content.Append(contentTemp.ToString()) ;
+                    content.Append(contentTemp.ToString());
                 }
-                    
+
             }
 
             // 去掉最后一个子元素末尾多余的英文逗号
@@ -1314,7 +1315,7 @@ class ExportJson : Export
 
             LitJson.JsonData jsonData = LitJson.JsonMapper.ToObject(content.ToString());
             if (jsonData.Count == 0)
-                AppLog.LogWarning(string.Format("警告：名为{0}类型为{1}的字段，第{2}行的值未设置为-1，但所有值都为空，请确认是否为这样", fieldInfo.FieldName, fieldInfo.DataTypeString, row + ExcelTableSetting.DataFieldDataStartRowIndex + 1), ConsoleColor.Yellow);
+                AppLog.LogWarning(string.Format("警告：名为{0}类型为{1}的字段，第{2}行的值未设置为-1，但所有值都为空，请确认是否为这样", fieldInfo.DatabaseFieldName, fieldInfo.DataTypeString, row + ExcelTableSetting.DataFieldDataStartRowIndex + 1), ConsoleColor.Yellow);
 
         }
 
@@ -1352,7 +1353,7 @@ class ExportJson : Export
                     // 变量名，注意array下属的子元素在json中不含key的声明
                     if (!(childField.ParentField != null && childField.ParentField.DataType == DataType.Array))
                     {
-                        contentTemp.Append("\"").Append(childField.FieldName).Append("\"");
+                        contentTemp.Append("\"").Append(childField.DatabaseFieldName).Append("\"");
                         contentTemp.Append(":");
                     }
                     contentTemp.Append(oneFieldString);

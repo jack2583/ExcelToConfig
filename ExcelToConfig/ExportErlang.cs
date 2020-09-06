@@ -8,6 +8,15 @@ class ExportErlang : Export
 {
     public static void ExportToErlang()
     {
+        string ExportType = "Erlang";
+        if (AppValues.ConfigData.ContainsKey("AllExport" + ExportType))
+        {
+            if (string.Equals("false", AppValues.ConfigData["AllExport" + ExportType].Trim().ToLower()))
+                return;
+        }
+        else
+            return;
+
         string errorString = null;
         BatExportPublicSetting batExportPublicSetting = new BatExportPublicSetting();
         batExportPublicSetting.IsExport = false;
@@ -36,6 +45,7 @@ class ExportErlang : Export
         batExportSetting.ExportTopWords = "%%--- coding:utf-8 ---";
         batExportSetting.ExportIndentationString = "    ";//缩进符
         batExportSetting.ExportSpaceString = " ";//间隔符
+        batExportSetting.ExportLineString = "\r\n";//换行符
         batExportSetting.IsExportJsonArrayFormat = false;
         batExportSetting.IsExportJsonMapIncludeKeyColumnValue = false;
         batExportSetting.IsArrayFieldName = false;
@@ -43,7 +53,7 @@ class ExportErlang : Export
         batExportSetting.IsAddKeyToLuaTable = false;
         batExportSetting.GetParamValue();
 
-        string ExportType = "Erlang";
+
         foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
         {
             TableInfo tableInfo = kvp.Value;
@@ -71,6 +81,7 @@ class ExportErlang : Export
             excelConfigSetting.ExportTopWordsParam = ExportType + "ExportTopWords";
             excelConfigSetting.ExportIndentationStringParam = ExportType + "ExportIndentationString";
             excelConfigSetting.ExportSpaceStringParam = ExportType + "ExportSpaceString";
+            excelConfigSetting.ExportLineStringParam = ExportType + "ExportLineString";
             excelConfigSetting.IsExportJsonArrayFormatParam = ExportType + "IsExportJsonArrayFormat";
             excelConfigSetting.IsExportJsonMapIncludeKeyColumnValueParam = ExportType + "IsExportJsonMapIncludeKeyColumnValue";
             excelConfigSetting.IsArrayFieldNameParam = ExportType + "IsArrayFieldName";
@@ -78,7 +89,68 @@ class ExportErlang : Export
             excelConfigSetting.IsAddKeyToLuaTableParam = ExportType + "IsAddKeyToLuaTable";
             excelConfigSetting.DateToExportFormatParam = ExportType + "DateToExportFormat";
             excelConfigSetting.TimeToExportFormatParam = ExportType + "TimeToExportFormat";
-            // excelConfigSetting.ExportMergeToTableParam = ExportType+"ExportMergeToTable";
+
+            if (AppValues.ConfigData.ContainsKey("Export" + ExportType))
+                excelConfigSetting.IsExportParam = AppValues.ConfigData["Export" + ExportType].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportPath"))
+                excelConfigSetting.ExportPathParam = AppValues.ConfigData[ExportType + "ExportPath"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportKeepDirectoryStructure"))
+                excelConfigSetting.IsExportKeepDirectoryStructureParam = AppValues.ConfigData[ExportType + "IsExportKeepDirectoryStructure"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportName"))
+                excelConfigSetting.ExportNameParam = AppValues.ConfigData[ExportType + "ExportName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExcelNameSplitString"))
+                excelConfigSetting.ExcelNameSplitStringParam = AppValues.ConfigData[ExportType + "ExcelNameSplitString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportExtension"))
+                excelConfigSetting.ExportExtensionParam = AppValues.ConfigData[ExportType + "ExportExtension"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameBeforeAdd"))
+                excelConfigSetting.ExportNameBeforeAddParam = AppValues.ConfigData[ExportType + "ExportNameBeforeAdd"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameAfterLanguageMark"))
+                excelConfigSetting.ExportNameAfterLanguageMarkParam = AppValues.ConfigData[ExportType + "ExportNameAfterLanguageMark"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullNumber"))
+                excelConfigSetting.IsExportNullNumberParam = AppValues.ConfigData[ExportType + "IsExportNullNumber"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullString"))
+                excelConfigSetting.IsExportNullStringParam = AppValues.ConfigData[ExportType + "IsExportNullString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullJson"))
+                excelConfigSetting.IsExportNullJsonParam = AppValues.ConfigData[ExportType + "IsExportNullJson"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullArray"))
+                excelConfigSetting.IsExportNullArrayParam = AppValues.ConfigData[ExportType + "IsExportNullArray"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDict"))
+                excelConfigSetting.IsExportNullDictParam = AppValues.ConfigData[ExportType + "IsExportNullDict"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullBool"))
+                excelConfigSetting.IsExportNullBoolParam = AppValues.ConfigData[ExportType + "IsExportNullBool"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDate"))
+                excelConfigSetting.IsExportNullDateParam = AppValues.ConfigData[ExportType + "IsExportNullDate"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullTime"))
+                excelConfigSetting.IsExportNullTimeParam = AppValues.ConfigData[ExportType + "IsExportNullTime"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullLang"))
+                excelConfigSetting.IsExportNullLangParam = AppValues.ConfigData[ExportType + "IsExportNullLang"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportFormat"))
+                excelConfigSetting.IsExportFormatParam = AppValues.ConfigData[ExportType + "IsExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportFieldComment"))
+                excelConfigSetting.IsExportFieldCommentParam = AppValues.ConfigData[ExportType + "ExportFieldComment"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportTopWords"))
+                excelConfigSetting.ExportTopWordsParam = AppValues.ConfigData[ExportType + "ExportTopWords"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportIndentationString"))
+                excelConfigSetting.ExportIndentationStringParam = AppValues.ConfigData[ExportType + "ExportIndentationString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportSpaceString"))
+                excelConfigSetting.ExportSpaceStringParam = AppValues.ConfigData[ExportType + "ExportSpaceString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportLineString"))
+                excelConfigSetting.ExportLineStringParam = AppValues.ConfigData[ExportType + "ExportLineString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonArrayFormat"))
+                excelConfigSetting.IsExportJsonArrayFormatParam = AppValues.ConfigData[ExportType + "IsExportJsonArrayFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonMapIncludeKeyColumnValue"))
+                excelConfigSetting.IsExportJsonMapIncludeKeyColumnValueParam = AppValues.ConfigData[ExportType + "IsExportJsonMapIncludeKeyColumnValue"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsArrayFieldName"))
+                excelConfigSetting.IsArrayFieldNameParam = AppValues.ConfigData[ExportType + "IsArrayFieldName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsTableNameStart"))
+                excelConfigSetting.IsTableNameStartParam = AppValues.ConfigData[ExportType + "IsTableNameStart"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsAddKeyToLuaTable"))
+                excelConfigSetting.IsAddKeyToLuaTableParam = AppValues.ConfigData[ExportType + "IsAddKeyToLuaTable"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "DateToExportFormat"))
+                excelConfigSetting.DateToExportFormatParam = AppValues.ConfigData[ExportType + "DateToExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "TimeToExportFormat"))
+                excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData[ExportType + "TimeToExportFormat"].Trim();
+
             excelConfigSetting.GetParamValue(tableInfo);
 
             Export export = new Export();
@@ -149,7 +221,7 @@ class ExportErlang : Export
                     return false;
                 }
 
-                content.AppendLine(export.ExportSpaceString + "#{");
+                content.Append(export.ExportSpaceString + "#{").Append(export.ExportLineString);
 
                 // 将其他列依次作为value生成
                 int i = 0;
@@ -177,13 +249,13 @@ class ExportErlang : Export
                             content.Append(",");
 
                         if (export.IsExportFormat == true)
-                            content.Append("'").Append(allField[column].DatabaseFieldName.ToLower()).Append("' => ").AppendLine(oneFieldString);
+                            content.Append("'").Append(allField[column].DatabaseFieldName.ToLower()).Append("' => ").Append(oneFieldString).Append(export.ExportLineString);
                         else
                             content.Append("'").Append(allField[column].DatabaseFieldName.ToLower()).Append("' => ").Append(oneFieldString);
 
                     }
                 }
-                content.AppendLine("};");
+                content.Append("};").Append(export.ExportLineString);
             }
 
             string exportString2 = content.ToString();
@@ -192,14 +264,14 @@ class ExportErlang : Export
             // 生成数据内容开头
             string erlangTableName = tableInfo.TableName;
 
-            stringBuilder.AppendLine(export.ExportTopWords);
-            stringBuilder.Append("-module(").Append(export.ExportNameBeforeAdd + export.ExportName).AppendLine(").");
-            stringBuilder.AppendLine(@"-export([get/1,get_list/0]).");
+            stringBuilder.Append(export.ExportTopWords).Append(export.ExportLineString);
+            stringBuilder.Append("-module(").Append(export.ExportNameBeforeAdd + export.ExportName).Append(").").Append(export.ExportLineString);
+            stringBuilder.Append(@"-export([get/1,get_list/0]).").Append(export.ExportLineString);
             stringBuilder.Append(exportString2);
 
             // 生成数据内容结尾
-            stringBuilder.AppendLine("get(_N) -> false.");
-            stringBuilder.AppendLine("get_list() ->");
+            stringBuilder.Append("get(_N) -> false.").Append(export.ExportLineString);
+            stringBuilder.Append("get_list() ->").Append(export.ExportLineString);
             stringBuilder.Append("\t[");
             for (int i = 0; i < dataCount; i++)
             {
@@ -207,7 +279,7 @@ class ExportErlang : Export
                 stringBuilder.Append(FieldString.ToLower()).Append(",");
             }
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            stringBuilder.AppendLine("].");
+            stringBuilder.Append("].").Append(export.ExportLineString);
 
             export.ExportContent = stringBuilder.ToString();
 
@@ -516,7 +588,7 @@ class ExportErlang : Export
                     return null;
                 else
                 {
-                    content.AppendFormat("{0}", childField.FieldName);
+                    content.AppendFormat("{0}", childField.DatabaseFieldName);
                     content.Append("=> ");
                     content.Append(oneFieldString).Append(",");
                 }
@@ -727,7 +799,7 @@ class ExportErlang : Export
         }
 
         // 包裹tableString所生成table的左括号
-        content.AppendLine("{");
+        content.Append("{").Append(export.ExportLineString);
         ++level;
 
         // 每组数据间用英文分号分隔，最终每组数据会生成一个lua table
@@ -827,7 +899,7 @@ class ExportErlang : Export
                     }
                 case TableStringValueType.Table:
                     {
-                        content.AppendLine("{");
+                        content.Append("{").Append(export.ExportLineString);
                         ++level;
 
                         // 依次输出table中定义的子元素
@@ -844,7 +916,7 @@ class ExportErlang : Export
                                 else
                                     content.Append(value);
                             }
-                            content.AppendLine(",");
+                            content.Append(",").Append(export.ExportLineString);
                         }
                         --level;
                         content.Append(_GetErlangIndentation(level));
@@ -865,7 +937,7 @@ class ExportErlang : Export
             }
 
             // 每组数据生成完毕后加逗号并换行
-            content.AppendLine(",");
+            content.Append(",").Append(export.ExportLineString);
         }
 
         // 包裹tableString所生成table的右括号

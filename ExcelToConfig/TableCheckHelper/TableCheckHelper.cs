@@ -143,6 +143,11 @@ public partial class TableCheckHelper
                         CheckNotEmpty(fieldInfo, checkRule, out errorString);
                         break;
                     }
+                case TableCheckType.CheckSum:
+                    {
+                        CheckSum(fieldInfo, checkRule, out errorString);
+                        break;
+                    }
                 case TableCheckType.RefStr:
                     {
                         CheckRefStr(fieldInfo, checkRule, out errorString);
@@ -237,6 +242,7 @@ public enum TableCheckType
     Illegal,      // 非法值检查（填写值不允许为几个非法值中的一个）
     NotEmpty,     // 值非空检查
     Unique,       // 值唯一性检查
+    CheckSum,       //sum组合检查
     RefStr,          // 值引用检查（某个数值必须为另一个表格中某字段中存在的值）
     Ref,          // 值引用检查（某个数值必须为另一个表格中某字段中存在的值）
     GreaterThan,  // 值大小比较检查（同一行中某个字段的值必须大于另一字段的值）

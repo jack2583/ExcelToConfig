@@ -61,6 +61,7 @@ public class ExcelFolder
         AllExcelPaths = RemoveTempFile(AllExcelPaths, ExcelTableSetting.ExcelTempFileFileNameStartString);
         FileModule.CheckSameName(AllExcelPaths, "xlsx");
         ExportTables=_getExportTables(AllExcelPaths, ExportPart, ExportExcept);
+       
     }
 
     private static void GetParamValue()
@@ -122,7 +123,7 @@ public class ExcelFolder
             {
                 if (!kvp.Key.StartsWith(TempFileFileNameStartString))
                 {
-                    allFilePathsTemp.Add(kvp.Key, kvp.Value);
+                    allFilePathsTemp.Add(ExcelMethods.GetTableName(kvp.Key), kvp.Value);
                 }
             }
         }

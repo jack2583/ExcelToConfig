@@ -67,7 +67,7 @@ public class BatExportMergeSetting : IBatExportMergeSetting
                     AppValues.TableInfo.Add(kvp.Key, tableInfo);
                 }
             }
-            AppLog.Log("合并完成\n");
+            
         }
     }
 }

@@ -8,6 +8,16 @@ class ExportTxt : Export
 {
     public static void ExportToTxt()
     {
+        string ExportType = "Txt";
+
+        if (AppValues.ConfigData.ContainsKey("AllExport" + ExportType))
+        {
+            if (string.Equals("false", AppValues.ConfigData["AllExport" + ExportType].Trim().ToLower()))
+                return;
+        }
+        else
+            return;
+
         string errorString = null;
         BatExportPublicSetting batExportPublicSetting = new BatExportPublicSetting();
         batExportPublicSetting.IsExport = true;
@@ -44,7 +54,7 @@ class ExportTxt : Export
         batExportSetting.IsAddKeyToLuaTable = false;
         batExportSetting.GetParamValue();
         
-        string ExportType = "Txt";
+
         foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
         {
             TableInfo tableInfo = kvp.Value;
@@ -80,6 +90,68 @@ class ExportTxt : Export
             excelConfigSetting.IsAddKeyToLuaTableParam = ExportType + "IsAddKeyToLuaTable";
             excelConfigSetting.DateToExportFormatParam = ExportType + "DateToExportFormat";
             excelConfigSetting.TimeToExportFormatParam = ExportType + "TimeToExportFormat";
+
+            if (AppValues.ConfigData.ContainsKey("Export" + ExportType))
+                excelConfigSetting.IsExportParam = AppValues.ConfigData["Export" + ExportType].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportPath"))
+                excelConfigSetting.ExportPathParam = AppValues.ConfigData[ExportType + "ExportPath"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportKeepDirectoryStructure"))
+                excelConfigSetting.IsExportKeepDirectoryStructureParam = AppValues.ConfigData[ExportType + "IsExportKeepDirectoryStructure"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportName"))
+                excelConfigSetting.ExportNameParam = AppValues.ConfigData[ExportType + "ExportName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExcelNameSplitString"))
+                excelConfigSetting.ExcelNameSplitStringParam = AppValues.ConfigData[ExportType + "ExcelNameSplitString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportExtension"))
+                excelConfigSetting.ExportExtensionParam = AppValues.ConfigData[ExportType + "ExportExtension"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameBeforeAdd"))
+                excelConfigSetting.ExportNameBeforeAddParam = AppValues.ConfigData[ExportType + "ExportNameBeforeAdd"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameAfterLanguageMark"))
+                excelConfigSetting.ExportNameAfterLanguageMarkParam = AppValues.ConfigData[ExportType + "ExportNameAfterLanguageMark"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullNumber"))
+                excelConfigSetting.IsExportNullNumberParam = AppValues.ConfigData[ExportType + "IsExportNullNumber"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullString"))
+                excelConfigSetting.IsExportNullStringParam = AppValues.ConfigData[ExportType + "IsExportNullString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullJson"))
+                excelConfigSetting.IsExportNullJsonParam = AppValues.ConfigData[ExportType + "IsExportNullJson"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullArray"))
+                excelConfigSetting.IsExportNullArrayParam = AppValues.ConfigData[ExportType + "IsExportNullArray"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDict"))
+                excelConfigSetting.IsExportNullDictParam = AppValues.ConfigData[ExportType + "IsExportNullDict"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullBool"))
+                excelConfigSetting.IsExportNullBoolParam = AppValues.ConfigData[ExportType + "IsExportNullBool"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDate"))
+                excelConfigSetting.IsExportNullDateParam = AppValues.ConfigData[ExportType + "IsExportNullDate"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullTime"))
+                excelConfigSetting.IsExportNullTimeParam = AppValues.ConfigData[ExportType + "IsExportNullTime"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullLang"))
+                excelConfigSetting.IsExportNullLangParam = AppValues.ConfigData[ExportType + "IsExportNullLang"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportFormat"))
+                excelConfigSetting.IsExportFormatParam = AppValues.ConfigData[ExportType + "IsExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportFieldComment"))
+                excelConfigSetting.IsExportFieldCommentParam = AppValues.ConfigData[ExportType + "ExportFieldComment"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportTopWords"))
+                excelConfigSetting.ExportTopWordsParam = AppValues.ConfigData[ExportType + "ExportTopWords"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportIndentationString"))
+                excelConfigSetting.ExportIndentationStringParam = AppValues.ConfigData[ExportType + "ExportIndentationString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportSpaceString"))
+                excelConfigSetting.ExportSpaceStringParam = AppValues.ConfigData[ExportType + "ExportSpaceString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportLineString"))
+                excelConfigSetting.ExportLineStringParam = AppValues.ConfigData[ExportType + "ExportLineString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonArrayFormat"))
+                excelConfigSetting.IsExportJsonArrayFormatParam = AppValues.ConfigData[ExportType + "IsExportJsonArrayFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonMapIncludeKeyColumnValue"))
+                excelConfigSetting.IsExportJsonMapIncludeKeyColumnValueParam = AppValues.ConfigData[ExportType + "IsExportJsonMapIncludeKeyColumnValue"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsArrayFieldName"))
+                excelConfigSetting.IsArrayFieldNameParam = AppValues.ConfigData[ExportType + "IsArrayFieldName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsTableNameStart"))
+                excelConfigSetting.IsTableNameStartParam = AppValues.ConfigData[ExportType + "IsTableNameStart"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsAddKeyToLuaTable"))
+                excelConfigSetting.IsAddKeyToLuaTableParam = AppValues.ConfigData[ExportType + "IsAddKeyToLuaTable"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "DateToExportFormat"))
+                excelConfigSetting.DateToExportFormatParam = AppValues.ConfigData[ExportType + "DateToExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "TimeToExportFormat"))
+                excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData[ExportType + "TimeToExportFormat"].Trim();
+
             excelConfigSetting.GetParamValue(tableInfo);
 
             Export export = new Export();
@@ -142,11 +214,11 @@ class ExportTxt : Export
                     continue;
 
 
-                export.ExportContent = content.ToString();
-
                 // 保存为txt文件
                 if (export.ExportPath == null || export.ExportPath == "")
                     export.ExportPath = Path.GetDirectoryName(tableInfo.ExcelFilePath);
+
+                export.ExportContent = content.ToString();
 
                 string sheetName = dt.TableName;
                 if (sheetName.StartsWith("'"))
@@ -156,15 +228,8 @@ class ExportTxt : Export
                 if (sheetName.EndsWith("$"))
                     sheetName = sheetName.Substring(0, sheetName.Length - 1);
 
-                //string s = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
-                //export.SaveFile(s, tableInfo.ExcelName, sheetName);
-
-                string fileName2 = string.Concat(tableInfo.ExcelName + "-" + sheetName, ".", export.ExportExtension);
-                string savePath = FileModule.CombinePath(Path.GetDirectoryName(tableInfo.ExcelFilePath), fileName2);
-                StreamWriter writer = new StreamWriter(savePath, false, new UTF8Encoding(false));
-                writer.Write(export.ExportContent);
-                writer.Flush();
-                writer.Close();
+                string s = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
+                export.SaveFile(s,tableInfo.ExcelName, sheetName);
                 AppLog.Log(string.Format("成功导出：{0}{1}{2}.{3}", tableInfo.ExcelName, "-", sheetName, export.ExportExtension));
                 errorString = null;
                 return true;
@@ -304,19 +369,30 @@ class ExportTxt : Export
             content.AppendLine(stringBuilder.ToString());
 
 
-        //if (export.ExportPath == null || export.ExportPath == "")
-        //    export.ExportPath = Path.GetDirectoryName(tableInfo.ExcelFilePath);
+        if (export.ExportPath == null || export.ExportPath == "")
+            export.ExportPath = Path.GetDirectoryName(tableInfo.ExcelFilePath);
 
 
-        //    string s = AppValues.MergeTableList[tableInfo.TableName][0].TableName;
-        //    string exportDirectoryPath = FileModule.GetExportDirectoryPath(s, export.ExportPath, export.IsExportKeepDirectoryStructure, false);
-        //    //如果文件夹不存在就创建
-        //    if (Directory.Exists(exportDirectoryPath) == false)
-        //        Directory.CreateDirectory(exportDirectoryPath);
+            string s = AppValues.MergeTableList[tableInfo.TableName][0].TableName;
+            string exportDirectoryPath = FileModule.GetExportDirectoryPath(s, export.ExportPath, export.IsExportKeepDirectoryStructure, false);
+            //如果文件夹不存在就创建
+            if (Directory.Exists(exportDirectoryPath) == false)
+                Directory.CreateDirectory(exportDirectoryPath);
 
+            //string xname = tableInfo.TableName;
+            //if(ExcelFolder.TheLanguage !="")
+            //{
+            //    foreach (TableInfo tab in AppValues.MergeTableList[tableInfo.TableName])
+            //    {
+            //        if (ExcelMethods.GetTableName(tab.ExcelName).EndsWith(ExcelFolder.TheLanguage))
+            //        {
+            //            xname = tableInfo.TableName + ExcelFolder.TheLanguage;
+            //        }
+            //    }
+            //}
 
             string fileName2 = string.Concat(tableInfo.TableName + ExcelFolder.TheLanguage, ".", export.ExportExtension);
-            string savePath = FileModule.CombinePath(Path.GetDirectoryName(tableInfo.ExcelFilePath), fileName2);
+            string savePath = FileModule.CombinePath(exportDirectoryPath, fileName2);
             StreamWriter writer = new StreamWriter(savePath, false, new UTF8Encoding(false));
             writer.Write(content);
             writer.Flush();
@@ -520,12 +596,12 @@ class ExportTxt : Export
             if (Directory.Exists(exportDirectoryPath) == false)
                 Directory.CreateDirectory(exportDirectoryPath);
 
-            if (sheetName.StartsWith("'"))
-                sheetName = sheetName.Substring(1);
-            if (sheetName.EndsWith("'"))
-                sheetName = sheetName.Substring(0, sheetName.Length - 1);
-            if (sheetName.EndsWith("$"))
-                sheetName = sheetName.Substring(0, sheetName.Length - 1);
+            //if (sheetName.StartsWith("'"))
+            //    sheetName = sheetName.Substring(1);
+            //if (sheetName.EndsWith("'"))
+            //    sheetName = sheetName.Substring(0, sheetName.Length - 1);
+            //if (sheetName.EndsWith("$"))
+            //    sheetName = sheetName.Substring(0, sheetName.Length - 1);
 
             string fileName2 = string.Concat(excelName + "-" + sheetName, ".", export.ExportExtension);
             string savePath = FileModule.CombinePath(exportDirectoryPath, fileName2);

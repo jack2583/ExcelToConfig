@@ -25,6 +25,15 @@ class ExportLua
 
     public static void ExportToLua()
     {
+        string ExportType = "Lua";
+        if (AppValues.ConfigData.ContainsKey("AllExport" + ExportType))
+        {
+            if (string.Equals("false", AppValues.ConfigData["AllExport" + ExportType].Trim().ToLower()))
+                return;
+        }
+        else
+            return;
+
         string errorString = null;
         BatExportPublicSetting batExportPublicSetting = new BatExportPublicSetting();
         batExportPublicSetting.IsExport = false;
@@ -60,7 +69,7 @@ class ExportLua
         batExportSetting.IsAddKeyToLuaTable = false;
         batExportSetting.GetParamValue();
 
-        string ExportType = "Lua";
+
         foreach (KeyValuePair<string, TableInfo> kvp in AppValues.TableInfo)
         {
             TableInfo tableInfo = kvp.Value;
@@ -96,7 +105,68 @@ class ExportLua
             excelConfigSetting.DateToExportFormatParam = ExportType + "DateToExportFormat";
             excelConfigSetting.TimeToExportFormatParam = ExportType + "TimeToExportFormat";
             excelConfigSetting.SpecialExportParam = "SpecialExport" + ExportType;
-            // excelConfigSetting.ExportMergeToTableParam = ExportType+"ExportMergeToTable";
+
+            if (AppValues.ConfigData.ContainsKey("Export" + ExportType))
+                excelConfigSetting.IsExportParam = AppValues.ConfigData["Export" + ExportType].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportPath"))
+                excelConfigSetting.ExportPathParam = AppValues.ConfigData[ExportType + "ExportPath"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportKeepDirectoryStructure"))
+                excelConfigSetting.IsExportKeepDirectoryStructureParam = AppValues.ConfigData[ExportType + "IsExportKeepDirectoryStructure"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportName"))
+                excelConfigSetting.ExportNameParam = AppValues.ConfigData[ExportType + "ExportName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExcelNameSplitString"))
+                excelConfigSetting.ExcelNameSplitStringParam = AppValues.ConfigData[ExportType + "ExcelNameSplitString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportExtension"))
+                excelConfigSetting.ExportExtensionParam = AppValues.ConfigData[ExportType + "ExportExtension"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameBeforeAdd"))
+                excelConfigSetting.ExportNameBeforeAddParam = AppValues.ConfigData[ExportType + "ExportNameBeforeAdd"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportNameAfterLanguageMark"))
+                excelConfigSetting.ExportNameAfterLanguageMarkParam = AppValues.ConfigData[ExportType + "ExportNameAfterLanguageMark"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullNumber"))
+                excelConfigSetting.IsExportNullNumberParam = AppValues.ConfigData[ExportType + "IsExportNullNumber"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullString"))
+                excelConfigSetting.IsExportNullStringParam = AppValues.ConfigData[ExportType + "IsExportNullString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullJson"))
+                excelConfigSetting.IsExportNullJsonParam = AppValues.ConfigData[ExportType + "IsExportNullJson"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullArray"))
+                excelConfigSetting.IsExportNullArrayParam = AppValues.ConfigData[ExportType + "IsExportNullArray"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDict"))
+                excelConfigSetting.IsExportNullDictParam = AppValues.ConfigData[ExportType + "IsExportNullDict"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullBool"))
+                excelConfigSetting.IsExportNullBoolParam = AppValues.ConfigData[ExportType + "IsExportNullBool"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullDate"))
+                excelConfigSetting.IsExportNullDateParam = AppValues.ConfigData[ExportType + "IsExportNullDate"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullTime"))
+                excelConfigSetting.IsExportNullTimeParam = AppValues.ConfigData[ExportType + "IsExportNullTime"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportNullLang"))
+                excelConfigSetting.IsExportNullLangParam = AppValues.ConfigData[ExportType + "IsExportNullLang"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportFormat"))
+                excelConfigSetting.IsExportFormatParam = AppValues.ConfigData[ExportType + "IsExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportFieldComment"))
+                excelConfigSetting.IsExportFieldCommentParam = AppValues.ConfigData[ExportType + "ExportFieldComment"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportTopWords"))
+                excelConfigSetting.ExportTopWordsParam = AppValues.ConfigData[ExportType + "ExportTopWords"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportIndentationString"))
+                excelConfigSetting.ExportIndentationStringParam = AppValues.ConfigData[ExportType + "ExportIndentationString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportSpaceString"))
+                excelConfigSetting.ExportSpaceStringParam = AppValues.ConfigData[ExportType + "ExportSpaceString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "ExportLineString"))
+                excelConfigSetting.ExportLineStringParam = AppValues.ConfigData[ExportType + "ExportLineString"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonArrayFormat"))
+                excelConfigSetting.IsExportJsonArrayFormatParam = AppValues.ConfigData[ExportType + "IsExportJsonArrayFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsExportJsonMapIncludeKeyColumnValue"))
+                excelConfigSetting.IsExportJsonMapIncludeKeyColumnValueParam = AppValues.ConfigData[ExportType + "IsExportJsonMapIncludeKeyColumnValue"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsArrayFieldName"))
+                excelConfigSetting.IsArrayFieldNameParam = AppValues.ConfigData[ExportType + "IsArrayFieldName"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsTableNameStart"))
+                excelConfigSetting.IsTableNameStartParam = AppValues.ConfigData[ExportType + "IsTableNameStart"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "IsAddKeyToLuaTable"))
+                excelConfigSetting.IsAddKeyToLuaTableParam = AppValues.ConfigData[ExportType + "IsAddKeyToLuaTable"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "DateToExportFormat"))
+                excelConfigSetting.DateToExportFormatParam = AppValues.ConfigData[ExportType + "DateToExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey(ExportType + "TimeToExportFormat"))
+                excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData[ExportType + "TimeToExportFormat"].Trim();
+
             excelConfigSetting.GetParamValue(tableInfo);
 
             Export export = new Export();

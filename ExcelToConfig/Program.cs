@@ -89,6 +89,7 @@ namespace ExcelToConfig
                 ExportTxt.ExportToTxt();
                 ExportJson.ExportToJson();
                 ExportErlang.ExportToErlang();
+                ExportServerJson.ExportToJson();
                 ExportLua.ExportToLua();
 
 

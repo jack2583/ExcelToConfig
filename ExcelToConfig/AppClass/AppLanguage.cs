@@ -7,7 +7,7 @@ public class AppLanguage
 {
     /// <summary>
     /// Config.txt中的多语言配置，即excel现有多少种类型
-    /// MoreLanguage:_ft,_yn,_English
+    /// Language:_ft,_yn,_English
     /// daily_activity_ft-日常活动.xlsx，daily_activity_yn-日常活动.xlsx，daily_activity_English-日常活动.xlsx
     /// </summary>
     public static string AppConfigIDArrParam =  "Language";

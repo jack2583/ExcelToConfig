@@ -130,6 +130,7 @@
     <Compile Include="ExportErlang.cs" />
     <Compile Include="ExportJson.cs" />
     <Compile Include="ExportLua.cs" />
+    <Compile Include="ExportServerJson.cs" />
     <Compile Include="ExportToLUA\ExportToLuaHelper.cs" />
     <Compile Include="ExportToLUA\LuaStruct.cs" />
     <Compile Include="ExportToLUA\SaveLua.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="TableCheckHelper\CheckRange.cs" />
     <Compile Include="TableCheckHelper\CheckRef.cs" />
     <Compile Include="TableCheckHelper\CheckRefStr.cs" />
+    <Compile Include="TableCheckHelper\CheckSum.cs" />
     <Compile Include="TableCheckHelper\CheckTableFunc.cs" />
     <Compile Include="TableCheckHelper\CheckTableIntegrity.cs" />
     <Compile Include="TableCheckHelper\CheckType.cs" />
