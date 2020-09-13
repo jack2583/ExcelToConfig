@@ -35,6 +35,7 @@ public class AppConfig
         else
             AppLog.LogWarning(string.Format("警告：找不到本工具所在路径下的{0}配置文件，请确定是否真的不需要自定义配置", AppConfig.ConfigPath));
 
+        //检查datetime类型，并初始化
         // 读取部分配置项并进行检查
         const string ERROR_STRING_FORMAT = "配置项\"{0}\"所设置的值\"{1}\"非法：{2}\n";
         StringBuilder errorStringBuilder = new StringBuilder();
@@ -45,36 +46,50 @@ public class AppConfig
             if (TableCheckHelper.CheckDateInputDefine(DateTimeValue.DefaultDateInputFormat, out tempErrorString) == false)
                 errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, DateTimeValue.APP_CONFIG_KEY_DEFAULT_DATE_INPUT_FORMAT, DateTimeValue.DefaultDateInputFormat, tempErrorString);
         }
-        if (AppValues.ConfigData.ContainsKey(LuaStruct.DefaultDateToExportFormatKey))
-        {
-            LuaStruct.DefaultDateToExportFormat = AppValues.ConfigData[LuaStruct.DefaultDateToExportFormatKey].Trim();
-            if (TableCheckHelper.CheckDateToLuaDefine(LuaStruct.DefaultDateToExportFormat, out tempErrorString) == false)
-                errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, LuaStruct.DefaultDateToExportFormatKey, LuaStruct.DefaultDateToExportFormat, tempErrorString);
-        }
-        if (AppValues.ConfigData.ContainsKey(MySQLStruct.DefaultDateToExportFormatKey))
-        {
-            MySQLStruct.DefaultDateToExportFormat = AppValues.ConfigData[MySQLStruct.DefaultDateToExportFormatKey].Trim();
-            if (TableCheckHelper.CheckDateToDatabaseDefine(MySQLStruct.DefaultDateToExportFormat, out tempErrorString) == false)
-                errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, MySQLStruct.DefaultDateToExportFormatKey, MySQLStruct.DefaultDateToExportFormat, tempErrorString);
-        }
         if (AppValues.ConfigData.ContainsKey(DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT))
         {
             DateTimeValue.DefaultTimeInputFormat = AppValues.ConfigData[DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT].Trim();
             if (TableCheckHelper.CheckTimeDefine(DateTimeValue.DefaultTimeInputFormat, out tempErrorString) == false)
                 errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT, DateTimeValue.DefaultTimeInputFormat, tempErrorString);
         }
-        if (AppValues.ConfigData.ContainsKey(LuaStruct.DefaultTimeToExportFormatKey))
-        {
-            LuaStruct.DefaultTimeToExportFormat = AppValues.ConfigData[LuaStruct.DefaultTimeToExportFormatKey].Trim();
-            if (TableCheckHelper.CheckTimeDefine(LuaStruct.DefaultTimeToExportFormat, out tempErrorString) == false)
-                errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, LuaStruct.DefaultTimeToExportFormatKey, LuaStruct.DefaultTimeToExportFormat, tempErrorString);
-        }
-        if (AppValues.ConfigData.ContainsKey(MySQLStruct.DefaultTimeToExportFormatKey))
-        {
-            MySQLStruct.DefaultTimeToExportFormat = AppValues.ConfigData[MySQLStruct.DefaultTimeToExportFormatKey].Trim();
-            if (TableCheckHelper.CheckTimeDefine(MySQLStruct.DefaultTimeToExportFormat, out tempErrorString) == false)
-                errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, MySQLStruct.DefaultTimeToExportFormatKey, MySQLStruct.DefaultTimeToExportFormat, tempErrorString);
-        }
+
+
+        //if (AppValues.ConfigData.ContainsKey(DateTimeValue.APP_CONFIG_KEY_DEFAULT_DATE_INPUT_FORMAT))
+        //{
+        //    DateTimeValue.DefaultDateInputFormat = AppValues.ConfigData[DateTimeValue.APP_CONFIG_KEY_DEFAULT_DATE_INPUT_FORMAT].Trim();
+        //    if (TableCheckHelper.CheckDateInputDefine(DateTimeValue.DefaultDateInputFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, DateTimeValue.APP_CONFIG_KEY_DEFAULT_DATE_INPUT_FORMAT, DateTimeValue.DefaultDateInputFormat, tempErrorString);
+        //}
+        //if (AppValues.ConfigData.ContainsKey(LuaStruct.DefaultDateToExportFormatKey))
+        //{
+        //    LuaStruct.DefaultDateToExportFormat = AppValues.ConfigData[LuaStruct.DefaultDateToExportFormatKey].Trim();
+        //    if (TableCheckHelper.CheckDateToLuaDefine(LuaStruct.DefaultDateToExportFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, LuaStruct.DefaultDateToExportFormatKey, LuaStruct.DefaultDateToExportFormat, tempErrorString);
+        //}
+        //if (AppValues.ConfigData.ContainsKey(MySQLStruct.DefaultDateToExportFormatKey))
+        //{
+        //    MySQLStruct.DefaultDateToExportFormat = AppValues.ConfigData[MySQLStruct.DefaultDateToExportFormatKey].Trim();
+        //    if (TableCheckHelper.CheckDateToDatabaseDefine(MySQLStruct.DefaultDateToExportFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, MySQLStruct.DefaultDateToExportFormatKey, MySQLStruct.DefaultDateToExportFormat, tempErrorString);
+        //}
+        //if (AppValues.ConfigData.ContainsKey(DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT))
+        //{
+        //    DateTimeValue.DefaultTimeInputFormat = AppValues.ConfigData[DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT].Trim();
+        //    if (TableCheckHelper.CheckTimeDefine(DateTimeValue.DefaultTimeInputFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT, DateTimeValue.DefaultTimeInputFormat, tempErrorString);
+        //}
+        //if (AppValues.ConfigData.ContainsKey(LuaStruct.DefaultTimeToExportFormatKey))
+        //{
+        //    LuaStruct.DefaultTimeToExportFormat = AppValues.ConfigData[LuaStruct.DefaultTimeToExportFormatKey].Trim();
+        //    if (TableCheckHelper.CheckTimeDefine(LuaStruct.DefaultTimeToExportFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, LuaStruct.DefaultTimeToExportFormatKey, LuaStruct.DefaultTimeToExportFormat, tempErrorString);
+        //}
+        //if (AppValues.ConfigData.ContainsKey(MySQLStruct.DefaultTimeToExportFormatKey))
+        //{
+        //    MySQLStruct.DefaultTimeToExportFormat = AppValues.ConfigData[MySQLStruct.DefaultTimeToExportFormatKey].Trim();
+        //    if (TableCheckHelper.CheckTimeDefine(MySQLStruct.DefaultTimeToExportFormat, out tempErrorString) == false)
+        //        errorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, MySQLStruct.DefaultTimeToExportFormatKey, MySQLStruct.DefaultTimeToExportFormat, tempErrorString);
+        //}
 
         string errorConfigString = errorStringBuilder.ToString();
         if (!string.IsNullOrEmpty(errorConfigString))

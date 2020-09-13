@@ -116,7 +116,7 @@ public class TableInfo
         return _fieldName.Contains(fieldName);
     }
     /// <summary>
-    /// 获取所有指定了字段名，需要进行客户端lua、csv、json等方式导出的字段
+    /// 获取所有【客户端】字段，需要进行客户端lua、csv、json等方式导出的字段
     /// </summary>
     public List<FieldInfo> GetAllClientFieldInfo()
     {
@@ -129,7 +129,20 @@ public class TableInfo
 
         return allClientFieldInfo;
     }
+    /// <summary>
+    /// 获取所有【服务端】字段
+    /// </summary>
+    public List<FieldInfo> GetAllServerFieldInfo()
+    {
+        List<FieldInfo> allServerFieldInfo = new List<FieldInfo>();
+        foreach (FieldInfo fieldInfo in _fieldInfo)
+        {
+            if (fieldInfo.DatabaseFieldName != null)
+                allServerFieldInfo.Add(fieldInfo);
+        }
 
+        return allServerFieldInfo;
+    }
     /// <summary>
     /// 获取主键字段
     /// </summary>

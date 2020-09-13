@@ -6,34 +6,7 @@ using System.Text;
 
 public partial class TableAnalyzeHelper
 {
-    /// <summary>
-    /// 解析date型的格式类型
-    /// </summary>
-    public static DateFormatType GetDateFormatType(string formatString)
-    {
-        formatString = formatString.Trim();
-        if ("#1970sec".Equals(formatString, StringComparison.CurrentCultureIgnoreCase))
-            return DateFormatType.ReferenceDateSec;
-        else if ("#1970msec".Equals(formatString, StringComparison.CurrentCultureIgnoreCase))
-            return DateFormatType.ReferenceDateMsec;
-        else if ("#dateTable".Equals(formatString, StringComparison.CurrentCultureIgnoreCase))
-            return DateFormatType.DataTable;
-        else
-            return DateFormatType.FormatString;
-    }
-
-    /// <summary>
-    /// 解析time型的格式类型
-    /// </summary>
-    public static TimeFormatType GetTimeFormatType(string formatString)
-    {
-        formatString = formatString.Trim();
-        if ("#sec".Equals(formatString, StringComparison.CurrentCultureIgnoreCase))
-            return TimeFormatType.ReferenceTimeSec;
-        else
-            return TimeFormatType.FormatString;
-    }
-
+    
     /// <summary>
     /// 解析date型数据的定义
     /// </summary>
@@ -69,6 +42,9 @@ public partial class TableAnalyzeHelper
             string[] defineParams = defineString.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
             StringBuilder paramDefineErrorStringBuilder = new StringBuilder();
             const string ERROR_STRING_FORMAT = "配置项\"{0}\"设置的格式\"{1}\"错误：{2}\n";
+
+
+
             foreach (string defineParam in defineParams)
             {
                 // 通过=分隔参数项的key和value
@@ -82,41 +58,56 @@ public partial class TableAnalyzeHelper
                 string paramValue = paramKeyAndValue[1].Trim();
 
                 errorString = null;
-                switch (paramKey)
+
+                if (!Enum.IsDefined(typeof(DateTimeTypeKey), paramKey))
                 {
-                    case DateTimeValue.DateInputParamKey:
-                        {
-                            if (TableCheckHelper.CheckDateInputDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[DateTimeValue.DateInputFormat] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
-
-                            break;
-                        }
-                    case LuaStruct.DateToExportParamKey:
-                        {
-                            if (TableCheckHelper.CheckDateToLuaDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[LuaStruct.DateToExportFormatKey] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
-
-                            break;
-                        }
-                    case MySQLStruct.DateToExportParamKey:
-                        {
-                            if (TableCheckHelper.CheckDateToDatabaseDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[MySQLStruct.DateToExportFormatKey] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
-
-                            break;
-                        }
-                    default:
-                        {
-                            paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
-                            break;
-                        }
+                    paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
+                    
                 }
+                else if (TableCheckHelper.CheckDateInputDefine(paramValue, out errorString) == true)
+                {
+                    fieldInfo.ExtraParam[paramKey] = paramValue;
+                    
+                }
+                else
+                    paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+
+                //switch (paramKey)
+                //{
+                //    case DateTimeValue.DateInputParamKey:
+                //        {
+                //            if (TableCheckHelper.CheckDateInputDefine(paramValue, out errorString) == true)
+                //                fieldInfo.ExtraParam[DateTimeValue.DateInputFormat] = paramValue;
+                //            else
+                //                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+                //            break;
+                //        }
+                //case LuaStruct.DateToExportParamKey:
+                //    {
+                //        if (TableCheckHelper.CheckDateToLuaDefine(paramValue, out errorString) == true)
+                //            fieldInfo.ExtraParam[LuaStruct.DateToExportFormatKey] = paramValue;
+                //        else
+                //            paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+                //        break;
+                //    }
+                //case MySQLStruct.DateToExportParamKey:
+                //    {
+                //        if (TableCheckHelper.CheckDateToDatabaseDefine(paramValue, out errorString) == true)
+                //            fieldInfo.ExtraParam[MySQLStruct.DateToExportFormatKey] = paramValue;
+                //        else
+                //            paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+                //        break;
+                //    }
+                //    default:
+                //        {
+                //            paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
+                //            break;
+                //        }
+                //}
             }
             string paramDefineErrorString = paramDefineErrorStringBuilder.ToString();
             if (!string.IsNullOrEmpty(paramDefineErrorString))
@@ -128,41 +119,25 @@ public partial class TableAnalyzeHelper
         }
 
         // 检查date型输入格式、导出至lua文件格式、导出至MySQL数据库格式是否都已声明，没有则分别采用config文件的默认设置
-        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeValue.DateInputFormat))
-        {
-            if (DateTimeValue.DefaultDateInputFormat == null)
-            {
-                errorString = string.Format("未声明date型的输入格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", DateTimeValue.APP_CONFIG_KEY_DEFAULT_DATE_INPUT_FORMAT);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[DateTimeValue.DateInputFormat] = DateTimeValue.DefaultDateInputFormat;
-        }
-        if (!fieldInfo.ExtraParam.ContainsKey(LuaStruct.DateToExportFormatKey))
-        {
-            if (LuaStruct.DefaultDateToExportFormat == null)
-            {
-                errorString = string.Format("未声明date型导出至lua文件的格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", LuaStruct.DefaultDateToExportFormatKey);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[LuaStruct.DateToExportFormatKey] = LuaStruct.DefaultDateToExportFormat;
-        }
-        if (!fieldInfo.ExtraParam.ContainsKey(MySQLStruct.DateToExportFormatKey))
-        {
-            if (MySQLStruct.DefaultDateToExportFormat == null)
-            {
-                errorString = string.Format("未声明date型导出至MySQL数据库的格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", MySQLStruct.DefaultDateToExportFormatKey);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[MySQLStruct.DateToExportFormatKey] = MySQLStruct.DefaultDateToExportFormat;
-        }
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.input.ToString()))
+             fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toLua.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toJson.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toServerJson.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toMySQL.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toMySQL.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toSQLITE.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toSQLITE.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toTxt.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toTxt.ToString()] = DateTimeValue.DefaultDateInputFormat;
 
-        DateFormatType dateFormatType = GetDateFormatType((string)fieldInfo.ExtraParam[DateTimeValue.DateInputFormat]);
+        DateFormatType dateFormatType =DateTimeValue.GetDateFormatType((string)fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()]);
+        
+
+
         fieldInfo.Data = new List<object>();
         // 记录非法数据的行号以及数据值（key：行号， value：数据值）
         Dictionary<int, object> invalidInfo = new Dictionary<int, object>();
@@ -171,7 +146,7 @@ public partial class TableAnalyzeHelper
         {
             // 用于对时间格式进行转换
             DateTimeFormatInfo dateTimeFormat = new DateTimeFormatInfo();
-            dateTimeFormat.ShortDatePattern = (string)fieldInfo.ExtraParam[DateTimeValue.DateInputFormat];
+            dateTimeFormat.ShortDatePattern = (string)fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()];
 
             for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
             {
@@ -252,7 +227,7 @@ public partial class TableAnalyzeHelper
         if (invalidInfo.Count > 0)
         {
             StringBuilder invalidDataInfo = new StringBuilder();
-            invalidDataInfo.AppendFormat("以下行中的数据无法按指定的输入格式（{0}）进行读取\n", fieldInfo.ExtraParam[DateTimeValue.DateInputFormat]);
+            invalidDataInfo.AppendFormat("以下行中的数据无法按指定的输入格式（{0}）进行读取\n", fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()]);
             foreach (var item in invalidInfo)
                 invalidDataInfo.AppendFormat("第{0}行，错误地填写数据为\"{1}\"\n", item.Key + 1, item.Value);
 
@@ -309,6 +284,7 @@ public partial class TableAnalyzeHelper
             string[] defineParams = defineString.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
             StringBuilder paramDefineErrorStringBuilder = new StringBuilder();
             const string ERROR_STRING_FORMAT = "配置项\"{0}\"设置的格式\"{1}\"错误：{2}\n";
+
             foreach (string defineParam in defineParams)
             {
                 // 通过=分隔参数项的key和value
@@ -322,41 +298,53 @@ public partial class TableAnalyzeHelper
                 string paramValue = paramKeyAndValue[1].Trim();
 
                 errorString = null;
-                switch (paramKey)
+
+                if (!Enum.IsDefined(typeof(DateTimeTypeKey), paramKey))
                 {
-                    case DateTimeValue.TimeInputParamKey:
-                        {
-                            if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+                    paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
 
-                            break;
-                        }
-                    case LuaStruct.TimeToExportParamKey:
-                        {
-                            if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
-
-                            break;
-                        }
-                    case MySQLStruct.TimeToExportParamKey:
-                        {
-                            if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
-                                fieldInfo.ExtraParam[MySQLStruct.TimeToExportFormatKey] = paramValue;
-                            else
-                                paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
-
-                            break;
-                        }
-                    default:
-                        {
-                            paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
-                            break;
-                        }
                 }
+                else if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
+                    fieldInfo.ExtraParam[paramKey] = paramValue;
+                else
+                    paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+
+            //    switch (paramKey)
+            //    {
+            //        case DateTimeValue.TimeInputParamKey:
+            //            {
+            //                if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
+            //                    fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat] = paramValue;
+            //                else
+            //                    paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+            //                break;
+            //            }
+            //        //case LuaStruct.TimeToExportParamKey:
+            //        //    {
+            //        //        if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
+            //        //            fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey] = paramValue;
+            //        //        else
+            //        //            paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+            //        //        break;
+            //        //    }
+            //        //case MySQLStruct.TimeToExportParamKey:
+            //        //    {
+            //        //        if (TableCheckHelper.CheckTimeDefine(paramValue, out errorString) == true)
+            //        //            fieldInfo.ExtraParam[MySQLStruct.TimeToExportFormatKey] = paramValue;
+            //        //        else
+            //        //            paramDefineErrorStringBuilder.AppendFormat(ERROR_STRING_FORMAT, paramKey, paramValue, errorString);
+
+            //        //        break;
+            //        //    }
+            //        default:
+            //            {
+            //                paramDefineErrorStringBuilder.AppendFormat("存在非法配置项key\"{0}\"\n", paramKey);
+            //                break;
+            //            }
+            //    }
             }
             string paramDefineErrorString = paramDefineErrorStringBuilder.ToString();
             if (!string.IsNullOrEmpty(paramDefineErrorString))
@@ -368,41 +356,22 @@ public partial class TableAnalyzeHelper
         }
 
         // 检查time型输入格式、导出至lua文件格式、导出至MySQL数据库格式是否都已声明，没有则分别采用config文件的默认设置
-        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeValue.TimeInputFormat))
-        {
-            if (DateTimeValue.DefaultTimeInputFormat == null)
-            {
-                errorString = string.Format("未声明time型的输入格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", DateTimeValue.APP_CONFIG_KEY_DEFAULT_TIME_INPUT_FORMAT);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat] = DateTimeValue.DefaultTimeInputFormat;
-        }
-        if (!fieldInfo.ExtraParam.ContainsKey(LuaStruct.TimeToExportFormatKey))
-        {
-            if (LuaStruct.DefaultTimeToExportFormat == null)
-            {
-                errorString = string.Format("未声明time型导出至lua文件的格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", LuaStruct.DefaultTimeToExportFormatKey);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[LuaStruct.TimeToExportFormatKey] = LuaStruct.DefaultTimeToExportFormat;
-        }
-        if (!fieldInfo.ExtraParam.ContainsKey(MySQLStruct.TimeToExportFormatKey))
-        {
-            if (MySQLStruct.DefaultTimeToExportFormat == null)
-            {
-                errorString = string.Format("未声明time型导出至MySQL数据库的格式，在config配置文件中也未定义名为\"{0}\"的默认格式配置项", MySQLStruct.DefaultTimeToExportFormatKey);
-                nextFieldColumnIndex = columnIndex + 1;
-                return false;
-            }
-            else
-                fieldInfo.ExtraParam[MySQLStruct.TimeToExportFormatKey] = MySQLStruct.DefaultTimeToExportFormat;
-        }
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.input.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toLua.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toJson.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toServerJson.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toMySQL.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toMySQL.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toSQLITE.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toSQLITE.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toTxt.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toTxt.ToString()] = DateTimeValue.DefaultTimeInputFormat;
 
-        TimeFormatType timeFormatType = GetTimeFormatType((string)fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat]);
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType((string)fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()]);
         fieldInfo.Data = new List<object>();
         // 记录非法数据的行号以及数据值（key：行号， value：数据值）
         Dictionary<int, object> invalidInfo = new Dictionary<int, object>();
@@ -411,7 +380,7 @@ public partial class TableAnalyzeHelper
         {
             // 用于对时间格式进行转换
             DateTimeFormatInfo dateTimeFormat = new DateTimeFormatInfo();
-            dateTimeFormat.ShortTimePattern = (string)fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat];
+            dateTimeFormat.ShortTimePattern = (string)fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()];
 
             for (int row = ExcelTableSetting.DataFieldDataStartRowIndex; row < dt.Rows.Count; ++row)
             {
@@ -481,7 +450,7 @@ public partial class TableAnalyzeHelper
         if (invalidInfo.Count > 0)
         {
             StringBuilder invalidDataInfo = new StringBuilder();
-            invalidDataInfo.AppendFormat("以下行中的数据无法按指定的输入格式（{0}）进行读取\n", fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat]);
+            invalidDataInfo.AppendFormat("以下行中的数据无法按指定的输入格式（{0}）进行读取\n", fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()]);
             foreach (var item in invalidInfo)
                 invalidDataInfo.AppendFormat("第{0}行，错误地填写数据为\"{1}\"\n", item.Key + 1, item.Value);
 

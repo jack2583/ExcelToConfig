@@ -360,6 +360,7 @@ class ExportJson : Export
         {
 #if DEBUG
             errorString = e.ToString();
+            return false;
 #endif
             errorString = "遇到错误";
             return false;
@@ -883,17 +884,17 @@ class ExportJson : Export
     private static string _GetDateValue(FieldInfo fieldInfo, Export export, int row)
     {
         StringBuilder content = new StringBuilder();
-
-        DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[_DateToExportFormatKey].ToString());
+        string slua = DateTimeTypeKey.toJson.ToString();
+        DateFormatType dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()].ToString());
         string exportFormatString = null;
         // 若date型声明toLua的格式为dateTable，则按input格式进行导出
         if (dateFormatType == DateFormatType.DataTable)
         {
-            dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString());
-            exportFormatString = fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString();
+            dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString());
+            exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString();
         }
         else
-            exportFormatString = fieldInfo.ExtraParam[_DateToExportFormatKey].ToString();
+            exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()].ToString();
 
         switch (dateFormatType)
         {
@@ -938,7 +939,7 @@ class ExportJson : Export
     {
         StringBuilder content = new StringBuilder();
 
-        TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString());
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()].ToString());
         switch (timeFormatType)
         {
             case TimeFormatType.FormatString:
@@ -946,7 +947,7 @@ class ExportJson : Export
                     if (fieldInfo.Data[row] == null)
                         content.Append("null");
                     else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString())).Append("\"");
+                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()].ToString())).Append("\"");
 
                     break;
                 }

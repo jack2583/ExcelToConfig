@@ -476,16 +476,16 @@ class ExportTxt : Export
                 }
             case DataType.Date:
                 {
-                    DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString());
+                    DateFormatType dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString());
                     string exportFormatString = null;
                     // 若date型声明toLua的格式为dateTable，则按input格式进行导出
                     if (dateFormatType == DateFormatType.DataTable)
                     {
-                        dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString());
-                        exportFormatString = fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString();
+                        dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString());
+                        exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString();
                     }
                     else
-                        exportFormatString = fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString();
+                        exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString();
 
                     switch (dateFormatType)
                     {
@@ -532,7 +532,7 @@ class ExportTxt : Export
                 }
             case DataType.Time:
                 {
-                    TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat].ToString());
+                    TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString());
                     switch (timeFormatType)
                     {
                         case TimeFormatType.FormatString:
@@ -542,7 +542,7 @@ class ExportTxt : Export
                                     StringBuilder stringBuilder = rowContentList[row];
                                     stringBuilder.Append(export.ExportSpaceString);
                                     if (fieldInfo.Data[row] != null)
-                                        stringBuilder.Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeValue.TimeInputFormat].ToString()));
+                                        stringBuilder.Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString()));
                                 }
                                 break;
                             }

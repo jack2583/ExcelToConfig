@@ -13,10 +13,11 @@ public partial class TableCheckHelper
             errorString = "未进行格式声明";
             return false;
         }
-        DateFormatType formatType = TableAnalyzeHelper.GetDateFormatType(defineString);
-        if (!(formatType == DateFormatType.FormatString || formatType == DateFormatType.ReferenceDateMsec || formatType == DateFormatType.ReferenceDateSec))
+        DateFormatType formatType = DateTimeValue.GetDateFormatType(defineString);
+
+        if (!(formatType == DateFormatType.FormatString || formatType == DateFormatType.ReferenceDateMsec || formatType == DateFormatType.ReferenceDateSec || formatType == DateFormatType.DataTable))
         {
-            errorString = "不属于合法的date型输入格式类型";
+            errorString = "定义的date格式类型错误";
             return false;
         }
 
@@ -51,7 +52,7 @@ public partial class TableCheckHelper
             errorString = "未进行格式声明";
             return false;
         }
-        DateFormatType formatType = TableAnalyzeHelper.GetDateFormatType(defineString);
+        DateFormatType formatType = DateTimeValue.GetDateFormatType(defineString);
         if (!(formatType == DateFormatType.FormatString || formatType == DateFormatType.ReferenceDateMsec || formatType == DateFormatType.ReferenceDateSec))
         {
             errorString = "不属于合法的date型导出至MySQL数据库的格式类型";
@@ -73,7 +74,7 @@ public partial class TableCheckHelper
             errorString = "未进行格式声明";
             return false;
         }
-        TimeFormatType formatType = TableAnalyzeHelper.GetTimeFormatType(defineString);
+        TimeFormatType formatType = DateTimeValue.GetTimeFormatType(defineString);
         if (formatType == TimeFormatType.FormatString)
         {
             // 检查time型的格式字符串声明，不允许出现代表年月日的y、M、d

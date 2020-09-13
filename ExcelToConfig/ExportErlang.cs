@@ -588,9 +588,21 @@ class ExportErlang : Export
                     return null;
                 else
                 {
-                    content.AppendFormat("{0}", childField.DatabaseFieldName);
-                    content.Append("=> ");
-                    content.Append(oneFieldString).Append(",");
+                    if (oneFieldString == null)
+                        continue;
+
+                    StringBuilder contentTemp = new StringBuilder();
+                    // 变量名，注意array下属的子元素在json中不含key的声明
+                    if (!(childField.ParentField != null && childField.ParentField.DataType == DataType.Array))
+                    {
+                        content.AppendFormat("{0}", childField.DatabaseFieldName);
+                        content.Append("=> ");
+                    }
+                    contentTemp.Append(oneFieldString);
+                    // 一个字段结尾加逗号
+                    contentTemp.Append(",");
+
+                    content.Append(contentTemp.ToString());
                 }
             }
 

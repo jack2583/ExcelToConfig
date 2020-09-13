@@ -885,16 +885,16 @@ class ExportServerJson : Export
     {
         StringBuilder content = new StringBuilder();
 
-        DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[_DateToExportFormatKey].ToString());
+        DateFormatType dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()].ToString());
         string exportFormatString = null;
         // 若date型声明toLua的格式为dateTable，则按input格式进行导出
         if (dateFormatType == DateFormatType.DataTable)
         {
-            dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString());
-            exportFormatString = fieldInfo.ExtraParam[DateTimeValue.DateInputFormat].ToString();
+            dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString());
+            exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.input.ToString()].ToString();
         }
         else
-            exportFormatString = fieldInfo.ExtraParam[_DateToExportFormatKey].ToString();
+            exportFormatString = fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()].ToString();
 
         switch (dateFormatType)
         {
@@ -939,7 +939,7 @@ class ExportServerJson : Export
     {
         StringBuilder content = new StringBuilder();
 
-        TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString());
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString());
         switch (timeFormatType)
         {
             case TimeFormatType.FormatString:

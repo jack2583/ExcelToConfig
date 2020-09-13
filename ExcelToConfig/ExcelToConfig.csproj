@@ -96,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppClass\AppConfig.txt.cs" />
-    <Compile Include="AppClass\AppDataTypeDateTime.cs" />
     <Compile Include="AppClass\AppDataTypeMapString.cs" />
     <Compile Include="AppClass\AppDataTypeTableString.cs" />
     <Compile Include="AppClass\AppLang.txt.cs" />
@@ -130,18 +129,8 @@
     <Compile Include="ExportErlang.cs" />
     <Compile Include="ExportJson.cs" />
     <Compile Include="ExportLua.cs" />
+    <Compile Include="ExportMySQL.cs" />
     <Compile Include="ExportServerJson.cs" />
-    <Compile Include="ExportToLUA\ExportToLuaHelper.cs" />
-    <Compile Include="ExportToLUA\LuaStruct.cs" />
-    <Compile Include="ExportToLUA\SaveLua.cs" />
-    <Compile Include="ExportToLUA\TableExportToLuaHelper.cs" />
-    <Compile Include="ExportToLUA\TableExportToLuaHelperGetOneField.cs" />
-    <Compile Include="ExportToLUA\TableExportToLuaHelperSpecial.cs" />
-    <Compile Include="ExportToMYSQL\ExportToMySQLHelper.cs" />
-    <Compile Include="ExportToMYSQL\MySQLStruct.cs" />
-    <Compile Include="ExportToMYSQL\TableExportToMySQLHelper.cs" />
-    <Compile Include="ExportToSQLITE\SQLiteStruct.cs" />
-    <Compile Include="ExportToSQLITE\TableExportToSQLiteHelper.cs" />
     <Compile Include="ExportTxt.cs" />
     <Compile Include="ICheckSetting.cs" />
     <Compile Include="IExportSave.cs" />

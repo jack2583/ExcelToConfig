@@ -106,10 +106,13 @@ public partial class TableAnalyzeHelper
             }
         }
 
-        // 存储定义过的字段名，不允许有同名字段（key：字段名， value：列号）
-        Dictionary<string, int> fieldNames = new Dictionary<string, int>();
+        // 存储定义过的字段名，不允许有同名字段assddds（key：字段名， value：列号)
+        Dictionary<string, int> clientFieldNames = new Dictionary<string, int>();
+        //Dictionary<string, int> serverFieldNames = new Dictionary<string, int>();
         // 先加入主键列
-        fieldNames.Add(tableInfo.GetKeyColumnFieldInfo().FieldName, 0);
+        clientFieldNames.Add(tableInfo.GetKeyColumnFieldInfo().FieldName, 0);
+       // if(tableInfo.GetKeyColumnFieldInfo().DatabaseFieldName!=null)
+        //    serverFieldNames.Add(tableInfo.GetKeyColumnFieldInfo().DatabaseFieldName, 0);
         // 解析剩余的列
         while (curColumnIndex < dt.Columns.Count)
         {
@@ -126,16 +129,28 @@ public partial class TableAnalyzeHelper
                 if (oneField != null)
                 {
                     // 检查字段名是否重复
-                    if (fieldNames.ContainsKey(oneField.FieldName))
+                    if (clientFieldNames.ContainsKey(oneField.FieldName))
                     {
-                        errorString = _GetTableAnalyzeErrorString(tableName, dt.TableName, nextColumnIndex) + string.Format("表格中存在字段名同为{0}的字段，分别位于第{1}列和第{2}列", oneField.FieldName, ExcelMethods.GetExcelColumnName(fieldNames[oneField.FieldName] + 1), ExcelMethods.GetExcelColumnName(oneField.ColumnSeq + 1));
+                        errorString = _GetTableAnalyzeErrorString(tableName, dt.TableName, nextColumnIndex) + string.Format("表格中存在字段名同为{0}的字段，分别位于第{1}列和第{2}列", oneField.FieldName, ExcelMethods.GetExcelColumnName(clientFieldNames[oneField.FieldName] + 1), ExcelMethods.GetExcelColumnName(oneField.ColumnSeq + 1));
                         return null;
                     }
                     else
                     {
                         tableInfo.AddField(oneField);
-                        fieldNames.Add(oneField.FieldName, oneField.ColumnSeq);
+                        clientFieldNames.Add(oneField.FieldName, oneField.ColumnSeq);
                     }
+
+                    // 检查字段名是否重复
+                    //if (serverFieldNames.ContainsKey(oneField.DatabaseFieldName))
+                    //{
+                    //    errorString = _GetTableAnalyzeErrorString(tableName, dt.TableName, nextColumnIndex) + string.Format("表格中存在字段名同为{0}的字段，分别位于第{1}列和第{2}列", oneField.DatabaseFieldName, ExcelMethods.GetExcelColumnName(serverFieldNames[oneField.DatabaseFieldName] + 1), ExcelMethods.GetExcelColumnName(oneField.ColumnSeq + 1));
+                     //   return null;
+                    //}
+                    //else
+                   // {
+                    //    tableInfo.AddField(oneField);
+                    //    serverFieldNames.Add(oneField.DatabaseFieldName, oneField.ColumnSeq);
+                   // }
                 }
             }
         }
@@ -302,6 +317,16 @@ public partial class TableAnalyzeHelper
 
                        // }
                 }
+                }
+                //检查服务端字段名是否重复
+                List<string> sf = new List<string>();
+                List<FieldInfo> allServerFieldInfo = AppValues.TableInfo[tableName].GetAllServerFieldInfo();
+                foreach(FieldInfo f in allServerFieldInfo)
+                {
+                    if (sf.Contains(f.DatabaseFieldName))
+                        AppLog.LogErrorAndExit(string.Format("错误：存在多个以{0}为名的服务端字段，请检查配置\n", f.DatabaseFieldName));
+                    else
+                        sf.Add(f.DatabaseFieldName);
                 }
 
                 stopwatch.Stop();

@@ -1002,7 +1002,7 @@ class ExportLua
     {
         StringBuilder content = new StringBuilder();
 
-        DateFormatType dateFormatType = TableAnalyzeHelper.GetDateFormatType(fieldInfo.ExtraParam[_DateToExportFormatKey].ToString());
+        DateFormatType dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()].ToString());
         switch (dateFormatType)
         {
             case DateFormatType.FormatString:
@@ -1013,7 +1013,7 @@ class ExportLua
                         else
                             return null;
                     else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[_DateToExportFormatKey].ToString())).Append("\"");
+                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()].ToString())).Append("\"");
 
                     break;
                 }
@@ -1070,7 +1070,7 @@ class ExportLua
     {
         StringBuilder content = new StringBuilder();
 
-        TimeFormatType timeFormatType = TableAnalyzeHelper.GetTimeFormatType(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString());
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()].ToString());
         switch (timeFormatType)
         {
             case TimeFormatType.FormatString:
@@ -1081,7 +1081,7 @@ class ExportLua
                         else
                             return null;
                     else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString())).Append("\"");
+                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()].ToString())).Append("\"");
 
                     break;
                 }

@@ -8,6 +8,8 @@ public class FieldInfo
     public FieldInfo()
     {
         ExtraParam = new Dictionary<string, object>();
+        DateFormatType = new Dictionary<DateTimeTypeKey, DateFormatType>();
+        TimeFormatType = new Dictionary<DateTimeTypeKey, TimeFormatType>();
         IsIgnoreClientExport = false;
     }
 
@@ -74,9 +76,26 @@ public class FieldInfo
     public bool IsIgnoreClientExport { get; set; }
 
     /// <summary>
+    /// 客户端字段名是否为空
+    /// </summary>
+    public bool IsClientFieldName { get; set; }
+    /// <summary>
+    /// 服务端字段名是否为空
+    /// </summary>
+    public bool IsServerFieldName { get; set; }
+
+    /// <summary>
     /// 存储额外属性，比如date类型的输入、导出选项等
     /// </summary>
     public Dictionary<string, object> ExtraParam { get; set; }
+    /// <summary>
+    /// 存储日期类型输入导出格式
+    /// </summary>
+    public Dictionary<DateTimeTypeKey, DateFormatType> DateFormatType { get; set; }
+    /// <summary>
+    /// 存储日期类型输入导出格式
+    /// </summary>
+    public Dictionary<DateTimeTypeKey, TimeFormatType> TimeFormatType { get; set; }
 
     // 如果该字段为tableString型，存储解析之后的格式定义
     public TableStringFormatDefine TableStringFormatDefine { get; set; }
