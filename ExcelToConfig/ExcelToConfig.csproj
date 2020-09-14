@@ -107,7 +107,6 @@
     <Compile Include="AppClass\MapStringAnalyzeHelper.cs" />
     <Compile Include="BatExportPublicSetting.cs" />
     <Compile Include="BatExportSetting.cs" />
-    <Compile Include="DataBase\DataBase.cs" />
     <Compile Include="DateTimes\DateTimeValue.cs" />
     <Compile Include="ExcelClassOfApp\FieldInfo.cs" />
     <Compile Include="ExcelClassOfApp\TableInfo.cs" />

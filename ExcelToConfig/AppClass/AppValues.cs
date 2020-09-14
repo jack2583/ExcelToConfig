@@ -149,4 +149,8 @@ public class AppValues
     /// 存储每个bat参数解析后的信息："MergeTable(IsMerge=true|item=item100,item101)"
     /// </summary>
     public static Dictionary<string, BatParamInfo> BatParamInfo = new Dictionary<string, BatParamInfo>();
+    /// <summary>
+    /// 未对某字段命名时，默认给予的字段名前缀  AUTO_FIELD_NAME_PREFIX
+    /// </summary>
+    public static string AutoFieldNamePrefix = "未命名字段";
 }

@@ -224,6 +224,14 @@ class ExportLua
 
     public static bool ExportOneTable(TableInfo tableInfo, Export export, out string errorString)
     {
+        FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+        if (keyColumnInfo.FieldName.StartsWith(AppValues.AutoFieldNamePrefix))
+        {
+            AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+            errorString = null;
+            return true;
+        }
+
         StringBuilder content = new StringBuilder();
 
         // 生成数据内容开头
@@ -244,6 +252,7 @@ class ExportLua
 
         // 逐行读取表格内容生成lua table
         List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
+
         int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
         for (int row = 0; row < dataCount; ++row)
         {

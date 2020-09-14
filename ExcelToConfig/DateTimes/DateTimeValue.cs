@@ -144,6 +144,7 @@ public enum DateTimeTypeKey
     input,
     toLua,
     toJson,
+    toErlang,
     toServerJson,
     toMySQL,
     toSQLITE,

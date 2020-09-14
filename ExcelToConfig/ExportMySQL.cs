@@ -500,6 +500,15 @@ class ExportMySQL : Export
 
     private static bool _CreateTable(string tableName, TableInfo tableInfo, string comment,Export export, out string errorString)
     {
+
+        // 将主键列作为key生成
+        FieldInfo keyColumnField = tableInfo.GetKeyColumnFieldInfo();
+        if (keyColumnField.DatabaseFieldName == null)
+        {
+            AppLog.Log("主键未设置，已忽略导入数据库！", ConsoleColor.Yellow);
+            errorString = null;
+            return true;
+        }
         // 生成在创建数据表时所有字段的声明
         StringBuilder fieldDefineStringBuilder = new StringBuilder();
         foreach (FieldInfo fieldInfo in GetAllDatabaseFieldInfo(tableInfo))

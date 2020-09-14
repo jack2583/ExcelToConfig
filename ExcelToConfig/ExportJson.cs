@@ -244,6 +244,12 @@ class ExportJson : Export
             // 逐行读取表格内容生成json
             List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
             FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+            if (keyColumnInfo.FieldName.StartsWith(AppValues.AutoFieldNamePrefix))
+            {
+                AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+                errorString = null;
+                return true;
+            }
             int dataCount = keyColumnInfo.Data.Count;
             int fieldCount = allField.Count;
             for (int row = 0; row < dataCount; ++row)
@@ -379,6 +385,14 @@ class ExportJson : Export
 
             // 逐行读取表格内容生成json
             List<FieldInfo> allField = tableInfo.GetAllClientFieldInfo();
+            FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+            if (keyColumnInfo.FieldName.StartsWith(AppValues.AutoFieldNamePrefix))
+            {
+                AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+                errorString = null;
+                return true;
+            }
+
             int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
             int fieldCount = allField.Count;
             for (int row = 0; row < dataCount; ++row)

@@ -194,18 +194,19 @@ class ExportErlang : Export
 
             // 逐行读取表格内容生成erlang table
             List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
+
+            // 将主键列作为key生成
+            FieldInfo keyColumnField = tableInfo.GetKeyColumnFieldInfo();
+            if (keyColumnField.DatabaseFieldName == null)
+            {
+                AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+                errorString = null;
+                return true;
+            }
+
             int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
             for (int row = 0; row < dataCount; ++row)
             {
-                // 将主键列作为key生成
-                FieldInfo keyColumnField = allField[0];
-                if (keyColumnField.DatabaseFieldName == null)
-                {
-                    AppLog.Log("主键未设置，已忽略导出！",ConsoleColor.Yellow);
-                    errorString = null;
-                    return true;
-                }
-
                 if (keyColumnField.DataType == DataType.Int || keyColumnField.DataType == DataType.Long)
                     content.Append("get(").Append(keyColumnField.Data[row]).Append(")->");
                 // 注意：像“1_2”这样的字符串作为table的key必须加[""]否则lua认为是语法错误

@@ -52,7 +52,7 @@ public partial class TableAnalyzeHelper
                 return null;
             }
             // 主键列字段名不允许为空
-            else if (primaryKeyField.IsIgnoreClientExport == true)
+            else if (primaryKeyField== null)//else if (primaryKeyField.IsIgnoreClientExport == true)
             {
                 errorString = _GetTableAnalyzeErrorString(tableName, dt.TableName, 0) + "主键列必须指定字段名\n" + errorString;
                 return null;
@@ -510,7 +510,7 @@ public partial class TableAnalyzeHelper
             else
                 fieldInfo.DataTypeString = parentField.ArrayChildDataTypeString.Substring(0, lastColonIndex);
         }
-        else if (string.IsNullOrEmpty(inputFieldName))
+        else if (string.IsNullOrEmpty(inputFieldName))//客户端字段名为空时
         {
             // dict下属字段的变量名为空的列，视为无效列，直接忽略
             if (fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Dict)
@@ -532,7 +532,7 @@ public partial class TableAnalyzeHelper
             else
             {
                 //  AppLog.LogWarning(string.Format("警告：第{0}列未填写变量名，仅填写了导出数据库信息，将不会进行lua、csv、json等客户端形式导出", ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1)));
-                fieldInfo.FieldName = string.Concat(DataBase.AutoFieldNamePrefix, fieldInfo.ColumnSeq);
+                fieldInfo.FieldName = string.Concat(AppValues.AutoFieldNamePrefix, fieldInfo.ColumnSeq);
                 fieldInfo.IsIgnoreClientExport = true;
 
                 // 读取填写的数据类型

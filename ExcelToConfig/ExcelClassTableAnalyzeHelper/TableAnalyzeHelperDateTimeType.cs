@@ -125,6 +125,8 @@ public partial class TableAnalyzeHelper
             fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()] = DateTimeValue.DefaultDateInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toJson.ToString()))
             fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()] = DateTimeValue.DefaultDateInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toErlang.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toErlang.ToString()] = DateTimeValue.DefaultDateInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toServerJson.ToString()))
             fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()] = DateTimeValue.DefaultDateInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toMySQL.ToString()))
@@ -362,6 +364,8 @@ public partial class TableAnalyzeHelper
             fieldInfo.ExtraParam[DateTimeTypeKey.toLua.ToString()] = DateTimeValue.DefaultTimeInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toJson.ToString()))
             fieldInfo.ExtraParam[DateTimeTypeKey.toJson.ToString()] = DateTimeValue.DefaultTimeInputFormat;
+        if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toErlang.ToString()))
+            fieldInfo.ExtraParam[DateTimeTypeKey.toErlang.ToString()] = DateTimeValue.DefaultTimeInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toServerJson.ToString()))
             fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()] = DateTimeValue.DefaultTimeInputFormat;
         if (!fieldInfo.ExtraParam.ContainsKey(DateTimeTypeKey.toMySQL.ToString()))

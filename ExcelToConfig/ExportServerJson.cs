@@ -236,6 +236,14 @@ class ExportServerJson : Export
     {
         try
         {
+            FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+            if (keyColumnInfo.DatabaseFieldName == null)
+            {
+                AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+                errorString = null;
+                return true;
+            }
+
             errorString = null;
             StringBuilder content = new StringBuilder();
             StringBuilder contentOneRow;
@@ -244,16 +252,19 @@ class ExportServerJson : Export
 
             // 逐行读取表格内容生成json
             List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
-            FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+
+
             int dataCount = keyColumnInfo.Data.Count;
             int fieldCount = allField.Count;
             for (int row = 0; row < dataCount; ++row)
 
             {
+
                 contentOneRow = new StringBuilder();
                 // 将主键列的值作为key
                 string keyString = null;
                 StringBuilder contentkey = new StringBuilder();
+
                 if (keyColumnInfo.DataType == DataType.String)
                 {
                     keyString = _GetStringValue(keyColumnInfo, export, row);
@@ -371,11 +382,19 @@ class ExportServerJson : Export
     {
         try
         {
+            FieldInfo keyColumnInfo = tableInfo.GetKeyColumnFieldInfo();
+            if (keyColumnInfo.DatabaseFieldName == null)
+            {
+                AppLog.Log("主键未设置，已忽略导出！", ConsoleColor.Yellow);
+                errorString = null;
+                return true;
+            }
             errorString = null;
             StringBuilder content = new StringBuilder();
 
             // 生成json字符串开头，每行数据为一个json object，作为整张表json array的元素
             content.Append("[");
+
 
             // 逐行读取表格内容生成json
             List<FieldInfo> allField = tableInfo.GetAllFieldInfo();//获取所有字段，第2行没有定义也获取
@@ -939,7 +958,7 @@ class ExportServerJson : Export
     {
         StringBuilder content = new StringBuilder();
 
-        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString());
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()].ToString());
         switch (timeFormatType)
         {
             case TimeFormatType.FormatString:
@@ -947,7 +966,7 @@ class ExportServerJson : Export
                     if (fieldInfo.Data[row] == null)
                         content.Append("null");
                     else
-                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[_TimeToExportFormatKey].ToString())).Append("\"");
+                        content.Append("\"").Append(((DateTime)(fieldInfo.Data[row])).ToString(fieldInfo.ExtraParam[DateTimeTypeKey.toServerJson.ToString()].ToString())).Append("\"");
 
                     break;
                 }
