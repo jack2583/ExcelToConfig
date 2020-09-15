@@ -129,7 +129,7 @@ public class FieldInfo
     public List<string> JsonString { get; set; }
 
     //导出类型
-    public ExportTableType ExportTable { get; set; }
+    //public ExportTableType ExportTable { get; set; }
 
     /// <summary>
     /// 将字段B的数据追加到字段A中，如果字段B数据不存在，以追加等数量的字段B所在表的主键数量null或false
@@ -230,10 +230,10 @@ public class FieldInfo
     /// <summary>
     /// 导出时的特殊处理
     /// </summary>
-    public enum ExportTableType
-    {
-        Null,
-        ToErlang,    //
-        ToJson,    //
-    }
+    //    public enum ExportTableType
+    //    {
+    //        Null,
+    //        ToErlang,    //
+    //        ToJson,    //
+    //    }
 }

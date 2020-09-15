@@ -89,6 +89,8 @@ class ExportErlang : Export
             excelConfigSetting.IsAddKeyToLuaTableParam = ExportType + "IsAddKeyToLuaTable";
             excelConfigSetting.DateToExportFormatParam = ExportType + "DateToExportFormat";
             excelConfigSetting.TimeToExportFormatParam = ExportType + "TimeToExportFormat";
+            excelConfigSetting.SpecialExportParam = "SpecialExport" + ExportType;
+
 
             if (AppValues.ConfigData.ContainsKey("Export" + ExportType))
                 excelConfigSetting.IsExportParam = AppValues.ConfigData["Export" + ExportType].Trim();
@@ -150,6 +152,8 @@ class ExportErlang : Export
                 excelConfigSetting.DateToExportFormatParam = AppValues.ConfigData[ExportType + "DateToExportFormat"].Trim();
             if (AppValues.ConfigData.ContainsKey(ExportType + "TimeToExportFormat"))
                 excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData[ExportType + "TimeToExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey("SpecialExport" + ExportType))
+                excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData["SpecialExport" + ExportType].Trim();
 
             excelConfigSetting.GetParamValue(tableInfo);
 
@@ -165,20 +169,52 @@ class ExportErlang : Export
                 m = "[合并]";
             }
 
-            if (export.IsExport == false)
-                continue;
-
-            AppLog.Log(string.Format("\n开始{0}导出{1}：", m, ExportType), ConsoleColor.Green, false);
-            AppLog.Log(string.Format("{0}", tableInfo.ExcelNameTips), ConsoleColor.Green);
-
-            if (!ExportOneTable(tableInfo, export, out errorString))
+            if (export.IsExport == true)
             {
-                if (errorString != null)
-                    AppLog.LogErrorAndExit(errorString);
-                else
-                    AppLog.LogErrorAndExit("导出遇到错误");
+                AppLog.Log(string.Format("\n开始{0}导出{1}：", m, ExportType), ConsoleColor.Green, false);
+                AppLog.Log(string.Format("{0}", tableInfo.ExcelNameTips), ConsoleColor.Green);
+
+                if (!ExportOneTable(tableInfo, export, out errorString))
+                {
+                    if (errorString != null)
+                        AppLog.LogErrorAndExit(errorString);
+                    else
+                        AppLog.LogErrorAndExit("导出遇到错误");
+                }
             }
-            
+            m = "";
+            if (AppValues.MergeTableList != null && AppValues.MergeTableList.ContainsKey(kvp.Key))
+            {
+                tableInfo.TableConfigData = AppValues.MergeTableList[kvp.Key][0].TableConfigData;
+                m = "[合并]";
+            }
+            if (export.SpecialExport != null && export.SpecialExport != "" && batExportSetting.IsExport == true)
+            {
+                List<string> exportRuleList;
+                if (export.SpecialExport.Contains(new string(new char[] { '|' })))
+                {
+                    string[] exportRuleArr = export.SpecialExport.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    exportRuleList = new List<string>(exportRuleArr);
+                }
+                else
+                {
+                    exportRuleList = new List<string>();
+                    exportRuleList.Add(export.SpecialExport);
+                }
+                // 特殊嵌套导出
+                foreach (string param in exportRuleList)
+                {
+                    AppLog.Log(string.Format("\n开始{0}特殊导出{1}：", m, ExportType), ConsoleColor.Green, false);
+                    AppLog.Log(string.Format("{0}", tableInfo.ExcelNameTips), ConsoleColor.Green);
+                    AppLog.Log(string.Format("规则：\"{0}\"", param), ConsoleColor.Yellow);
+
+                    SpecialExportTableToErlang(tableInfo, export, param, out errorString);
+                    if (errorString != null)
+                        AppLog.LogErrorAndExit(string.Format("{0}导出特殊失败：\n{1}\n", m, errorString));
+                }
+            }
+
+
         }
 
     }
@@ -300,6 +336,256 @@ class ExportErlang : Export
         }
         
     }
+    /// <summary>
+    /// 按配置的特殊索引导出方式输出json文件（如果声明了在生成的json文件开头以注释形式展示列信息，将生成更直观的嵌套字段信息，而不同于普通导出规则的列信息展示）
+    /// </summary>
+    public static bool SpecialExportTableToErlang(TableInfo tableInfo, Export export, string exportRule, out string errorString)
+    {
+        try
+        {
+            exportRule = exportRule.Trim();
+            // 解析按这种方式导出后的json文件名
+            int colonIndex = exportRule.IndexOf(':');
+
+            // 解析table value中要输出的字段名
+            List<FieldInfo> tableValueField = new List<FieldInfo>();
+            // 解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构
+            Dictionary<object, object> data = new Dictionary<object, object>();
+            //自定义导出规则检查
+            TableCheckHelper.CheckSpecialExportRule(tableInfo, exportRule, out tableValueField, out data, out errorString);
+
+            if (errorString != null)
+            {
+                errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
+                return false;
+            }
+
+            // 生成导出的文件内容
+            StringBuilder content = new StringBuilder();
+
+            // 生成数据内容开头
+           // content.Append("{");//content.AppendLine("{");
+
+            // 当前缩进量
+            int currentLevel = 1;
+
+            //解析顶层结构
+            List<object> listKey = new List<object>();
+            foreach (var key in data.Keys)
+            {
+                if (key.GetType() == typeof(int) || key.GetType() == typeof(long) )
+                    content.Append("get(").Append(key).Append(")->");
+                else if (key.GetType() == typeof(string))
+                {
+                    string FieldString = key.ToString();
+                    content.Append("get(").Append(FieldString.ToLower()).Append(")->");
+                }
+                else
+                {
+                    errorString = string.Format("SpecialExportTableToErlang中出现非法类型的索引列类型{0}", key.GetType());
+                    AppLog.LogErrorAndExit(errorString);
+                }
+                listKey.Add(key);
+                content.Append(export.ExportSpaceString + "#{").Append(export.ExportLineString);
+                //++currentLevel;
+                
+                _GetIndexFieldData(content, export, (Dictionary<object, object>)(data[key]), tableValueField, ref currentLevel, out errorString);
+                content.Append(export.ExportLineString);
+            }
+
+                // 逐层按嵌套结构输出数据
+              //  _GetIndexFieldData(content, export, data, tableValueField, ref currentLevel, out errorString);
+            if (errorString != null)
+            {
+                errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
+                return false;
+            }
+
+            // 去掉最后一个子元素后多余的英文逗号
+            content.Remove(content.Length - 1, 1);
+            // 生成数据内容结尾
+            content.AppendLine("};");
+
+            string exportString2 = content.ToString();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            // 生成数据内容开头
+            string erlangTableName = tableInfo.TableName;
+
+            stringBuilder.Append(export.ExportTopWords).Append(export.ExportLineString);
+            stringBuilder.Append("-module(").Append(export.ExportNameBeforeAdd + export.ExportName).Append(").").Append(export.ExportLineString);
+            stringBuilder.Append(@"-export([get/1,get_list/0]).").Append(export.ExportLineString);
+            stringBuilder.Append(exportString2);
+
+            // 生成数据内容结尾
+            stringBuilder.Append("get(_N) -> false.").Append(export.ExportLineString);
+            stringBuilder.Append("get_list() ->").Append(export.ExportLineString);
+            stringBuilder.Append("\t[");
+            for (int i = 0; i < listKey.Count; i++)
+            {
+                stringBuilder.Append(listKey[i].ToString().ToLower()).Append(",");
+            }
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            stringBuilder.Append("].").Append(export.ExportLineString);
+
+            export.ExportContent = stringBuilder.ToString();
+
+            string s = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
+            export.SaveFile(s);
+            AppLog.Log(string.Format("成功导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
+            errorString = null;
+            return true;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+#if DEBUG
+            errorString = e.ToString();
+#endif
+            errorString = "遇到错误";
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 按指定索引方式导出数据时,通过此函数递归生成层次结构,当递归到最内层时输出指定table value中的数据
+    /// </summary>
+    private static void _GetIndexFieldData(StringBuilder content, Export export, Dictionary<object, object> parentDict, List<FieldInfo> tableValueField, ref int currentLevel, out string errorString)
+    {
+        string oneTableValueFieldData = null;
+        try
+        {
+
+            foreach (var key in parentDict.Keys)
+            {
+                content.Append(_GetErlangIndentation(currentLevel));
+                if (key.GetType() == typeof(int) || key.GetType() == typeof(long) || key.GetType() == typeof(float))
+                    content.Append("\'").Append(key).Append("\'");
+                else if (key.GetType() == typeof(string))
+                {
+                    content.Append("\'").Append(key.ToString().ToLower()).Append("\'");
+                }
+                else
+                {
+                    errorString = string.Format("SpecialExportTableToErlang中出现非法类型的索引列类型{0}", key.GetType());
+                    AppLog.LogErrorAndExit(errorString);
+                    return;
+                }
+
+                content.Append("=> #{");// content.AppendLine(":{");
+               // ++currentLevel;
+                //content.Append(_GetErlangIndentation(currentLevel));
+                // 如果已是最内层，输出指定table value中的数据
+                if (parentDict[key].GetType() == typeof(int))
+                {
+                    foreach (FieldInfo fieldInfo in tableValueField)
+                    {
+                        int rowIndex = (int)parentDict[key];
+                        oneTableValueFieldData = _GetOneField(fieldInfo, export, rowIndex, currentLevel, out errorString);//
+                        if (errorString != null)
+                        {
+                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
+                            return;
+                        }
+                        else
+                        {
+                            if (oneTableValueFieldData == null)
+                                continue;
+
+                            StringBuilder contentTemp = new StringBuilder();
+                            // 变量名，注意array下属的子元素在json中不含key的声明
+                            if (!(fieldInfo.ParentField != null && fieldInfo.ParentField.DataType == DataType.Array))
+                            {
+                                contentTemp.Append("\'").Append(fieldInfo.FieldName).Append("\'");
+                                contentTemp.Append(" => ");
+                            }
+                            contentTemp.Append(oneTableValueFieldData);
+                            // 一个字段结尾加逗号
+                            contentTemp.Append(",");
+                            oneTableValueFieldData = contentTemp.ToString();
+
+                            if (oneTableValueFieldData == null)
+                            {
+                                errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", rowIndex + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), "嵌套导出的值不能为空");
+                                //AppLog.LogErrorAndExit(errorString);
+                                //return;
+                                content.Append("\'").Append(fieldInfo.FieldName).Append("\'");
+                                content.Append(" => ");
+                                switch (fieldInfo.DataType)
+                                {
+                                    case DataType.Int:
+                                    case DataType.Long:
+                                        {
+                                            content.Append("0").Append(",");
+                                            break;
+                                        }
+                                    case DataType.Float:
+                                        {
+                                            content.Append("0.0").Append(",");
+                                            break;
+                                        }
+                                    case DataType.String:
+                                        {
+                                            content.Append("\"\"").Append(",");//@"<<"""">>"
+                                            break;
+                                        }
+                                    case DataType.Bool:
+                                        {
+                                            content.Append("0").Append(",");
+                                            break;
+                                        }
+                                    case DataType.Lang:
+                                    case DataType.Date:
+                                    case DataType.Time:
+                                    default:
+                                        {
+                                            content.Append("\"\"").Append(",");
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                                content.Append(oneTableValueFieldData);
+                        }
+                    }
+                    // 去掉最后一个子元素后多余的英文逗号
+                    if (content.ToString().EndsWith(","))
+                        content.Remove(content.Length - 1, 1);
+
+                    
+                }
+                // 否则继续递归生成索引key
+                else
+                {
+                    // if (content.ToString().EndsWith("}"))
+                    // content.Remove(content.Length - 1, 1).Append(",");
+
+                    _GetIndexFieldData(content, export, (Dictionary<object, object>)(parentDict[key]), tableValueField, ref currentLevel, out errorString);
+                    if (errorString != null)
+                        return;
+
+                    if (content.ToString().EndsWith(","))
+                        content.Remove(content.Length - 1, 1);
+
+                    
+                    //content.Append(",");
+                }
+
+                //--currentLevel;
+                // content.Append(_GetJsonIndentation(currentLevel));
+                content.Append("},"); // content.AppendLine("},");
+                content.Append(export.ExportLineString);
+                //AppLog.Log(content2.Length.ToString());
+            }
+            errorString = null;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            errorString = e.ToString();
+        }
+
+
+    }
+
     private static string _GetOneField(FieldInfo fieldInfo, Export export, int row, int level, out string errorString)
     {
         errorString = null;
@@ -439,20 +725,19 @@ class ExportErlang : Export
             else
                 return null;
 
-        if (fieldInfo.ExportTable == FieldInfo.ExportTableType.ToErlang)
-        {
-            // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
-            // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理。之前做法为Replace("\\", "\\\\")，即将单元格中输入内容均视为普通字符，忽略转义的处理
-            string str = fieldInfo.Data[row].ToString();//.Replace("\n", "\\n").Replace("\"", "\\\"");
-            content.Append(str);
-        }
-        else
-        {
-            string str2 = fieldInfo.Data[row].ToString().Replace("\n", "\\n");
+        //if (fieldInfo.ExportTable == FieldInfo.ExportTableType.ToErlang)
+        //{
+        //    // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
+        //    // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理。之前做法为Replace("\\", "\\\\")，即将单元格中输入内容均视为普通字符，忽略转义的处理
+        //    string str = fieldInfo.Data[row].ToString();//.Replace("\n", "\\n").Replace("\"", "\\\"");
+        //    content.Append(str);
+        //}
+        //else
+        //{
             content.Append("<<\"");
             // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
             // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理。之前做法为Replace("\\", "\\\\")，即将单元格中输入内容均视为普通字符，忽略转义的处理
-            string str = fieldInfo.Data[row].ToString().Replace("\n", "\\n").Replace("\\\"", "\"");//.Replace("\n", "\\n").Replace("\"", "\"");
+            string str = fieldInfo.Data[row].ToString().Replace("\n", "\\n").Replace("\"", "\\\"");//.Replace("\n", "\\n").Replace("\"", "\"");
 
             //int ti;
             //if (!int.TryParse(str, out ti))//如果转换失败（为false）时输出括号内容
@@ -470,7 +755,7 @@ class ExportErlang : Export
                 content.Append("\">>");
             else
                 content.Append("\"/utf8>>");
-        }
+        //}
 
         return content.ToString();
     }
@@ -479,14 +764,14 @@ class ExportErlang : Export
     {
         if (fieldInfo.Data[row] == null)
             if (export.IsExportNullBool == true)
-                return "false";
+                return "0";
             else
                 return null;
 
         if ((bool)fieldInfo.Data[row] == true)
-            return "true";
+            return "1";
         else
-            return "false";
+            return "0";
     }
 
     private static string _GetLangValue(FieldInfo fieldInfo, Export export, int row, int level)
@@ -527,33 +812,108 @@ class ExportErlang : Export
     private static string _GetDateValue(FieldInfo fieldInfo, Export export, int row, int level)
     {
         StringBuilder content = new StringBuilder();
-
-        if (fieldInfo.Data[row] == null)
-            if (export.IsExportNullDate == true)
-                return "{{1970,1,1}, {0,0,0}}";
-            else
-                return null;
-        else
+        DateFormatType dateFormatType = DateTimeValue.GetDateFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toErlang.ToString()].ToString());
+        switch (dateFormatType)
         {
-            DateTime dt = (DateTime)(fieldInfo.Data[row]);
-            content.Append("{{").Append(dt.Year).Append(",").Append(dt.Month).Append(",").Append(dt.Day).Append("}, {0,0,0}}");
+            case DateFormatType.FormatString:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullDate == true)
+                            return "{{1970,1,1}, {0,0,0}}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        
+                        content.Append("{{").Append(dt.Year).Append(",").Append(dt.Month).Append(",").Append(dt.Day).Append("}, {0,0,0}}");
+                    }
+                    break;
+                }
+            case DateFormatType.ReferenceDateSec:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullDate == true)
+                            return "{{1970,1,1}, {0,0,0}}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE_LOCAL).TotalSeconds);
+                        //content.Append("{{").Append(dt.Year).Append(",").Append(dt.Month).Append(",").Append(dt.Day).Append("}, {0,0,0}}");
+                    }
+                    break;
+                }
+            case DateFormatType.ReferenceDateMsec:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullDate == true)
+                            return "{{1970,1,1}, {0,0,0}}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE_LOCAL).TotalMilliseconds);
+                    }
+                    break;
+                }
+            default:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullDate == true)
+                            return "{{1970,1,1}, {0,0,0}}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        content.Append("{{").Append(dt.Year).Append(",").Append(dt.Month).Append(",").Append(dt.Day).Append("}, {0,0,0}}");
+                    }
+                    break;
+                }
         }
+
         return content.ToString();
     }
 
     private static string _GetTimeValue(FieldInfo fieldInfo, Export export, int row, int level)
     {
         StringBuilder content = new StringBuilder();
-        if (fieldInfo.Data[row] == null)
-            if (export.IsExportNullTime == true)
-                return "{{1970,1,1}, {0,0,0}}";
-            else
-                return null;
-        else
+        TimeFormatType timeFormatType = DateTimeValue.GetTimeFormatType(fieldInfo.ExtraParam[DateTimeTypeKey.toErlang.ToString()].ToString());
+        switch (timeFormatType)
         {
-            DateTime dt = (DateTime)(fieldInfo.Data[row]);
-            content.Append("{").Append(dt.Hour).Append(",").Append(dt.Minute).Append(",").Append(dt.Second).Append("}");
+            case TimeFormatType.FormatString:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullTime == true)
+                            return "{0,0,0}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        content.Append("{").Append(dt.Hour).Append(",").Append(dt.Minute).Append(",").Append(dt.Second).Append("}");
+                    }
+                    break;
+                }
+            case TimeFormatType.ReferenceTimeSec:
+                {
+                    if (fieldInfo.Data[row] == null)
+                        content.Append("0");
+                    else
+                        content.Append(((DateTime)(fieldInfo.Data[row]) - DateTimeValue.REFERENCE_DATE).TotalSeconds);
+
+                    break;
+                }
+            default:
+                {
+                    AppLog.LogErrorAndExit("错误：用_GetTimeValue函数导出json文件的time型的TimeFormatType非法");
+                    break;
+                }
         }
+
 
         return content.ToString();
     }

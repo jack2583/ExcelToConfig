@@ -151,6 +151,8 @@ class ExportJson : Export
                 excelConfigSetting.DateToExportFormatParam = AppValues.ConfigData[ExportType + "DateToExportFormat"].Trim();
             if (AppValues.ConfigData.ContainsKey(ExportType + "TimeToExportFormat"))
                 excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData[ExportType + "TimeToExportFormat"].Trim();
+            if (AppValues.ConfigData.ContainsKey("SpecialExport"+ExportType))
+                excelConfigSetting.TimeToExportFormatParam = AppValues.ConfigData["SpecialExport" + ExportType].Trim();
 
             excelConfigSetting.GetParamValue(tableInfo);
 
