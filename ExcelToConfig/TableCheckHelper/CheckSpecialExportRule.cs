@@ -118,6 +118,8 @@ public partial class TableCheckHelper
                     return false;
                 }
             }
+            
+
 
             indexField.Add(fieldInfo);
         }
@@ -207,4 +209,89 @@ public partial class TableCheckHelper
         errorString = null;
         return true;
     }
+    /// <summary>
+    /// JSON、LUA自定义导出规则检查
+    /// </summary>
+    /// <param name="tableInfo"></param>
+    /// <param name="exportRule">自定义导出字符串</param>
+    /// <param name="tableValueField">解析table value中要输出的字段名</param>
+    /// <param name="data">解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构</param>
+    /// <param name="errorString"></param>
+    /// <returns></returns>
+    public static bool CheckSpecialExportRuleObject(TableInfo tableInfo, string exportRule, out List<FieldInfo> indexField,  out string errorString)
+    {
+        // 用于索引的字段列表
+        indexField = new List<FieldInfo>();
+        // 解析按这种方式导出后的json文件名
+        int colonIndex = exportRule.IndexOf(':');
+        if (colonIndex == -1)
+        {
+            errorString = string.Format("导出配置\"{0}\"定义错误，必须在开头声明导出json文件名\n", exportRule);
+            return false;
+        }
+
+        // 判断是否在最后的花括号内声明table value中包含的字段
+        int leftBraceIndex = exportRule.LastIndexOf('{');
+        int rightBraceIndex = exportRule.LastIndexOf('}');
+        // 解析依次作为索引的字段名
+        string indexFieldNameString = null;
+        // 注意分析花括号时要考虑到未声明table value中的字段而在某索引字段完整性检查规则中用花括号声明了有效值的情况
+        if (exportRule.EndsWith("}") && leftBraceIndex != -1)
+            indexFieldNameString = exportRule.Substring(colonIndex + 1, leftBraceIndex - colonIndex - 1);
+        else
+            indexFieldNameString = exportRule.Substring(colonIndex + 1, exportRule.Length - colonIndex - 1);
+
+        string[] indexFieldDefine = indexFieldNameString.Split(new char[] { '-' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+        // 索引字段对应的完整性检查规则
+        List<string> integrityCheckRules = new List<string>();
+        if (indexFieldDefine.Length < 1)
+        {
+            errorString = string.Format("导出配置\"{0}\"定义错误，用于索引的字段不能为空，请按fileName:indexFieldName1-indexFieldName2{otherFieldName1,otherFieldName2}的格式配置\n", exportRule);
+            return false;
+        }
+        // 检查字段是否存在且为int、float、string或lang型
+        foreach (string fieldDefine in indexFieldDefine)
+        {
+            string fieldName = null;
+            // 判断是否在字段名后用小括号声明了该字段的完整性检查规则
+            int leftBracketIndex = fieldDefine.IndexOf('(');
+            int rightBracketIndex = fieldDefine.IndexOf(')');
+            if (leftBracketIndex > 0 && rightBracketIndex > leftBracketIndex)
+            {
+                fieldName = fieldDefine.Substring(0, leftBracketIndex);
+                string integrityCheckRule = fieldDefine.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1).Trim();
+                if (string.IsNullOrEmpty(integrityCheckRule))
+                {
+                    errorString = string.Format("导出配置\"{0}\"定义错误，用于索引的字段\"{1}\"若要声明完整性检查规则就必须在括号中填写否则不要加括号\n", exportRule, fieldName);
+                    return false;
+                }
+                integrityCheckRules.Add(integrityCheckRule);
+            }
+            else
+            {
+                fieldName = fieldDefine.Trim();
+                integrityCheckRules.Add(null);
+            }
+
+            FieldInfo fieldInfo = tableInfo.GetFieldInfoByFieldName(fieldName);
+            if (fieldInfo == null)
+            {
+                errorString = string.Format("导出配置\"{0}\"定义错误，声明的索引字段\"{1}\"不存在\n", exportRule, fieldName);
+                return false;
+            }
+            if (fieldInfo.DataType != DataType.Int && fieldInfo.DataType != DataType.Long && fieldInfo.DataType != DataType.Float && fieldInfo.DataType != DataType.String && fieldInfo.DataType != DataType.Lang)
+            {
+                errorString = string.Format("导出配置\"{0}\"定义错误，声明的索引字段\"{1}\"为{2}型，但只允许为int、long、float、string或lang型\n", exportRule, fieldName, fieldInfo.DataType);
+                return false;
+            }
+
+            indexField.Add(fieldInfo);
+        }
+
+        
+        errorString = null;
+        return true;
+    }
+
 }

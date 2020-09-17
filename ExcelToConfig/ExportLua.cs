@@ -199,6 +199,18 @@ class ExportLua
                 }
             }
 
+            string ECP = excelConfigSetting.SpecialExportParam + "Object";
+            if (tableInfo.TableConfigData.ContainsKey(ECP))
+            {
+                if (!string.IsNullOrEmpty(tableInfo.TableConfigData[ECP]))
+                {
+                    AppLog.Log(string.Format("\n开始特殊导出{0}Object：", ExportType), ConsoleColor.Green, false);
+                    SpecialExportTableToLuaObject(tableInfo, export, tableInfo.TableConfigData[ECP], out errorString);
+                    if (errorString != null)
+                        AppLog.LogErrorAndExit(string.Format("导出特殊失败：\n{0}\n", errorString));
+                }
+            }
+
             if (AppValues.MergeTableList != null && AppValues.MergeTableList.ContainsKey(kvp.Key) && batExportSetting.IsExport == true)
             {
                 export.IsExport = true;
@@ -660,6 +672,124 @@ class ExportLua
         //    errorString = "保存为lua文件失败\n";
         //    return false;
         //}
+    }
+    /// <summary>
+    /// 按配置导出特殊的Object类型
+    /// </summary>
+    public static bool SpecialExportTableToLuaObject(TableInfo tableInfo, Export export, string exportRule, out string errorString)
+    {
+        try
+        {
+            exportRule = exportRule.Trim();
+            // 解析按这种方式导出后的json文件名
+            int colonIndex = exportRule.IndexOf(':');
+
+            // 解析table value中要输出的字段名
+            List<FieldInfo> tableValueField = new List<FieldInfo>();
+            // 解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构
+            Dictionary<object, object> data = new Dictionary<object, object>();
+            //自定义导出规则检查
+            TableCheckHelper.CheckSpecialExportRuleObject(tableInfo, exportRule, out tableValueField, out errorString);
+
+            if (errorString != null)
+            {
+                errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
+                return false;
+            }
+
+            // 当前缩进量
+            int currentLevel = 1;
+            // 生成导出的文件内容
+            StringBuilder content = new StringBuilder();
+
+            // 生成数据内容开头
+            if (export.IsTableNameStart)
+            {
+                content.Append(tableInfo.TableName).AppendLine(" = {");
+            }
+            else
+            {
+                content.AppendLine("return {");
+            }
+
+            string oneTableValueFieldData = null;
+            int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
+
+            foreach (FieldInfo fieldInfo in tableValueField)
+            {
+                content.Append(_GetLuaIndentation(currentLevel));
+
+                if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float || fieldInfo.DataType == DataType.String)
+                {
+                    content.Append("[\"").Append(fieldInfo.FieldName).Append("\"]").Append(" = {");
+
+                    int i = 1;
+                    for (int row = 0; row < dataCount; ++row)
+                    {
+                        oneTableValueFieldData = _GetOneField(fieldInfo, export, row, currentLevel, out errorString);//_GetOneField(allField[column], export, row, currentLevel, out errorString);
+                        if (errorString != null)
+                        {
+                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", row + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
+                            return false;
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(oneTableValueFieldData) || oneTableValueFieldData== "\"\"")
+                                continue;
+                        }
+
+                        if (export.IsArrayFieldName == true)
+                        {
+                            content.Append(string.Format("[{0}] = ", i));
+                            i++;
+                        }
+                        content.Append(oneTableValueFieldData).Append(",");
+                    }
+                }
+                else
+                {
+                    errorString = string.Format("SpecialExportTableToLuaObject中出现非法类型的索引列类型{0}", fieldInfo.DataType);
+                    AppLog.LogErrorAndExit(errorString);
+                    return false;
+                }
+                // 去掉最后一个子元素后多余的英文逗号
+                content.Remove(content.Length - 1, 1);
+                content.AppendLine("},");
+
+            }
+
+
+            // 去掉最后一个子元素后多余的英文逗号
+            content.Remove(content.Length - 3, 3);
+            content.AppendLine("");
+            // 生成数据内容结尾
+            content.AppendLine("}");
+
+            string exportString = content.ToString();
+
+            // 如果声明了要整理为带缩进格式的形式
+            //if (export.IsExportFormat == true)
+            //{
+            //    exportString = _FormatJson(exportString);
+            //}
+
+            // 保存为json文件
+            export.ExportName = exportRule.Substring(0, colonIndex).Trim();
+            export.ExportContent = exportString;
+
+            export.SaveFile(tableInfo.ExcelName);
+            AppLog.Log(string.Format("成功特殊导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
+            errorString = null;
+            return true;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+
+            errorString = e.ToString();
+
+            errorString = "遇到错误";
+            return false;
+        }
     }
 
     /// <summary>
