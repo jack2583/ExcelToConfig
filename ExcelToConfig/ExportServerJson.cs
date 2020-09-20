@@ -591,7 +591,7 @@ class ExportServerJson : Export
 
             foreach (FieldInfo fieldInfo in tableValueField)
             {
-                if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float || fieldInfo.DataType == DataType.String)
+                if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float || fieldInfo.DataType == DataType.String || fieldInfo.DataType == DataType.Json || fieldInfo.DataType == DataType.MapString)
                 {
                     content.Append("\"").Append(fieldInfo.FieldName).Append("\"").Append(":[");
 
@@ -977,7 +977,7 @@ class ExportServerJson : Export
         StringBuilder content = new StringBuilder();
 
         content.Append("\"");
-        content.Append(str.Replace("\n", "\\n").Replace("\"", "\\\""));
+        content.Append(str.Replace("\n", "\\n"));
         content.Append("\"");
 
         return content.ToString();

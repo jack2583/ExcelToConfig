@@ -104,12 +104,12 @@
     <Compile Include="AppClass\AppDataType.cs" />
     <Compile Include="AppClass\AppValues.cs" />
     <Compile Include="AppClass\BatData.cs" />
-    <Compile Include="AppClass\MapStringAnalyzeHelper.cs" />
     <Compile Include="BatExportPublicSetting.cs" />
     <Compile Include="BatExportSetting.cs" />
     <Compile Include="DateTimes\DateTimeValue.cs" />
     <Compile Include="ExcelClassOfApp\FieldInfo.cs" />
     <Compile Include="ExcelClassOfApp\TableInfo.cs" />
+    <Compile Include="ExcelClassTableAnalyzeHelper\MapStringAnalyzeHelper.cs" />
     <Compile Include="ExcelClassTableAnalyzeHelper\MapStringCheckHelper.cs" />
     <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperConfigData.cs" />
     <Compile Include="ExcelClassTableAnalyzeHelper\TableAnalyzeHelperDictAndArray.cs" />

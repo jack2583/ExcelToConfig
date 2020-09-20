@@ -9,7 +9,7 @@ public partial class TableAnalyzeHelper
     {
         StringBuilder errorStringBuilder = new StringBuilder();
 
-        fieldInfo.MapStringFormatDefine = MapStringAnalyzeHelper.GetMapStringFormatDefine(fieldInfo.DataTypeString, out errorString);
+        fieldInfo.MapStringFormatDefine =GetMapStringFormatDefine(fieldInfo.DataTypeString, out errorString);
         if (errorString != null)
         {
             errorString = string.Format("{0}，你输入的类型定义字符串为{1}", errorString, fieldInfo.DataTypeString);
@@ -40,7 +40,7 @@ public partial class TableAnalyzeHelper
                     fieldInfo.JsonString.Add(inputData);
 
                     // 将输入的数据转为JsonData
-                    JsonData jsonData = MapStringAnalyzeHelper.GetMapStringData(inputData, fieldInfo.MapStringFormatDefine, out errorString);
+                    JsonData jsonData = GetMapStringData(inputData, fieldInfo.MapStringFormatDefine, out errorString);
                     if (errorString == null)
                         fieldInfo.Data.Add(jsonData);
                     else

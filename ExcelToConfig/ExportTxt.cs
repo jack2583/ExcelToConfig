@@ -436,6 +436,7 @@ class ExportTxt : Export
                 }
             case DataType.Lang:
             case DataType.TableString:
+            case DataType.MapString:
                 {
                     for (int row = 0; row < rowCount; ++row)
                     {

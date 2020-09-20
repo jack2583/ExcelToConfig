@@ -737,7 +737,7 @@ class ExportErlang : Export
             content.Append("<<\"");
             // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
             // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理。之前做法为Replace("\\", "\\\\")，即将单元格中输入内容均视为普通字符，忽略转义的处理
-            string str = fieldInfo.Data[row].ToString().Replace("\n", "\\n").Replace("\"", "\\\"");//.Replace("\n", "\\n").Replace("\"", "\"");
+            string str = fieldInfo.Data[row].ToString().Replace("\n", "\\n");//.Replace("\"", "\\"");
 
             //int ti;
             //if (!int.TryParse(str, out ti))//如果转换失败（为false）时输出括号内容
@@ -1127,7 +1127,7 @@ class ExportErlang : Export
                 content.Append("<<\"");
                 // 将单元格中填写的英文引号进行转义，使得单元格中填写123"456时，最终生成的lua文件中为xx = "123\"456"
                 // 将单元格中手工按下的回车变成"\n"输出到lua文件中，单元格中输入的"\n"等原样导出到lua文件中使其能被lua转义处理
-                content.AppendFormat("{0}", jsonData.ToString().Replace("\n", "\\n").Replace("\"", "\""));
+                content.AppendFormat("{0}", jsonData.ToString().Replace("\n", "\\n").Replace("\"", "\\\""));
                 content.Append("\"/utf8>>");
             }
         }

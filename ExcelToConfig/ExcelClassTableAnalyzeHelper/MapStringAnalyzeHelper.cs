@@ -3,10 +3,10 @@ using LitJson;
 using System.Collections.Generic;
 using System.Text;
 
-public class MapStringAnalyzeHelper
+public partial class TableAnalyzeHelper
 {
     /// <summary>
-    /// 解析mapString类型的定义字符串，并以MapStringInfo形式返回
+    /// 解析mapString类型的定义字符串，并以MapStringInfo形式返回 //class MapStringAnalyzeHelper
     /// </summary>
     public static MapStringInfo GetMapStringFormatDefine(string defineString, out string errorString)
     {
