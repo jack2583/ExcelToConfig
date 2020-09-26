@@ -187,7 +187,9 @@ public partial class TableAnalyzeHelper
                 {
                     string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                     ulong inputLongValue = 0;
-                    if (ulong.TryParse(inputData, out inputLongValue) == false)
+                    if (string.IsNullOrEmpty(inputData))
+                        fieldInfo.Data.Add(null);
+                    else if (ulong.TryParse(inputData, out inputLongValue) == false)
                         invalidInfo.Add(row, inputData);
                     else
                     {
@@ -208,7 +210,9 @@ public partial class TableAnalyzeHelper
                 {
                     string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                     ulong inputLongValue = 0;
-                    if (ulong.TryParse(inputData, out inputLongValue) == false)
+                    if (string.IsNullOrEmpty(inputData))
+                        fieldInfo.Data.Add(null);
+                    else if (ulong.TryParse(inputData, out inputLongValue) == false)
                         invalidInfo.Add(row, inputData);
                     else
                     {
@@ -424,7 +428,9 @@ public partial class TableAnalyzeHelper
                 {
                     string inputData = dt.Rows[row][columnIndex].ToString().Trim();
                     uint inputIntValue = 0;
-                    if (uint.TryParse(inputData, out inputIntValue) == false)
+                    if (string.IsNullOrEmpty(inputData))
+                        fieldInfo.Data.Add(null);
+                    else if (uint.TryParse(inputData, out inputIntValue) == false)
                         invalidInfo.Add(row, inputData);
                     else
                     {

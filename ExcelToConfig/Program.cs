@@ -91,6 +91,8 @@ namespace ExcelToConfig
                 ExportErlang.ExportToErlang();
                 ExportServerJson.ExportToJson();
                 ExportLua.ExportToLua();
+                ExportMySQL.ExportToMySQL();
+                
 
 
                 AppLog.Log("\n全部文件导出成功");

@@ -158,7 +158,7 @@ class ExportJson : Export
 
             Export export = new Export();
             export.GetValue(tableInfo,excelConfigSetting, batExportSetting, batExportPublicSetting);
-           // export.GetExportName(excelConfigSetting.ExportName, tableInfo.ExcelName, export.ExcelNameSplitString);
+            string exportName = export.ExportName;
 
 
             string m = "";

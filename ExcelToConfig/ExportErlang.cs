@@ -159,7 +159,7 @@ class ExportErlang : Export
 
             Export export = new Export();
             export.GetValue(tableInfo,excelConfigSetting, batExportSetting, batExportPublicSetting);
-          //  export.GetExportName(excelConfigSetting.ExportName, tableInfo.ExcelName, export.ExcelNameSplitString);
+            string exportName = export.ExportName;
 
             string m = "";
             if (AppValues.MergeTableList != null && AppValues.MergeTableList.ContainsKey(kvp.Key) && batExportSetting.IsExport == true)
@@ -213,7 +213,17 @@ class ExportErlang : Export
                         AppLog.LogErrorAndExit(string.Format("{0}导出特殊失败：\n{1}\n", m, errorString));
                 }
             }
-
+            string ECP = excelConfigSetting.SpecialExportParam + "Object";
+            if (tableInfo.TableConfigData.ContainsKey(ECP))
+            {
+                if (!string.IsNullOrEmpty(tableInfo.TableConfigData[ECP]))
+                {
+                    AppLog.Log(string.Format("\n开始特殊导出{0}Object：", ExportType), ConsoleColor.Green, false);
+                    SpecialExportTableToErlangObject(tableInfo, export, tableInfo.TableConfigData[ECP], out errorString);
+                    if (errorString != null)
+                        AppLog.LogErrorAndExit(string.Format("导出特殊失败：\n{0}\n", errorString));
+                }
+            }
 
         }
 
@@ -390,6 +400,7 @@ class ExportErlang : Export
                 //++currentLevel;
                 
                 _GetIndexFieldData(content, export, (Dictionary<object, object>)(data[key]), tableValueField, ref currentLevel, out errorString);
+                content.Append("};");
                 content.Append(export.ExportLineString);
             }
 
@@ -404,14 +415,150 @@ class ExportErlang : Export
             // 去掉最后一个子元素后多余的英文逗号
             content.Remove(content.Length - 1, 1);
             // 生成数据内容结尾
-            content.AppendLine("};");
+            content.AppendLine("");
 
             string exportString2 = content.ToString();
 
             StringBuilder stringBuilder = new StringBuilder();
             // 生成数据内容开头
-            string erlangTableName = tableInfo.TableName;
+           // string erlangTableName = tableInfo.TableName;
+            export.ExportName = exportRule.Substring(0, colonIndex).Trim();
 
+            stringBuilder.Append(export.ExportTopWords).Append(export.ExportLineString);
+            stringBuilder.Append("-module(").Append(export.ExportNameBeforeAdd + export.ExportName).Append(").").Append(export.ExportLineString);
+            stringBuilder.Append(@"-export([get/1,get_list/0]).").Append(export.ExportLineString);
+            stringBuilder.Append(exportString2);
+
+            // 生成数据内容结尾
+            stringBuilder.Append("get(_N) -> false.").Append(export.ExportLineString);
+            stringBuilder.Append("get_list() ->").Append(export.ExportLineString);
+            stringBuilder.Append("\t[");
+            for (int i = 0; i < listKey.Count; i++)
+            {
+                stringBuilder.Append(listKey[i].ToString().ToLower()).Append(",");
+            }
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            stringBuilder.Append("].").Append(export.ExportLineString);
+
+            export.ExportContent = stringBuilder.ToString();
+
+            string s = ExcelMethods.GetTableName(tableInfo.ExcelName, "-", ExcelFolder.TheLanguage);
+            export.SaveFile(s);
+            AppLog.Log(string.Format("成功导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
+            errorString = null;
+            return true;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+#if DEBUG
+            errorString = e.ToString();
+#endif
+            errorString = "遇到错误";
+            return false;
+        }
+    }
+    public static bool SpecialExportTableToErlangObject(TableInfo tableInfo, Export export, string exportRule, out string errorString)
+    {
+        try
+        {
+            exportRule = exportRule.Trim();
+            // 解析按这种方式导出后的json文件名
+            int colonIndex = exportRule.IndexOf(':');
+
+            // 解析table value中要输出的字段名
+            List<FieldInfo> tableValueField = new List<FieldInfo>();
+            // 解析完依次作为索引的字段以及table value中包含的字段后，按索引要求组成相应的嵌套数据结构
+            Dictionary<object, object> data = new Dictionary<object, object>();
+            //自定义导出规则检查
+            TableCheckHelper.CheckSpecialExportRuleObject(tableInfo, exportRule, out tableValueField,  out errorString);
+
+            if (errorString != null)
+            {
+                errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
+                return false;
+            }
+
+            // 生成导出的文件内容
+            StringBuilder content = new StringBuilder();
+
+            // 生成数据内容开头
+            // content.Append("{");//content.AppendLine("{");
+
+            // 当前缩进量
+            int currentLevel = 1;
+            string oneTableValueFieldData = null;
+            int dataCount = tableInfo.GetKeyColumnFieldInfo().Data.Count;
+            List<object> listKey = new List<object>();
+            foreach (FieldInfo fieldInfo in tableValueField)
+            {
+                if (fieldInfo.DataType == DataType.Int || fieldInfo.DataType == DataType.Long || fieldInfo.DataType == DataType.Float || fieldInfo.DataType == DataType.String || fieldInfo.DataType == DataType.Json || fieldInfo.DataType == DataType.MapString)
+                {
+                    
+                    if (fieldInfo.DataType == DataType.String)
+                    {
+                        content.Append("get(").Append(fieldInfo.FieldName.ToLower()).Append(")-> [");
+                        listKey.Add(fieldInfo.FieldName.ToLower());
+                    }
+                    else
+                    {
+                        content.Append("get(").Append(fieldInfo.FieldName).Append(")-> [");
+                        listKey.Add(fieldInfo.FieldName);
+                    }
+                        
+
+                    for (int row = 0; row < dataCount; ++row)
+                    {
+                        oneTableValueFieldData = _GetOneField(fieldInfo, export, row, currentLevel, out errorString);//
+                        if (errorString != null)
+                        {
+                            errorString = string.Format("第{0}行的字段\"{1}\"（列号：{2}）导出数据错误：{3}", row + ExcelTableSetting.DataFieldDataStartRowIndex + 1, fieldInfo.FieldName, ExcelMethods.GetExcelColumnName(fieldInfo.ColumnSeq + 1), errorString);
+                            return false;
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(oneTableValueFieldData))
+                                continue;
+                        }
+
+                        if (fieldInfo.DataType == DataType.String)
+                        {
+                            content.Append(oneTableValueFieldData).Append(",");
+                        }
+                        else
+                        {
+                            content.Append(oneTableValueFieldData).Append(",");
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    errorString = string.Format("SpecialExportTableToErlangObject中出现非法类型的索引列类型{0}", fieldInfo.DataType);
+                    AppLog.LogErrorAndExit(errorString);
+                    return false;
+                }
+                // 去掉最后一个子元素后多余的英文逗号
+                content.Remove(content.Length - 1, 1);
+                content.AppendLine("];");
+            }
+
+            if (errorString != null)
+            {
+                errorString = string.Format("错误：对表格{0}按\"{1}\"规则进行特殊索引导出时发现以下错误，导出被迫停止，请修正错误后重试：\n{2}\n", tableInfo.TableName, exportRule, errorString);
+                return false;
+            }
+
+            // 去掉最后一个子元素后多余的英文逗号
+            content.Remove(content.Length - 1, 1);
+            // 生成数据内容结尾
+           // content.AppendLine("");
+
+            string exportString2 = content.ToString();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            // 生成数据内容开头
+           // string erlangTableName = tableInfo.TableName;
+            export.ExportName = exportRule.Substring(0, colonIndex).Trim();
             stringBuilder.Append(export.ExportTopWords).Append(export.ExportLineString);
             stringBuilder.Append("-module(").Append(export.ExportNameBeforeAdd + export.ExportName).Append(").").Append(export.ExportLineString);
             stringBuilder.Append(@"-export([get/1,get_list/0]).").Append(export.ExportLineString);
@@ -573,9 +720,11 @@ class ExportErlang : Export
                 //--currentLevel;
                 // content.Append(_GetJsonIndentation(currentLevel));
                 content.Append("},"); // content.AppendLine("},");
-                content.Append(export.ExportLineString);
+               // content.Append(export.ExportLineString);
                 //AppLog.Log(content2.Length.ToString());
             }
+            if (content.ToString().EndsWith(","))
+                content.Remove(content.Length - 1, 1);
             errorString = null;
         }
         catch (ArgumentOutOfRangeException e)

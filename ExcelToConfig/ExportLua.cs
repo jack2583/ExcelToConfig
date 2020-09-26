@@ -173,7 +173,7 @@ class ExportLua
 
             Export export = new Export();
             export.GetValue(tableInfo, excelConfigSetting, batExportSetting, batExportPublicSetting);
-            //export.GetExportName(excelConfigSetting.ExportName, tableInfo.ExcelName, export.ExcelNameSplitString);
+            string exportName = export.ExportName;
 
             if (export.SpecialExport != null && export.SpecialExport != "" && batExportSetting.IsExport == true)
             {
@@ -219,7 +219,7 @@ class ExportLua
 
             if (export.IsExport == false)
                 continue;
-
+            export.ExportName = exportName;
             AppLog.Log(string.Format("\n开始导出{0}：", ExportType), ConsoleColor.Green, false);
             AppLog.Log(string.Format("{0}", tableInfo.ExcelNameTips), ConsoleColor.Green);
 
@@ -410,7 +410,7 @@ class ExportLua
             errorString = string.Format("导出配置\"{0}\"定义错误，必须在开头声明导出lua文件名\n", exportRule);
             return false;
         }
-        string fileName = exportRule.Substring(0, colonIndex).Trim();
+        export.ExportName = exportRule.Substring(0, colonIndex).Trim();
         // 判断是否在最后的花括号内声明table value中包含的字段
         int leftBraceIndex = exportRule.LastIndexOf('{');
         int rightBraceIndex = exportRule.LastIndexOf('}');
@@ -656,7 +656,7 @@ class ExportLua
 
         export.ExportContent = exportString;
 
-        export.SaveFile(tableInfo.ExcelName);
+        export.SaveFile(export.ExportName);
         AppLog.Log(string.Format("成功导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
         errorString = null;
         return true;
@@ -777,7 +777,7 @@ class ExportLua
             export.ExportName = exportRule.Substring(0, colonIndex).Trim();
             export.ExportContent = exportString;
 
-            export.SaveFile(tableInfo.ExcelName);
+            export.SaveFile(export.ExportName);
             AppLog.Log(string.Format("成功特殊导出：{0}{1}{2}.{3}", export.ExportNameBeforeAdd, export.ExportName, export.ExportNameAfterLanguageMark, export.ExportExtension));
             errorString = null;
             return true;
