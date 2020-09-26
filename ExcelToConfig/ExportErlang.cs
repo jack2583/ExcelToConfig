@@ -31,11 +31,11 @@ class ExportErlang : Export
         batExportSetting.IsExportKeepDirectoryStructure = false;
         batExportSetting.ExportExtension = "erl";
         batExportSetting.ExportNameBeforeAdd = "";
-        batExportSetting.IsExportNullNumber = true;
-        batExportSetting.IsExportNullString = true;
+        batExportSetting.IsExportNullNumber = false;
+        batExportSetting.IsExportNullString = false;
         batExportSetting.IsExportNullJson = false;
-        batExportSetting.IsExportNullArray = true;
-        batExportSetting.IsExportNullDict = true;
+        batExportSetting.IsExportNullArray = false;
+        batExportSetting.IsExportNullDict = false;
         batExportSetting.IsExportNullBool = false;
         batExportSetting.IsExportNullDate = false;
         batExportSetting.IsExportNullTime = false;
@@ -983,7 +983,7 @@ class ExportErlang : Export
                 {
                     if (fieldInfo.Data[row] == null)
                         if (export.IsExportNullDate == true)
-                            return "{{1970,1,1}, {0,0,0}}";
+                            return "0";
                         else
                             return null;
                     else
@@ -998,7 +998,7 @@ class ExportErlang : Export
                 {
                     if (fieldInfo.Data[row] == null)
                         if (export.IsExportNullDate == true)
-                            return "{{1970,1,1}, {0,0,0}}";
+                            return "0";
                         else
                             return null;
                     else
@@ -1058,7 +1058,16 @@ class ExportErlang : Export
                 }
             default:
                 {
-                    AppLog.LogErrorAndExit("错误：用_GetTimeValue函数导出json文件的time型的TimeFormatType非法");
+                    if (fieldInfo.Data[row] == null)
+                        if (export.IsExportNullTime == true)
+                            return "{0,0,0}";
+                        else
+                            return null;
+                    else
+                    {
+                        DateTime dt = (DateTime)(fieldInfo.Data[row]);
+                        content.Append("{").Append(dt.Hour).Append(",").Append(dt.Minute).Append(",").Append(dt.Second).Append("}");
+                    }
                     break;
                 }
         }
